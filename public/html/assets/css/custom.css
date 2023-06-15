@@ -1,0 +1,133 @@
+.investigator_profile_state{
+  width:125px;
+}
+.investigator_profile_vechile_year{
+  width:80px;
+}
+.investigator_profile_vechile_make{
+  width:80px;
+}
+.investigator_profile_vechile_model{
+  width:80px;
+}
+.investigator_profile_vechile_picture{
+  width:260px;
+}
+.investigator_profile_proof_of_insurance{
+  width:260px;
+}
+.investigator_profile_document_dl{
+  width:260px;
+}
+.investigator_profile_document_id{
+  width:260px;
+}
+.investigator_profile_document_ssn{
+  width:260px;
+}
+.investigator_profile_document_birth_certificate{
+  width:260px;
+}
+.investigator_profile_document_form_19{
+  width:260px;
+}
+.investigator_profile_picture{
+  width:260px;
+}
+
+.dashboard-topbar-img{
+  height: 70px;
+  width: 180px;
+}
+
+.invSearchWrap .card {
+    box-shadow: none;
+  }
+.invSearchWrap .card-header {
+  padding-left: 5px;
+  color: #000;
+  font-size: 16px;
+}
+.invSearchWrap table th, .invSearchWrap table td {
+  padding-left: 5px;
+padding-right: 5px;
+  border: none;
+}
+.invSearchWrap table tr{border: none !important;}
+.invSearchWrap table tbody{border: none !important;}
+
+.invSearchWrap .card-body form {
+  padding: 10px;
+  float: left;
+  width: 100%;
+  border-radius: 7px;
+}
+.invSearchWrap .btn.btn-primary {
+  float: right;
+  margin: 10px 5px 0 0;
+  width: 48%;
+}
+.invSearchTitle {
+  padding: 20px 0 20px 30px;
+}
+.invSearchWrap .form-control, .invSearchWrap select {
+  background-color: #f7f7f7;
+}
+.investigation_span{
+  margin-left: -14px;
+}
+.investigation_input_dollar_sign{
+  margin-top: -32px;
+}
+
+.hr_investigator_search{
+  margin-top: 34px !important;
+  float: left !important;
+  margin-left: 18px !important;
+  margin-bottom: 15px;
+}
+
+.profileData label {
+  color: rgb(33, 37, 41);
+  font-weight: 600;
+}
+.fileText {
+  color: #0b509d;
+  cursor: pointer;
+}
+.profileData h5 {
+  font-size: 18px;
+  color: #fff;
+  background: #0b509d;
+  padding: 10px 10px;
+}
+.highlightRow {
+  background: #e1efff;
+}
+
+.investigator-view-profile-link{
+  float: right;
+  margin-right: 14px;
+  margin-top: -50px;
+}
+
+.hrprofileview{
+    float: right;
+    margin-top: -50px;
+}
+
+.select2-selection--multiple{
+    height: 40px;
+    border-radius: 5px !important;
+    border: 1px solid #d9dee3 !important;
+    background-color: #f7f7f7 !important;
+  }
+
+  .manage-index-list{
+     margin-top: 24px;
+     margin-left: 20px;
+     margin-right: 20px;
+  }
+.logo{
+  margin-top: 16px;
+}
