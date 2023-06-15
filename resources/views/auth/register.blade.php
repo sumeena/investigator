@@ -6,7 +6,15 @@
             <div class="col-md-8">
                 <div class="card">
                     <div class="card-header">{{ __('Register') }}</div>
-
+                    @if ($errors->any())
+                        <div class="alert alert-danger dev75">
+                            <ul>
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
                     <div class="card-body">
                         <form method="POST" action="{{ route('register') }}">
                             @csrf
@@ -121,13 +129,13 @@
                                     <span id="password-error" class="invalid-feedback hide" role="alert">
 
                                     </span>
-                                    <small class="text-danger">
+                                    <small class="password-error-bags">
                                         <ul class="ml-n4">
-                                            <li>At least 10 characters</li>
-                                            <li>At least 1 number</li>
-                                            <li>At least 1 lowercase letter</li>
-                                            <li>At least 1 uppercase letter</li>
-                                            <li>
+                                            <li type="length" class="text-danger">At least 10 characters</li>
+                                            <li type="number" class="text-danger">At least 1 number</li>
+                                            <li type="lowercase" class="text-danger">At least 1 lowercase letter</li>
+                                            <li type="uppercase" class="text-danger">At least 1 uppercase letter</li>
+                                            <li type="special_character" class="text-danger">
                                                 At least 1 special character within a set of special characters: @$!%*?&
                                             </li>
                                         </ul>
@@ -177,6 +185,19 @@
             }
         }
 
+        function removeItem(array, item){
+            for(var i in array){
+                if(array[i]==item){
+                    array.splice(i,1);
+                    break;
+                }
+            }
+        }
+
+        function removeErrorSuccess(itemType){
+            $(document).find(".password-error-bags").find('li[type="'+itemType+'"]').removeClass('text-success').addClass('text-danger');
+        }
+
         $(document).ready(function () {
             initWebsiteSection();
 
@@ -197,12 +218,59 @@
                 let lowercaseLetterValid  = /[a-z]/.test(password);
                 let specialCharacterValid = /[@$!%*?&]/.test(password);
                 let allConditionsValid    = capitalLetterValid && numberValid && lowercaseLetterValid && specialCharacterValid;
+                let errorBagsEle = $(document).find(".password-error-bags");
+                let errorBagTypes = [];
+                // for min length
+                if (minLengthValid)
+                    errorBagTypes.push("length");
+                else
+                    removeErrorSuccess("length");
+                    //removeItem(errorBagTypes, 'length');
+                    
+                // for atleast single number
+                if (numberValid)
+                    errorBagTypes.push("number");
+                else
+                    removeErrorSuccess("number");
+                    //removeItem(errorBagTypes, 'number');
+
+                // for lower case
+                if (lowercaseLetterValid)
+                    errorBagTypes.push("lowercase");
+                else
+                    removeErrorSuccess("lowercase");
+
+                    //removeItem(errorBagTypes, 'lowercase');
+
+                // for upper case
+                if (capitalLetterValid)
+                    errorBagTypes.push("uppercase");
+                else
+                    removeErrorSuccess("uppercase");
+
+                    //removeItem(errorBagTypes, 'uppercase');
+
+                // for special symbols
+                if (specialCharacterValid)
+                    errorBagTypes.push("special_character");
+                else
+                    removeErrorSuccess("special_character");
+                    
+                    //removeItem(errorBagTypes, 'special_character');
+
+                console.log("ERR", errorBagTypes)
+                if (errorBagTypes.length > 0){
+                    $.each(errorBagTypes, function(key,errType) {
+                        errorBagsEle.find('li[type="'+errType+'"]').removeClass('text-danger').addClass('text-success');
+                    })
+                }
 
                 // Display error messages
                 if (!minLengthValid || !allConditionsValid) {
                     $("#password-error").html(`<strong>Password is invalid, please follow the instructions below!</strong>`);
                     $("#password-error").removeClass("hide");
                     $(this).addClass("is-invalid");
+                    //$(document).find(".text-success").removeClass("text-success").addClass("text-danger")
                 } else {
                     $("#password-error").text("");
                     $("#password-error").addClass("hide");
