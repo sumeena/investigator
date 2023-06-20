@@ -72,8 +72,17 @@
                                                                    id="postal_code">
                                                             <span role="alert" class="text-danger small d-none"
                                                                   id="zipcode-error">
-                                             Zipcode is required!
-                                             </span>
+                                                             Zipcode is required!
+                                                             </span>
+                                                            <span role="alert" class="text-danger small d-none"
+                                                                  id="zipcode-lat-lng-error">
+                                                              Lat and lng is not found for this zipcode, please try another zipcode!
+                                                             </span>
+                                                            <span role="alert" class="text-info small ms-1 d-none"
+                                                                  id="zipcode-lat-lng-loading">
+                                                              <i class="fas fa-spinner fa-spin"></i>
+                                                                Lat and Lng is getting from zipcode, please wait...
+                                                             </span>
                                                         </td>
                                                     </tr>
                                                     </tbody>
@@ -190,7 +199,8 @@
                                     <div class="mb-1">
                                         <div class="card">
                                             <div class="table-responsive">
-                                                <button type="submit" class="btn btn-primary hr_investigator_search">
+                                                <button type="submit" class="btn btn-primary hr_investigator_search"
+                                                        id="form-submit-btn">
                                                     Search
                                                 </button>
                                             </div>
@@ -307,6 +317,8 @@
     <script>
         function getLatLngFromZipCode(zipCode) {
             var geocoder = new google.maps.Geocoder();
+            $('#form-submit-btn').attr('disabled', 'disabled');
+            $('#zipcode-lat-lng-loading').removeClass('d-none');
 
             geocoder.geocode({'address': zipCode}, function (results, status) {
                 if (status == google.maps.GeocoderStatus.OK) {
@@ -324,7 +336,23 @@
                     if ($('#lng').length) {
                         $('#lng').val(lng);
                     }
+
+                    if ($('#lat').val() && $('#lng').val() && $('#postal_code').val()) {
+                        $('#zipcode-lat-lng-error').addClass('d-none');
+                        $('#zipcode-lat-lng-loading').addClass('d-none');
+                        $('#form-submit-btn').removeAttr('disabled');
+                        $('#zipcode-error').addClass('d-none');
+                    } else {
+                        $('#zipcode-lat-lng-error').removeClass('d-none');
+                        $('#zipcode-lat-lng-loading').addClass('d-none');
+                        $('#form-submit-btn').attr('disabled', 'disabled');
+                        $('#zipcode-error').addClass('d-none');
+                    }
                 } else {
+                    $('#zipcode-lat-lng-loading').addClass('d-none');
+                    $('#zipcode-lat-lng-error').removeClass('d-none');
+                    $('#form-submit-btn').attr('disabled', 'disabled');
+                    $('#zipcode-error').addClass('d-none');
                     console.log('Geocode was not successful for the following reason: ' + status);
                 }
             });
@@ -342,7 +370,7 @@
             form.on('submit', function () {
 
                 // input selector
-                const zip  = $('#postal_code');
+                const zip = $('#postal_code');
                 const surv = $('#surveillance');
                 const stat = $('#statements');
                 const misc = $('#misc');
@@ -351,9 +379,9 @@
                 const zipValue = zip.val();
 
                 // error selector
-                const zipError         = $('#zipcode-error');
+                const zipError = $('#zipcode-error');
                 const serviceTypeError = $('#service-type-error');
-                let hasError           = false;
+                let hasError = false;
 
                 // Hide error
                 zipError.addClass('d-none');
@@ -390,11 +418,18 @@
                 // Remove error class
                 zip.removeClass('is-invalid');
 
+                // hide other errors
+                $('#zipcode-lat-lng-error').addClass('d-none');
+                $('#zipcode-lat-lng-loading').addClass('d-none');
+
                 form.submit();
             });
 
-            $('#postal_code').on('blur', function () {
+            $('#postal_code').on('input', function () {
                 let zipCode = $(this).val();
+                if (!zipCode) {
+                    return false;
+                }
                 getLatLngFromZipCode(zipCode);
             });
         });

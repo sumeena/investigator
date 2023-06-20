@@ -24,6 +24,8 @@
         rel="stylesheet"
     />
 
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <!-- Icons. Uncomment required icon fonts -->
     <link rel="stylesheet" href="{{ asset('html/assets/vendor/fonts/boxicons.css') }}"/>
 
