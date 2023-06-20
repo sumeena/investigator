@@ -58,7 +58,7 @@
             <input type="text" class="form-control" value="Admin" disabled>
           </div>
           <button type="submit" class="btn btn-primary">{{isset($profile) && !empty($profile->id) ? 'Update':'Submit'}}</button>
-          <a href = "/admin/admin-reset-password"><button type="button" class="btn btn-primary">Reset Password</button></a>
+          <a href = "/admin/reset-password"><button type="button" class="btn btn-primary">Reset Password</button></a>
         </form>
       </div>
     </div>

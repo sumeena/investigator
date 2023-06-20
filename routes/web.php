@@ -67,10 +67,9 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['admin']],
         Route::post('/submit', [AdminInvestigatorController::class, 'store'])->name('submit');
         Route::get('/delete/{id}', [AdminInvestigatorController::class, 'delete'])->name('delete');
         Route::get('/edit/{id}', [AdminInvestigatorController::class, 'edit'])->name('edit');
-        Route::get('/reset-password/{id}', [AdminInvestigatorController::class, 'investigatorResetPassword'])
-            ->name('reset-password');
-        Route::post('/update-password', [AdminInvestigatorController::class, 'investigatorResetUpdate'])
-            ->name('update-password');
+        // Route::get('/reset-password/{id}', [AdminInvestigatorController::class, 'investigatorResetPassword'])->name('reset-password');
+        Route::get('/reset-password', [AdminInvestigatorController::class, 'investigatorResetPassword'])->name('reset-password');
+        Route::post('/update-password', [AdminInvestigatorController::class, 'investigatorResetUpdate'])->name('update-password');
         Route::get('/{id}/view', [AdminInvestigatorController::class, 'profileView'])->name('view');
     });
 
