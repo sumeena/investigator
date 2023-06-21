@@ -112,7 +112,11 @@
                 else
                     removeErrorSuccess("length");
                     //removeItem(errorBagTypes, 'length');
+<<<<<<< HEAD
                     
+=======
+
+>>>>>>> 438a06950324880db14b6a93890c48c80677f87d
                 // for atleast single number
                 if (numberValid)
                     errorBagTypes.push("number");
@@ -141,7 +145,11 @@
                     errorBagTypes.push("special_character");
                 else
                     removeErrorSuccess("special_character");
+<<<<<<< HEAD
                     
+=======
+
+>>>>>>> 438a06950324880db14b6a93890c48c80677f87d
                     //removeItem(errorBagTypes, 'special_character');
 
                 console.log("ERR", errorBagTypes)
@@ -165,4 +173,8 @@
             });
         });
     </script>
+<<<<<<< HEAD
 @endpush
+=======
+@endpush
+>>>>>>> 438a06950324880db14b6a93890c48c80677f87d

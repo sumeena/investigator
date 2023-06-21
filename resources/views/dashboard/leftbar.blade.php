@@ -2,7 +2,7 @@
     <div class="app-brand demo">
         <a href="#" class="app-brand-link">
         <span class="app-brand-logo demo">
-        <img src="/html/logo.jpg" class="dashboard-topbar-img">
+        <img src="/html/logo.png" class="dashboard-topbar-img">
         </span>
             <!-- <span class="app-brand-text demo menu-text fw-bolder ms-2">Sneat</span> -->
         </a>
