@@ -24,7 +24,16 @@ class PasswordRequest extends FormRequest
     public function rules()
     {
       return [
-        'password'    => 'required|confirmed|min:8|max:10',
+        // 'password'    => 'required|confirmed|min:8|max:10',
+        'password'   => ['required', 'string', 'min:10', 'confirmed', 'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{10,}$/']
+      ];
+    }
+
+    public function messages(): array
+    {
+      return [
+        // 'password'    => 'required|confirmed|min:8|max:10',
+        'password.regex' => 'Password is invalid, please follow the instructions below!'
       ];
     }
 }
