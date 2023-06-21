@@ -52,7 +52,8 @@ class User extends Authenticatable
         'password',
         'is_investigator_profile_submitted',
         'lat',
-        'lng'
+        'lng',
+        'bio'
     ];
 
     /**

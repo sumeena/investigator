@@ -1,4 +1,5 @@
 @extends('layouts.dashboard')
+@section('title', 'Find Investigators')
 @section('content')
     <div class="container">
         <div class="row mt-4 mb-4 mx-0">

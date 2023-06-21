@@ -118,7 +118,7 @@
             <li class="menu-item {{ request()->routeIs('investigator.company-admins.index') ? 'active' : '' }}">
                 <a href="{{ route('investigator.company-admins.index') }}" class="menu-link">
                     <i class="bx bx-user me-2"></i>
-                    <div data-i18n="Analytics">Company Admins</div>
+                    <div data-i18n="Analytics">Companies</div>
                 </a>
             </li>
         @endif

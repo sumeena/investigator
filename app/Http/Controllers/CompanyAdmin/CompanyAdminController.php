@@ -78,9 +78,20 @@ class CompanyAdminController extends Controller
             $investigators = User::investigatorFiltered($request)
                 ->orderBy('calculated_distance')
                 ->get();
+                // dd($investigators);
 
             $investigators = $investigators->filter(function ($investigator) {
-                return !$investigator->checkIsBlockedCompanyAdmin(auth()->id())
+
+                $user = Auth::user();
+                $company_admin_id = auth()->id();
+
+                if($user->role == 4) { // check if role is hm
+                    $hmCompanyAdmin = json_decode($user->hmCompanyAdmin);
+                    if($hmCompanyAdmin)
+                    $company_admin_id = $hmCompanyAdmin->company_admin_id;
+                }
+
+                return !$investigator->checkIsBlockedCompanyAdmin($company_admin_id)
                     && ($investigator->investigatorAvailability && $investigator->investigatorAvailability->distance >=
                         $investigator->calculated_distance);
             });

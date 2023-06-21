@@ -23,7 +23,8 @@ use App\Http\Controllers\Investigator\InvestigatorController;
 */
 
 Route::get('/', function () {
-    return view('auth.login');
+    $title = 'ILOGISTIC Portal | Login';
+    return view('auth.login', compact('title'));
 });
 
 Auth::routes();

@@ -93,6 +93,7 @@ class InvestigatorController extends Controller
                 'zipcode'    => $request->zipcode,
                 'lat'        => $request->lat,
                 'lng'        => $request->lng,
+                'bio'        => $request->bio,
             ]);
 
 
