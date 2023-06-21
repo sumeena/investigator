@@ -58,7 +58,7 @@
             <input type="text" class="form-control" value="Investigator" disabled>
           </div>
           <button type="submit" class="btn btn-primary">{{isset($profile) && !empty($profile->id) ? 'Update':'Submit'}}</button>
-          <a href = "/investigator/investigator-reset-password"><button type="button" class="btn btn-primary">Reset Password</button></a>
+          <a href = "/investigator/reset-password"><button type="button" class="btn btn-primary">Reset Password</button></a>
         </form>
       </div>
     </div>
