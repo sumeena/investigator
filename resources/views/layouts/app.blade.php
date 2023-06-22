@@ -15,15 +15,24 @@
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}" defer></script>
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+<<<<<<< HEAD
     <title>Ilogistic Portal | @yield('title')</title>
+=======
+     <title>{{ config('app.name', 'Laravel') }}</title>
+>>>>>>> aa6a3a1ea59d2dbb0be1b612b78fb8832fbbe96f
 </head>
 <body>
 <div id="app">
     <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
         <div class="container">
             <a class="navbar-brand" href="{{ url('/') }}">
+<<<<<<< HEAD
                 <!-- {{ config('app.name', 'Dashboard') }} -->
                     <img src="{{ asset('html/logo.png') }}" >
+=======
+              <!-- {{ config('app.name', 'Dashboard') }} -->
+                <img src="{{ asset('html/logo.png') }}" >
+>>>>>>> aa6a3a1ea59d2dbb0be1b612b78fb8832fbbe96f
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                     data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"

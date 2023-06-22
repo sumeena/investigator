@@ -14,6 +14,7 @@ use App\Models\State;
 use App\Models\User;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 
@@ -76,41 +77,8 @@ class CompanyAdminController extends Controller
         if ($this->checkQueryAvailablity($request)) {
             $filtered      = true;
             $investigators = User::investigatorFiltered($request)
-                ->orderBy('calculated_distance')
-                ->get();
-                // dd($investigators);
+                ->paginate(10);
 
-            $investigators = $investigators->filter(function ($investigator) {
-
-                $user = Auth::user();
-                $company_admin_id = auth()->id();
-
-                if($user->role == 4) { // check if role is hm
-                    $hmCompanyAdmin = json_decode($user->hmCompanyAdmin);
-                    if($hmCompanyAdmin)
-                    $company_admin_id = $hmCompanyAdmin->company_admin_id;
-                }
-
-                return !$investigator->checkIsBlockedCompanyAdmin($company_admin_id)
-                    && ($investigator->investigatorAvailability && $investigator->investigatorAvailability->distance >=
-                        $investigator->calculated_distance);
-            });
-
-
-
-            $page = $request->get('page') ?? 1;
-            $perPage = 10;
-
-            $investigators = new LengthAwarePaginator(
-                $investigators->forPage($page, $perPage),
-                $investigators->count(),
-                $perPage,
-                $page,
-                [
-                    'path' => request()->url(),
-                    'query' => request()->query(),
-                ]
-            );
         }
 
 

@@ -16,7 +16,7 @@ class LicenseFilter extends Filter
     protected function applyFilters($builder)
     {
         if (isset($this->request->license)) {
-            return $builder->orWhereHas('investigatorLicenses', function ($query) {
+            return $builder->whereHas('investigatorLicenses', function ($query) {
                 $query->where('state', $this->request->license);
             });
         }

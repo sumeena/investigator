@@ -16,7 +16,7 @@ class LanguageFilter extends Filter
     protected function applyFilters($builder)
     {
         if (isset($this->request->languages) && count($this->request->languages)) {
-            return $builder->orWhereHas('investigatorLanguages', function ($query) {
+            return $builder->whereHas('investigatorLanguages', function ($query) {
                 $query->whereIn('language', $this->request->languages);
             });
         }

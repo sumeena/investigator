@@ -241,31 +241,30 @@
                                 </thead>
                                 <tbody>
                                 @forelse($investigators as $investigator)
-                                    @if(
-                                            !$investigator->checkIsBlockedCompanyAdmin(auth()->id())
-                                            && ($investigator->investigatorAvailability && $investigator->investigatorAvailability->distance >=
-                                            $investigator->calculated_distance)
-                                        )
-                                        <tr>
-                                            <td>{{ $investigators->firstItem() + $loop->index }}</td>
-                                            <td>{{ $investigator->first_name }}</td>
-                                            <td>{{ $investigator->last_name }}</td>
-                                            @php
-                                                $surv = $investigator->getServiceType('surveillance');
-                                                $stat = $investigator->getServiceType('statements');
-                                                $misc = $investigator->getServiceType('misc');
-                                            @endphp
-                                            <td>{{ $surv ? 'Yes' : '-' }}</td>
-                                            <td>{{ $surv ? $surv->hourly_rate : '-' }}</td>
-                                            <td>{{ $stat ? 'Yes' : '-' }}</td>
-                                            <td>{{ $stat ? $stat->hourly_rate : '-' }}</td>
-                                            <td>{{ $misc ? 'Yes' : '-' }}</td>
-                                            <td>{{ $misc ? $misc->hourly_rate : '-' }}</td>
-                                            <td class="text-center">{{ number_format($investigator->calculated_distance, 2) }}
-                                                miles
-                                            </td>
-                                        </tr>
-                                    @endif
+                                @if(  !$investigator->checkIsBlockedCompanyAdmin(auth()->id())
+                                && ($investigator->investigatorAvailability && $investigator->investigatorAvailability->distance >=
+                                $investigator->calculated_distance)
+                                )
+                              <tr>
+                                  <td>{{ $investigators->firstItem() + $loop->index }}</td>
+                                  <td>{{ $investigator->first_name }}</td>
+                                  <td>{{ $investigator->last_name }}</td>
+                                  @php
+                                      $surv = $investigator->getServiceType('surveillance');
+                                      $stat = $investigator->getServiceType('statements');
+                                      $misc = $investigator->getServiceType('misc');
+                                  @endphp
+                                  <td>{{ $surv ? 'Yes' : '-' }}</td>
+                                  <td>{{ $surv ? $surv->hourly_rate : '-' }}</td>
+                                  <td>{{ $stat ? 'Yes' : '-' }}</td>
+                                  <td>{{ $stat ? $stat->hourly_rate : '-' }}</td>
+                                  <td>{{ $misc ? 'Yes' : '-' }}</td>
+                                  <td>{{ $misc ? $misc->hourly_rate : '-' }}</td>
+                                  <td class="text-center">{{ number_format($investigator->calculated_distance, 2) }}
+                                      miles
+                                  </td>
+                              </tr>
+                              @endif
                                 @empty
                                     <tr>
                                         <td colspan="100%" class="text-center">No investigators found!</td>

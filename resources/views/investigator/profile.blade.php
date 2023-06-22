@@ -1268,10 +1268,17 @@
         current = $('#current'),
         maximum = $('#maximum'),
         theCount = $('#the-count');
+<<<<<<< HEAD
       
     current.text(characterCount);
    
     
+=======
+
+    current.text(characterCount);
+
+
+>>>>>>> aa6a3a1ea59d2dbb0be1b612b78fb8832fbbe96f
     /*This isn't entirely necessary, just playin around*/
     /* if (characterCount < 70) {
       current.css('color', '#666');
@@ -1288,7 +1295,11 @@
     if (characterCount > 120 && characterCount < 139) {
       current.css('color', '#8f0001');
     }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> aa6a3a1ea59d2dbb0be1b612b78fb8832fbbe96f
     if (characterCount >= 140) {
       maximum.css('color', '#8f0001');
       current.css('color', '#8f0001');

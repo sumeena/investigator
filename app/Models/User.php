@@ -9,6 +9,9 @@ use App\Filters\InvestigatorFilters\LanguageFilter;
 use App\Filters\InvestigatorFilters\LicenseFilter;
 use App\Filters\InvestigatorFilters\MiscFilter;
 use App\Filters\InvestigatorFilters\ServiceTypeFilter;
+use App\Filters\InvestigatorFilters\ServiceTypeMiscFilter;
+use App\Filters\InvestigatorFilters\ServiceTypeStatementsFilter;
+use App\Filters\InvestigatorFilters\ServiceTypeSurveillanceFilter;
 use App\Filters\InvestigatorFilters\StateFilter;
 use App\Filters\InvestigatorFilters\StatementFilter;
 use App\Filters\InvestigatorFilters\SurveillanceFilter;
@@ -208,26 +211,36 @@ class User extends Authenticatable
                 'investigatorLicenses',
                 'investigatorLanguages',
                 'investigatorReview',
-                'investigatorAvailability'
-            ])
+                'investigatorAvailability',
+                'investigatorBlockedCompanyAdmins'
+            ])->where('zipcode', '!=', null)
+            ->where('lat', '!=', null)
+            ->where('lng', '!=', null)
             ->whereHas('userRole', function ($q) {
                 $q->where('role', 'investigator');
             })
+            // check auth()->user() is in blocked list or not
+            ->whereDoesntHave('investigatorBlockedCompanyAdmins', function ($q) {
+                $q->where('company_admin_id', auth()->user()->id);
+            })
+            // Get calculated distance from lat lng
             ->selectRaw(
-                'users.*, ST_Distance_Sphere(point(lng, lat), point(?, ?)) * .000621371192 as calculated_distance',
+                'users.*, ST_Distance_Sphere(point(users.lng, users.lat), point(?, ?)) * .000621371192 as calculated_distance',
+                [request('lng'), request('lat')]
+            )
+            ->join('investigator_availabilities', 'investigator_availabilities.user_id', '=', 'users.id')
+            // check investigators distance within calculated distance
+            ->whereRaw(
+                'ST_Distance_Sphere(point(users.lng, users.lat), point(?, ?)) * .000621371192 <= investigator_availabilities.distance',
                 [request('lng'), request('lat')]
             );
 
         return app(Pipeline::class)
             ->send($query)
             ->through([
-                new AddressFilter($request),
-                new CityFilter($request),
-                new StateFilter($request),
-                new ZipcodeFilter($request),
-                new ServiceTypeFilter($request),
+                new LicenseFilter($request),
                 new LanguageFilter($request),
-                new LicenseFilter($request)
+                new ServiceTypeFilter($request)
             ])
             ->thenReturn();
     }
