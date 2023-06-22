@@ -1,8 +1,9 @@
 @extends('layouts.dashboard')
-
+@section('title', 'Company Admins')
 @section('content')
     <div class="card">
-        <h5 class="card-header">Company Admins</h5>
+        <h5 class="card-header">Companies</h5>
+        <p class="card-body">You can block the companies so that your profile is not visible in their search.</p>
 
         <div class="table-responsive text-nowrap">
             @if(session('success'))
@@ -21,9 +22,7 @@
                 <thead>
                 <tr>
                     <th>#</th>
-                    <th>First Name</th>
-                    <th>Last Name</th>
-                    <th>Email</th>
+                    <th>Company Name</th>
                     <th class="text-center">Is Blocked</th>
                 </tr>
                 </thead>
@@ -31,9 +30,7 @@
                 @foreach($companyAdmins as $key=>$value)
                     <tr>
                         <td>{{ $companyAdmins->firstItem() + $loop->index }}</td>
-                        <td>{{$value->first_name}}</td>
-                        <td>{{$value->last_name}}</td>
-                        <td>{{$value->email}}</td>
+                        <td>{{$value->first_name}} {{$value->last_name}}</td>
                         <td class="text-center">
                             @if(auth()->user()->checkIsBlockedCompanyAdmin($value->id))
                                 <label for="unblock-user">

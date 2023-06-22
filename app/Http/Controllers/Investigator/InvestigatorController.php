@@ -93,6 +93,7 @@ class InvestigatorController extends Controller
                 'zipcode'    => $request->zipcode,
                 'lat'        => $request->lat,
                 'lng'        => $request->lng,
+                'bio'        => $request->bio,
             ]);
 
 
@@ -607,7 +608,7 @@ class InvestigatorController extends Controller
         $user_id = Auth::user()->id;
         $user    = User::find($user_id);
         $user->update([
-            'password' => Hash::make($request->password),
+            'npassword' => Hash::make($request->password),
         ]);
         session()->flash('success', 'Hi Investigator , Your Account Password Changed Sucessfully!');
         return redirect()->route('investigator.my-profile');

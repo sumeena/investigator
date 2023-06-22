@@ -1,4 +1,5 @@
 @extends('layouts.dashboard')
+@section('title', 'Reset Password')
 @section('content')
     <div class="row mt-4 mb-4">
         <div class="col-md-1"></div>

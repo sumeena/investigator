@@ -1,4 +1,5 @@
 @extends('layouts.dashboard')
+@section('title', 'Reset Password')
 @section('content')
 <div class="row mt-4 mb-4">
   <div class="col-md-1"></div>
@@ -19,8 +20,6 @@
                 </span>
             @enderror
           </div> -->
-
-
           <div class="mb-3">
             <label for="new-password" class="form-label">Enter New Password</label>
             <input id="new-password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" required autocomplete="new-password">

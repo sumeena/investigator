@@ -1,5 +1,5 @@
 @extends('layouts.dashboard')
-
+@section('title', 'Company Profile')
 @section('content')
     <div class="row mt-4 mb-4 mx-0">
         <div class="col-md-1"></div>

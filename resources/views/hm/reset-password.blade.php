@@ -1,4 +1,5 @@
 @extends('layouts.dashboard')
+@section('title', 'Reset Password')
 @section('content')
     <div class="row mt-4 mb-4">
         <div class="col-md-1"></div>
@@ -112,7 +113,6 @@
                 else
                     removeErrorSuccess("length");
                     //removeItem(errorBagTypes, 'length');
-
                 // for atleast single number
                 if (numberValid)
                     errorBagTypes.push("number");
@@ -141,7 +141,6 @@
                     errorBagTypes.push("special_character");
                 else
                     removeErrorSuccess("special_character");
-
                     //removeItem(errorBagTypes, 'special_character');
 
                 console.log("ERR", errorBagTypes)
@@ -165,4 +164,3 @@
             });
         });
     </script>
-@endpush

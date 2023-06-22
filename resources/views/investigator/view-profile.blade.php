@@ -1,5 +1,5 @@
 @extends('layouts.dashboard')
-
+@section('title', 'Investigator Profile')
 @section('content')
     <div class="container-xxl flex-grow-1 container-p-y">
         <div class="row">
@@ -110,6 +110,16 @@
                                     <b><label>Zip Code :</label></b>
                                 </div>
                                 <div class="col-md-6">{{ $user->zipcode ?? 'N/A' }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mx-0 py-1 px-3">
+                        <div class="col-md-12">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <b><label>Bio :</label></b>
+                                </div>
+                                <div class="col-md-9">{{ $user->bio ?? 'N/A' }}</div>
                             </div>
                         </div>
                     </div>

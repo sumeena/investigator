@@ -1,5 +1,5 @@
 @extends('layouts.dashboard')
-
+@section('title', "Investigator's Profile")
 @section('content')
     <div class="row mt-4 mb-4 mx-0 justify-content-center">
         <div class="col-md-10">
@@ -168,6 +168,34 @@
                             <input type="hidden" id="lat" name="lat" value="{{ old('lat', $user->lat) }}">
                             <input type="hidden" id="lng" name="lng" value="{{ old('lng', $user->lng) }}">
                         </div>
+
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="mb-3">
+                                    <label class="form-label" for="basic-default-email">Your Bio</label>
+                                    <div class="">
+                                        <textarea id="bio" maxlength="1000" class="form-control @error('bio') is-invalid @enderror" name="bio" value="{{isset($user->bio) ? $user->bio : old('bio')}}"></textarea>
+                                        <div id="the-count">
+                                            <small>
+                                        <span id="current">0</span>
+                                        <span id="maximum">/ 1000</span></small>
+                                    </div>
+                                        <!-- <select id="defaultSelect"
+                                                class="form-control @error('country') is-invalid @enderror"
+                                                name="country">
+                                            <option selected="selected" value="1">USA</option>
+                                        </select> -->
+                                    </div>
+                                </div>
+                                @error('bio')
+                                <span role="alert" class="text-danger small">
+                                        {{ $message }}
+                                    </span>
+                                @enderror
+                            </div>
+                        </div>
+
                         <hr>
                         <div class="mb-3">
                             <div class="card">
@@ -1231,4 +1259,45 @@
         src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAB80hPTftX9xYXqy6_NcooDtW53kiIH3A&libraries=places&callback=initAutocomplete"
         async defer></script>
     <script src="{{ asset('html/assets/js/address-auto-complete.js') }}"></script>
+
+    <script>
+        $(document).ready(function(){
+    $('#bio').keyup(function() {
+    console.log('typing');
+    var characterCount = $(this).val().length,
+        current = $('#current'),
+        maximum = $('#maximum'),
+        theCount = $('#the-count');
+
+    current.text(characterCount);
+
+
+    /*This isn't entirely necessary, just playin around*/
+    /* if (characterCount < 70) {
+      current.css('color', '#666');
+    }
+    if (characterCount > 70 && characterCount < 90) {
+      current.css('color', '#6d5555');
+    }
+    if (characterCount > 90 && characterCount < 100) {
+      current.css('color', '#793535');
+    }
+    if (characterCount > 100 && characterCount < 120) {
+      current.css('color', '#841c1c');
+    }
+    if (characterCount > 120 && characterCount < 139) {
+      current.css('color', '#8f0001');
+    }
+
+    if (characterCount >= 140) {
+      maximum.css('color', '#8f0001');
+      current.css('color', '#8f0001');
+      theCount.css('font-weight','bold');
+    } else {
+      maximum.css('color','#666');
+      theCount.css('font-weight','normal');
+    } */
+    });
+  });
+  </script>
 @endpush

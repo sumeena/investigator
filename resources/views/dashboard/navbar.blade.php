@@ -11,6 +11,34 @@
     <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
         <ul class="navbar-nav flex-row align-items-center ms-auto">
             <!-- User -->
+            <li class="nav-item" style="margin-right:20px">
+                <a class="nav-link" href="javascript:void(0);">
+                    <div class="d-flex">
+                        <div class="flex-grow-1">
+                            <span
+                                class="fw-semibold d-block">{{auth()->user()->first_name}} {{auth()->user()->last_name}}</span>
+                            <small class="text-muted">
+                                @switch(auth()->user()->userRole)
+                                    @case(auth()->user()->userRole->role == 'admin')
+                                        <span>Admin</span>
+                                        @break
+                                    @case(auth()->user()->userRole->role == 'company-admin')
+                                        <span>Company Admin</span>
+                                        @break
+                                    @case(auth()->user()->userRole->role == 'investigator')
+                                        <span>Investigator</span>
+                                        @break
+                                    @case(auth()->user()->userRole->role == 'hiring-manager')
+                                        <span>Hiring Manager</span>
+                                        @break
+                                    @default
+                                        <span>Wrong Role!</span>
+                                @endswitch
+                            </small>
+                        </div>
+                    </div>
+                </a>
+            </li>
             <li class="nav-item navbar-dropdown dropdown-user dropdown">
                 <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
                     <div class="avatar avatar-online">
@@ -18,43 +46,6 @@
                     </div>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end">
-                    <li>
-                        <a class="dropdown-item" href="#">
-                            <div class="d-flex">
-                                <div class="flex-shrink-0 me-3">
-                                    <div class="avatar avatar-online">
-                                        <img src="/html/assets/img/avatars/1.png" alt
-                                             class="w-px-40 h-auto rounded-circle"/>
-                                    </div>
-                                </div>
-                                <div class="flex-grow-1">
-                                    <span
-                                        class="fw-semibold d-block">{{auth()->user()->first_name}} {{auth()->user()->last_name}}</span>
-                                    <small class="text-muted">
-                                        @switch(auth()->user()->userRole)
-                                            @case(auth()->user()->userRole->role == 'admin')
-                                                <span>Admin</span>
-                                                @break
-                                            @case(auth()->user()->userRole->role == 'company-admin')
-                                                <span>Company Admin</span>
-                                                @break
-                                            @case(auth()->user()->userRole->role == 'investigator')
-                                                <span>Investigator</span>
-                                                @break
-                                            @case(auth()->user()->userRole->role == 'hiring-manager')
-                                                <span>Hiring Manager</span>
-                                                @break
-                                            @default
-                                                <span>Wrong Role!</span>
-                                        @endswitch
-                                    </small>
-                                </div>
-                            </div>
-                        </a>
-                    </li>
-                    <li>
-                        <div class="dropdown-divider"></div>
-                    </li>
                     <li>
                         @switch(auth()->user()->userRole)
                             @case(auth()->user()->userRole->role == 'admin')

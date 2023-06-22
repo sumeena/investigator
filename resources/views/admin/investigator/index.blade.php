@@ -1,4 +1,5 @@
 @extends('layouts.dashboard')
+@section('title', 'Investigators')
 @section('content')
     <div class="card manage-index-list">
         <h5 class="card-header">Manage Investigators</h5>
