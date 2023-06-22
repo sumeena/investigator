@@ -8,11 +8,7 @@
           content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"
     />
 
-<<<<<<< HEAD
     <title>Ilogistic Portal | @yield('title')</title>
-=======
-     <title>Ilogistic Portal | @yield('title')</title>
->>>>>>> aa6a3a1ea59d2dbb0be1b612b78fb8832fbbe96f
 
     <meta name="description" content=""/>
     <meta name="csrf-token" content="{{ csrf_token() }}">

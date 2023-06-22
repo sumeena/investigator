@@ -7,6 +7,7 @@ use App\Http\Requests\CompanyAdmin\CompanyUserRequest;
 use App\Mail\UserCredentialMail;
 use App\Models\Role;
 use App\Models\User;
+use App\Models\CompanyUser;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\Admin\CompanyAdmin\CompanyAdminRequest;
 use App\Http\Requests\Admin\CompanyAdmin\PasswordRequest;
@@ -33,7 +34,7 @@ class CompanyUsersController extends Controller
     public function store(CompanyUserRequest $request)
     { //for storing data new and update hr
         $password = isset($request->password) ? $request->password : '12345678';
-        $data     = [
+        $data = [
             'first_name' => $request->first_name,
             'last_name'  => $request->last_name,
             'phone'      => $request->phone,
@@ -41,9 +42,15 @@ class CompanyUsersController extends Controller
             'password'   => Hash::make($password),
             'role'       => $request->role,
         ];
+        
         $user     = User::updateOrCreate([
             'id' => $request->id
         ], $data);
+
+
+        $companyUsersData = array('user_id' => $user->id, 'parent_id' => auth()->id());
+
+        CompanyUser::create($companyUsersData);
 
         if ($user->userRole->role == 'hiring-manager') {
             $user->hmCompanyAdmin()->updateOrCreate([

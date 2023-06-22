@@ -113,14 +113,7 @@
                 else
                     removeErrorSuccess("length");
                     //removeItem(errorBagTypes, 'length');
-<<<<<<< HEAD
-<<<<<<< HEAD
-                    
-=======
 
->>>>>>> 438a06950324880db14b6a93890c48c80677f87d
-=======
->>>>>>> aa6a3a1ea59d2dbb0be1b612b78fb8832fbbe96f
                 // for atleast single number
                 if (numberValid)
                     errorBagTypes.push("number");
@@ -149,14 +142,7 @@
                     errorBagTypes.push("special_character");
                 else
                     removeErrorSuccess("special_character");
-<<<<<<< HEAD
-<<<<<<< HEAD
-                    
-=======
 
->>>>>>> 438a06950324880db14b6a93890c48c80677f87d
-=======
->>>>>>> aa6a3a1ea59d2dbb0be1b612b78fb8832fbbe96f
                     //removeItem(errorBagTypes, 'special_character');
 
                 console.log("ERR", errorBagTypes)
@@ -180,11 +166,4 @@
             });
         });
     </script>
-<<<<<<< HEAD
-<<<<<<< HEAD
 @endpush
-=======
-@endpush
->>>>>>> 438a06950324880db14b6a93890c48c80677f87d
-=======
->>>>>>> aa6a3a1ea59d2dbb0be1b612b78fb8832fbbe96f
