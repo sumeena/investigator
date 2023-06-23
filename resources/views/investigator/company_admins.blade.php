@@ -27,28 +27,28 @@
                 </tr>
                 </thead>
                 <tbody>
-                @foreach($companyAdmins as $key=>$value)
+                @foreach($companyAdmins as $companyAdmin)
                     <tr>
-                        <td>{{ $companyAdmins->firstItem() + $loop->index }}</td>
-                        <td>{{$value->first_name}} {{$value->last_name}}</td>
+                        <td>{{ $loop->first + $loop->index }}</td>
+                        <td>{{$companyAdmin->companyAdminProfile->company_name}}</td>
                         <td class="text-center">
-                            @if(auth()->user()->checkIsBlockedCompanyAdmin($value->id))
+                            @if(auth()->user()->checkIsBlockedCompanyAdmin($companyAdmin->id))
                                 <label for="unblock-user">
                                     <input class="form-check-input" type="checkbox" name="unblock_user" value="1"
-                                           id="unblock-user-{{ $value->id }}" checked
-                                           onchange="blockUnblockCompanyAdmin(`{!! $value->id !!}`, false)">
+                                           id="unblock-user-{{ $companyAdmin->id }}" checked
+                                           onchange="blockUnblockCompanyAdmin(`{!! $companyAdmin->id !!}`, false)">
                                 </label>
                             @else
                                 <label for="block-user">
                                     <input class="form-check-input" type="checkbox" name="block_user" value="1"
-                                           id="block-user-{{ $value->id }}"
-                                           onchange="blockUnblockCompanyAdmin(`{!! $value->id !!}`, true)">
+                                           id="block-user-{{ $companyAdmin->id }}"
+                                           onchange="blockUnblockCompanyAdmin(`{!! $companyAdmin->id !!}`, true)">
                                 </label>
                             @endif
 
-                            <form action="{{ route('investigator.company-admins.block-unblock', $value->id) }}"
+                            <form action="{{ route('investigator.company-admins.block-unblock', $companyAdmin->id) }}"
                                   method="POST"
-                                  id="block-user-form-{{$value->id}}">
+                                  id="block-user-form-{{$companyAdmin->id}}">
                                 @csrf
                             </form>
                         </td>

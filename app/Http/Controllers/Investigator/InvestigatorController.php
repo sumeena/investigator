@@ -603,8 +603,25 @@ class InvestigatorController extends Controller
         return view('investigator.reset-password');
     }
 
+    /**
+     * Get a validator for an incoming registration request.
+     *
+     * @param array $data
+     * @return \Illuminate\Contracts\Validation\Validator
+     */
+    /* protected function validator(array $data)
+    {
+        return Validator::make($data, [
+            'password'   => ['required', 'string', 'min:10', 'confirmed', 'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{10,}$/'],
+        ], [
+            'password.regex' => 'Password is invalid, please follow the instructions below!',
+        ]);
+    } */
+
     public function investigatorPasswordUpdate(PasswordRequest $request)
     { //update password for investigator
+
+        // dd('here');
         $user_id = Auth::user()->id;
         $user    = User::find($user_id);
         $user->update([

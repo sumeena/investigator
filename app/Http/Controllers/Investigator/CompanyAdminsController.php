@@ -3,15 +3,22 @@
 namespace App\Http\Controllers\Investigator;
 
 use App\Http\Controllers\Controller;
+use App\Models\CompanyUser;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 
 class CompanyAdminsController extends Controller
 {
     public function index()
-    {   //listing for all hr roles user
-        $companyAdmins = User::whereHas('userRole', function ($q) {
-            $q->where('role', 'company-admin');
-        })->with('CompanyAdminProfile')->paginate(10);
+    {   
+
+        $companyAdmins = User::whereIn('id', function($query){
+                            $query->select('parent_id')
+                            ->from(with(new CompanyUser())->getTable())
+                            ->groupBy('parent_id');
+                        })
+                        ->with('companyAdminProfile')
+                        ->paginate();
 
         return view('investigator.company_admins', compact('companyAdmins'));
     }

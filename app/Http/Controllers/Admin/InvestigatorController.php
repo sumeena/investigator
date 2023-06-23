@@ -16,7 +16,6 @@ use Illuminate\Support\Facades\Mail;
 
 class InvestigatorController extends Controller
 {
-
     public function index()
     {  //listing for all investigator roles user
         $investigators = User::whereHas('userRole', function ($q) {

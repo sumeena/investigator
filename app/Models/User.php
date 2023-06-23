@@ -24,6 +24,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Pipeline\Pipeline;
+use Illuminate\Support\Facades\Auth;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
@@ -32,8 +33,9 @@ class User extends Authenticatable
 
     // Roles
     const ADMIN        = 1;
-    const HR           = 2;
+    const COMPANYADMIN = 2;
     const INVESTIGATOR = 3;
+    const HR           = 4;
 
     /**
      * The attributes that are mass assignable.
@@ -68,6 +70,15 @@ class User extends Authenticatable
         'password',
         'remember_token',
     ];
+    
+    /**
+     * The accessors to append to the model's array form.
+     *
+     * @var array
+     */
+    protected $appends = [
+        'company_is_admin'
+    ];
 
     /**
      * The attributes that should be cast.
@@ -81,6 +92,21 @@ class User extends Authenticatable
     public function userRole()
     {
         return $this->belongsTo(Role::class, 'role', 'id');
+    }
+
+    
+    /* Check if logged in user is company admin or not */
+    public function getCompanyIsAdminAttribute(): bool
+    {
+        /* If logged in user role is admin or investigator. Then return false as user can't be company admin. */
+        if(Auth::user()->role === USER::ADMIN || Auth::user()->role === USER::INVESTIGATOR)
+        {
+            return false;
+        }
+
+        /* If logged in user is in parent_id, then logged in user is company admin else not an company admin */
+        return  CompanyUser::where('parent_id', Auth::id())->exists();
+         
     }
 
     /**
@@ -160,7 +186,6 @@ class User extends Authenticatable
         return $this->hasOne(InvestigatorAvailability::class);
     }
 
-
     public function hmCompanyAdmin() // hiring manager company admin for company profile access
     {
         return $this->hasOne(HiringManagerCompany::class, 'hiring_manager_id');
@@ -205,6 +230,17 @@ class User extends Authenticatable
     // Filter method through pipeline
     public static function investigatorFiltered($request)
     {
+
+        $user = Auth::user();
+        /* Assuming logged in user as Company Admin */
+        $companyId = $user->id;
+        $userRole = $user->role;
+        
+        /* If logged in user's role is sub admin or HR. Then get the company id of the logged in user */
+        if (($userRole === USER::COMPANYADMIN && !$user->company_is_admin) || $userRole === USER::HR) {
+            $companyId = CompanyUser::where('user_id', 19)->select('parent_id')->first()->parent_id;
+        }
+
         $query = self::query()
             ->with([
                 'investigatorServiceLines',
@@ -219,9 +255,9 @@ class User extends Authenticatable
             ->whereHas('userRole', function ($q) {
                 $q->where('role', 'investigator');
             })
-            // check auth()->user() is in blocked list or not
-            ->whereDoesntHave('investigatorBlockedCompanyAdmins', function ($q) {
-                $q->where('company_admin_id', auth()->user()->id);
+            // check companyId is in blocked list or not
+            ->whereDoesntHave('investigatorBlockedCompanyAdmins', function ($q) use ($companyId){
+                $q->where('company_admin_id', $companyId);
             })
             // Get calculated distance from lat lng
             ->selectRaw(
@@ -249,4 +285,5 @@ class User extends Authenticatable
     {
         return $this->investigatorServiceLines()->where('investigation_type', $service_type)->first();
     }
+
 }

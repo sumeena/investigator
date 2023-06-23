@@ -113,6 +113,7 @@
                 else
                     removeErrorSuccess("length");
                     //removeItem(errorBagTypes, 'length');
+
                 // for atleast single number
                 if (numberValid)
                     errorBagTypes.push("number");
@@ -141,6 +142,7 @@
                     errorBagTypes.push("special_character");
                 else
                     removeErrorSuccess("special_character");
+
                     //removeItem(errorBagTypes, 'special_character');
 
                 console.log("ERR", errorBagTypes)
@@ -164,3 +166,4 @@
             });
         });
     </script>
+@endpush
