@@ -91,7 +91,7 @@ class HmController extends Controller
     {
       $user               = Auth::user()->id;
       $currentUserData    = CompanyUser::where('user_id',$user)->first();
-      $companyUsers       = '';
+      $companyUsers       = [];
       if ($currentUserData) {
             $companies    = CompanyUser::where('parent_id', $currentUserData->parent_id)->pluck('user_id');
             $companyUsers = User::whereIn('id', $companies)->paginate(10);

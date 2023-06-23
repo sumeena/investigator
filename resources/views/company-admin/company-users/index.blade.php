@@ -14,7 +14,6 @@
                     {{ session('success') }}
                 </div>
             @endif
-            @if(!empty($companyAdmins))
             <table class="table">
                 <thead>
                 <tr>
@@ -59,11 +58,7 @@
                         </td>
                     </tr>
                     </tfoot>
-                @endif
             </table>
-            @else
-            <h2>Users not Found related to You!</h2>
-            @endif
         </div>
     </div>
 @endsection
