@@ -238,7 +238,7 @@ class User extends Authenticatable
         
         /* If logged in user's role is sub admin or HR. Then get the company id of the logged in user */
         if (($userRole === USER::COMPANYADMIN && !$user->company_is_admin) || $userRole === USER::HR) {
-            $companyId = CompanyUser::where('user_id', 19)->select('parent_id')->first()->parent_id;
+            $companyId = CompanyUser::where('user_id', $user->id)->select('parent_id')->first()->parent_id;
         }
 
         $query = self::query()

@@ -11,7 +11,7 @@ class CompanyAdminsController extends Controller
 {
     public function index()
     {   
-
+        // $companyAdmins = array();
         $companyAdmins = User::whereIn('id', function($query){
                             $query->select('parent_id')
                             ->from(with(new CompanyUser())->getTable())
@@ -20,7 +20,18 @@ class CompanyAdminsController extends Controller
                         ->with('companyAdminProfile')
                         ->paginate();
 
-        return view('investigator.company_admins', compact('companyAdmins'));
+                        /* dd($companyAdminsQueryResult);
+
+                        foreach($companyAdminsQueryResult as $companyAdmin) {
+                            if($companyAdmin->companyAdminProfile)
+                            {
+                                $companyAdmins[] = $companyAdmin;
+                            }
+                        }
+
+             */
+            $profilesCount = 0;
+        return view('investigator.company_admins', compact('companyAdmins','profilesCount'));
     }
 
     public function blockUnblockCompanyAdmin($companyAdminId)
