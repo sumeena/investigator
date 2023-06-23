@@ -14,4 +14,7 @@ class CompanyUser extends Model
     public function company(){
         return $this->hasMany(User::class, 'parent_id');
     }
+
+
+
 }

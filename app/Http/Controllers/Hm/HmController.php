@@ -9,8 +9,10 @@ use App\Models\InvestigatorLanguage;
 use App\Models\Language;
 use App\Models\State;
 use App\Models\User;
+use App\Models\CompanyUser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Auth;
 
 class HmController extends Controller
 {
@@ -84,4 +86,19 @@ class HmController extends Controller
             'CompanyAdminProfile'
         ));
     }
+
+    public function companyUsers()
+    {
+      $user               = Auth::user()->id;
+      $currentUserData    = CompanyUser::where('user_id',$user)->first();
+      $companyUsers       = '';
+      if ($currentUserData) {
+            $companies    = CompanyUser::where('parent_id', $currentUserData->parent_id)->pluck('user_id');
+            $companyUsers = User::whereIn('id', $companies)->paginate(10);
+        }
+        return view('hm.company-users', compact(
+            'companyUsers'
+        ));
+   }
+
 }

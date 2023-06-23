@@ -42,7 +42,7 @@ class CompanyUsersController extends Controller
             'password'   => Hash::make($password),
             'role'       => $request->role,
         ];
-        
+
         $user     = User::updateOrCreate([
             'id' => $request->id
         ], $data);

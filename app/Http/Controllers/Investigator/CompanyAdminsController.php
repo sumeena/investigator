@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\DB;
 class CompanyAdminsController extends Controller
 {
     public function index()
-    {   
+    {
         // $companyAdmins = array();
         $companyAdmins = User::whereIn('id', function($query){
                             $query->select('parent_id')

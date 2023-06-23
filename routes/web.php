@@ -106,6 +106,7 @@ Route::group(['prefix' => 'company-admin', 'as' => 'company-admin.', 'middleware
 
 Route::group(['prefix' => 'hm', 'as' => 'hm.', 'middleware' => ['hm']], function () {
     Route::get('/', [HmController::class, 'index'])->name('index');
+    Route::get('/company-users', [HmController::class, 'companyUsers'])->name('company-users.index');
     Route::get('/profile', [HmController::class, 'viewProfile'])->name('profile');
     Route::get('/find-investigators', [CompanyAdminController::class, 'findInvestigator'])->name('find_investigator');
     Route::post('/profile/submit', [HmController::class, 'store'])->name('profile.submit');

@@ -70,7 +70,7 @@ class User extends Authenticatable
         'password',
         'remember_token',
     ];
-    
+
     /**
      * The accessors to append to the model's array form.
      *
@@ -94,7 +94,7 @@ class User extends Authenticatable
         return $this->belongsTo(Role::class, 'role', 'id');
     }
 
-    
+
     /* Check if logged in user is company admin or not */
     public function getCompanyIsAdminAttribute(): bool
     {
@@ -106,7 +106,7 @@ class User extends Authenticatable
 
         /* If logged in user is in parent_id, then logged in user is company admin else not an company admin */
         return  CompanyUser::where('parent_id', Auth::id())->exists();
-         
+
     }
 
     /**
@@ -235,7 +235,7 @@ class User extends Authenticatable
         /* Assuming logged in user as Company Admin */
         $companyId = $user->id;
         $userRole = $user->role;
-        
+
         /* If logged in user's role is sub admin or HR. Then get the company id of the logged in user */
         if (($userRole === USER::COMPANYADMIN && !$user->company_is_admin) || $userRole === USER::HR) {
             $companyId = CompanyUser::where('user_id', $user->id)->select('parent_id')->first()->parent_id;
@@ -284,6 +284,10 @@ class User extends Authenticatable
     public function getServiceType($service_type)
     {
         return $this->investigatorServiceLines()->where('investigation_type', $service_type)->first();
+    }
+
+    public function companyUsers(){
+        return $this->hasMany(CompanyUser::class, 'parent_id');
     }
 
 }
