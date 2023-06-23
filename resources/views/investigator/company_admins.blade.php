@@ -27,9 +27,12 @@
                 </tr>
                 </thead>
                 <tbody>
+
                 @foreach($companyAdmins as $companyAdmin)
+                    @if($companyAdmin->companyAdminProfile)
+
                     <tr>
-                        <td>{{ $loop->first + $loop->index }}</td>
+                        <td>{{ $loop->index + 1 }} <?php $profilesCount = $profilesCount+1; ?></td>
                         <td>{{$companyAdmin->companyAdminProfile->company_name}}</td>
                         <td class="text-center">
                             @if(auth()->user()->checkIsBlockedCompanyAdmin($companyAdmin->id))
@@ -53,7 +56,16 @@
                             </form>
                         </td>
                     </tr>
+                @endif
                 @endforeach
+
+                @if($profilesCount == 0)
+                <tr><td colspan="2">
+                <div class="float-end">
+                    No data available in table
+                </div>
+                </td></tr>
+                @endif
                 </tbody>
 
                 @if(count($companyAdmins))
