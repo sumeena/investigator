@@ -101,9 +101,14 @@
                             <div class="row mb-3" id="website-section">
                                 <label for="website"
                                        class="col-md-4 col-form-label text-md-end">{{ __('Website') }}</label>
-
-                                <div class="col-md-6">
-                                    <input id="website" type="url"
+                                 <div class="col-md-2">
+                                   <select class="form-control" name="pre_link">
+                                      <option value="http://">http://</option>
+                                      <option value="https://">https://</option>
+                                  </select>
+                                 </div>
+                                <div class="col-md-4">
+                                    <input id="website" type="text"
                                            class="form-control @error('website') is-invalid @enderror" name="website"
                                            value="{{ old('website') }}">
 

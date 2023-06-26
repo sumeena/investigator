@@ -137,6 +137,13 @@
                     <div data-i18n="Analytics">Find Investigators</div>
                 </a>
             </li>
+
+            <li class="menu-item {{ request()->routeIs('hm.company-users.index') ? 'active' : '' }}">
+                <a href="{{ route('hm.company-users.index') }}" class="menu-link">
+                    <i class="bx bx-user me-2"></i>
+                    <div data-i18n="Analytics">Company Users</div>
+                </a>
+            </li>
         @endif
 
         <li class="menu-item">
