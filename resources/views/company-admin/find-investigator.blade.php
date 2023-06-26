@@ -146,7 +146,8 @@
                                                     <tbody>
                                                     <tr>
                                                         <td>
-                                                            <select class="form-select" name="license">
+                                                            <select class="form-select" name="license"
+                                                                    id="license-select">
                                                                 <option value="">Select License</option>
                                                                 @foreach($states as $state)
                                                                     <option
@@ -223,8 +224,8 @@
                         </h4>
                     </div>
                     <div class="card-body">
-                        <div class="table-responsive text-nowrap">
-                            <table class="table">
+                        <div class="table-responsive text-nowrap" id="data-container">
+                            <table class="table" id="investigator-table">
                                 <thead>
                                 <tr>
                                     <th>#</th>
@@ -241,30 +242,30 @@
                                 </thead>
                                 <tbody>
                                 @forelse($investigators as $investigator)
-                                @if(  !$investigator->checkIsBlockedCompanyAdmin(auth()->id())
-                                && ($investigator->investigatorAvailability && $investigator->investigatorAvailability->distance >=
-                                $investigator->calculated_distance)
-                                )
-                              <tr>
-                                  <td>{{ $investigators->firstItem() + $loop->index }}</td>
-                                  <td>{{ $investigator->first_name }}</td>
-                                  <td>{{ $investigator->last_name }}</td>
-                                  @php
-                                      $surv = $investigator->getServiceType('surveillance');
-                                      $stat = $investigator->getServiceType('statements');
-                                      $misc = $investigator->getServiceType('misc');
-                                  @endphp
-                                  <td>{{ $surv ? 'Yes' : '-' }}</td>
-                                  <td>{{ $surv ? $surv->hourly_rate : '-' }}</td>
-                                  <td>{{ $stat ? 'Yes' : '-' }}</td>
-                                  <td>{{ $stat ? $stat->hourly_rate : '-' }}</td>
-                                  <td>{{ $misc ? 'Yes' : '-' }}</td>
-                                  <td>{{ $misc ? $misc->hourly_rate : '-' }}</td>
-                                  <td class="text-center">{{ number_format($investigator->calculated_distance, 2) }}
-                                      miles
-                                  </td>
-                              </tr>
-                              @endif
+                                    @if(  !$investigator->checkIsBlockedCompanyAdmin(auth()->id())
+                                    && ($investigator->investigatorAvailability && $investigator->investigatorAvailability->distance >=
+                                    $investigator->calculated_distance)
+                                    )
+                                        <tr>
+                                            <td>{{ $investigators->firstItem() + $loop->index }}</td>
+                                            <td>{{ $investigator->first_name }}</td>
+                                            <td>{{ $investigator->last_name }}</td>
+                                            @php
+                                                $surv = $investigator->getServiceType('surveillance');
+                                                $stat = $investigator->getServiceType('statements');
+                                                $misc = $investigator->getServiceType('misc');
+                                            @endphp
+                                            <td>{{ $surv ? 'Yes' : '-' }}</td>
+                                            <td>{{ $surv ? $surv->hourly_rate : '-' }}</td>
+                                            <td>{{ $stat ? 'Yes' : '-' }}</td>
+                                            <td>{{ $stat ? $stat->hourly_rate : '-' }}</td>
+                                            <td>{{ $misc ? 'Yes' : '-' }}</td>
+                                            <td>{{ $misc ? $misc->hourly_rate : '-' }}</td>
+                                            <td class="text-center">{{ number_format($investigator->calculated_distance, 2) }}
+                                                miles
+                                            </td>
+                                        </tr>
+                                    @endif
                                 @empty
                                     <tr>
                                         <td colspan="100%" class="text-center">No investigators found!</td>
@@ -275,7 +276,7 @@
                                     <tfoot>
                                     <tr>
                                         <td colspan="100%">
-                                            <div class="float-end">
+                                            <div class="float-end" id="pagination-links">
                                                 {{ $investigators->withQueryString()->links() }}
                                             </div>
                                         </td>
@@ -325,9 +326,6 @@
                     let lat = results[0].geometry.location.lat();
                     let lng = results[0].geometry.location.lng();
 
-                    console.log('Latitude: ' + lat);
-                    console.log('Longitude: ' + lng);
-
                     // check lat id and lng id is exist or not
                     if ($('#lat').length) {
                         $('#lat').val(lat);
@@ -358,25 +356,56 @@
             });
         }
 
+        function fetchData(data) {
+            $.ajax({
+                url: '{{ route('company-admin.find_investigator') }}',
+                type: 'GET',
+                data: data,
+                success: function (response) {
+                    $('#data-container').html(response.data);
+                },
+                error: function (xhr) {
+                    console.log(xhr.responseText);
+                }
+            });
+        }
+
         $(document).ready(function () {
             $('#language-select').select2({
-                placeholder  : 'Select Languages',
-                allowClear   : true,
+                placeholder: 'Select Languages',
+                allowClear: true,
                 closeOnSelect: false,
-                width        : '100%',
+                width: '100%',
             });
 
             const form = $('#find-investigator-form');
-            form.on('submit', function () {
+            form.on('submit', function (e) {
+                e.preventDefault();
 
                 // input selector
                 const zip = $('#postal_code');
                 const surv = $('#surveillance');
                 const stat = $('#statements');
                 const misc = $('#misc');
+                const lang = $('#language-select');
+                const license = $('#license-select');
+                const lat = $('#lat');
+                const lng = $('#lng');
+
 
                 // values
                 const zipValue = zip.val();
+                const survValue = surv.is(':checked');
+                const statValue = stat.is(':checked');
+                const miscValue = misc.is(':checked');
+                const languages = lang.val();
+                const licenseValue = license.val();
+                const latValue = lat.val();
+                const lngValue = lng.val();
+
+                const data = {
+                    page: 1
+                };
 
                 // error selector
                 const zipError = $('#zipcode-error');
@@ -422,7 +451,32 @@
                 $('#zipcode-lat-lng-error').addClass('d-none');
                 $('#zipcode-lat-lng-loading').addClass('d-none');
 
-                form.submit();
+                if (latValue && lngValue) {
+                    data['lat'] = latValue;
+                    data['lng'] = lngValue;
+                }
+
+                if (statValue) {
+                    data['statements'] = 'statements';
+                }
+
+                if (miscValue) {
+                    data['misc'] = 'misc';
+                }
+
+                if (survValue) {
+                    data['surveillance'] = 'surveillance';
+                }
+
+                if (languages && languages.length) {
+                    data['languages'] = languages;
+                }
+
+                if (licenseValue) {
+                    data['license'] = licenseValue;
+                }
+
+                fetchData(data);
             });
 
             $('#postal_code').on('input', function () {
@@ -431,6 +485,60 @@
                     return false;
                 }
                 getLatLngFromZipCode(zipCode);
+            });
+
+            $(document).on('click', '#pagination-links a', function(e) {
+                e.preventDefault();
+                // input selector
+                const surv = $('#surveillance');
+                const stat = $('#statements');
+                const misc = $('#misc');
+                const lang = $('#language-select');
+                const license = $('#license-select');
+                const lat = $('#lat');
+                const lng = $('#lng');
+
+
+                // values
+                const survValue = surv.is(':checked');
+                const statValue = stat.is(':checked');
+                const miscValue = misc.is(':checked');
+                const languages = lang.val();
+                const licenseValue = license.val();
+                const latValue = lat.val();
+                const lngValue = lng.val();
+
+                let page = $(this).attr('href').split('page=')[1];
+                const data = {
+                    page: page
+                };
+
+                if (latValue && lngValue) {
+                    data['lat'] = latValue;
+                    data['lng'] = lngValue;
+                }
+
+                if (statValue) {
+                    data['statements'] = 'statements';
+                }
+
+                if (miscValue) {
+                    data['misc'] = 'misc';
+                }
+
+                if (survValue) {
+                    data['surveillance'] = 'surveillance';
+                }
+
+                if (languages && languages.length) {
+                    data['languages'] = languages;
+                }
+
+                if (licenseValue) {
+                    data['license'] = licenseValue;
+                }
+
+                fetchData(data);
             });
         });
     </script>

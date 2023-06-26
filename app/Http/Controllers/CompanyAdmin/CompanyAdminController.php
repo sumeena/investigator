@@ -31,7 +31,7 @@ class CompanyAdminController extends Controller
         $user->load([
             'CompanyAdminProfile',
         ]);
-        $profile   = $user->CompanyAdminProfile;
+        $profile = $user->CompanyAdminProfile;
         $timezones = Timezone::where('active', 1)->get();
 
         return view('company-admin.profile', compact('profile', 'timezones'));
@@ -46,15 +46,15 @@ class CompanyAdminController extends Controller
             $user->CompanyAdminProfile()->updateOrCreate([
                 'user_id' => $user->id
             ], [
-                'company_name'  => $request->company_name,
+                'company_name' => $request->company_name,
                 'company_phone' => $request->company_phone,
-                'address'       => $request->address,
-                'address_1'     => $request->address_1,
-                'city'          => $request->city,
-                'state'         => $request->state,
-                'country'       => $request->country,
-                'zipcode'       => $request->zipcode,
-                'timezone_id'   => $request->timezone,
+                'address' => $request->address,
+                'address_1' => $request->address_1,
+                'city' => $request->city,
+                'state' => $request->state,
+                'country' => $request->country,
+                'zipcode' => $request->zipcode,
+                'timezone_id' => $request->timezone,
             ]);
 
             $user->CompanyAdminProfile()->update(['is_company_profile_submitted' => true]);
@@ -69,16 +69,24 @@ class CompanyAdminController extends Controller
 
     public function findInvestigator(Request $request)
     {
-        $states          = State::all();
+        $states = State::all();
         $languageOptions = Language::all();
-        $filtered        = false;
-        $investigators   = [];
+        $filtered = false;
+        $investigators = [];
 
         if ($this->checkQueryAvailablity($request)) {
-            $filtered      = true;
+            $filtered = true;
             $investigators = User::investigatorFiltered($request)
                 ->paginate(10);
 
+        }
+
+        if ($request->ajax()) {
+            $html = view('company-admin.find-investigator-response', compact('investigators'))->render();
+
+            return response()->json([
+                'data' => $html,
+            ]);
         }
 
 
@@ -119,12 +127,12 @@ class CompanyAdminController extends Controller
     public function companyProfileUpdate(ProfileRequest $request)
     { //update profile for company
         $user_id = Auth::user()->id;
-        $user    = User::find($user_id);
+        $user = User::find($user_id);
         $user->update([
             'first_name' => $request->first_name,
-            'last_name'  => $request->last_name,
-            'email'      => $request->email,
-            'phone'      => $request->phone,
+            'last_name' => $request->last_name,
+            'email' => $request->email,
+            'phone' => $request->phone,
         ]);
         session()->flash('success', 'Hi, Your Account Info Updated Sucessfully!');
         return redirect()->route('company-admin.my-profile');
@@ -155,7 +163,7 @@ class CompanyAdminController extends Controller
     public function companyPasswordUpdate(PasswordRequest $request)
     { //update password for company
         $user_id = Auth::user()->id;
-        $user    = User::find($user_id);
+        $user = User::find($user_id);
         $user->update([
             'password' => Hash::make($request->password),
         ]);
