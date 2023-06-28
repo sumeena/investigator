@@ -10,6 +10,8 @@ use App\Http\Requests\CompanyAdmin\ProfileRequest;
 use App\Http\Requests\CompanyAdmin\CompanyAdminProfileRequest;
 use App\Http\Requests\CompanyAdmin\PasswordRequest;
 use App\Models\InvestigatorLanguage;
+use App\Models\CompanyUser;
+use App\Models\CompanyAdminProfile;
 use App\Models\State;
 use App\Models\User;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -28,10 +30,16 @@ class CompanyAdminController extends Controller
     public function viewProfile()
     {
         $user = auth()->user();
+        $parent_id = CompanyUser::where('user_id',auth()->user()->id)->first();
+
+
         $user->load([
             'CompanyAdminProfile',
         ]);
         $profile = $user->CompanyAdminProfile;
+        if(!empty($parent_id)){
+          $profile = CompanyAdminProfile::where('id',$parent_id->parent_id)->first();
+        }
         $timezones = Timezone::where('active', 1)->get();
 
         return view('company-admin.profile', compact('profile', 'timezones'));

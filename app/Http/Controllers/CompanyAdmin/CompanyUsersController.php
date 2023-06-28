@@ -16,9 +16,11 @@ use Illuminate\Support\Facades\Mail;
 class CompanyUsersController extends Controller
 {
     public function index()
-    {   //listing for all hr roles user
+    {   //listing for all hm + company admin roles user
         $companyAdmins = User::whereHas('userRole', function ($q) {
             $q->whereIn('role', ['company-admin', 'hiring-manager']);
+        })->whereHas('companyAdmin', function ($q) {
+            $q->where('parent_id', auth()->id());
         })->with('CompanyAdminProfile', 'userRole')->paginate(10);
 
         return view('company-admin.company-users.index', compact('companyAdmins'));
@@ -32,9 +34,10 @@ class CompanyUsersController extends Controller
     }
 
     public function store(CompanyUserRequest $request)
-    { //for storing data new and update hr
+    {
+        //for storing data new and update hr
         $password = isset($request->password) ? $request->password : '12345678';
-        $data = [
+        $data     = [
             'first_name' => $request->first_name,
             'last_name'  => $request->last_name,
             'phone'      => $request->phone,
@@ -43,20 +46,17 @@ class CompanyUsersController extends Controller
             'role'       => $request->role,
         ];
 
-        $user     = User::updateOrCreate([
+        $user = User::updateOrCreate([
             'id' => $request->id
         ], $data);
 
-
-        $companyUsersData = array('user_id' => $user->id, 'parent_id' => auth()->id());
-
-        CompanyUser::create($companyUsersData);
+        // Create company user data
+        CompanyUser::updateOrCreate([
+            'user_id'   => $user->id,
+            'parent_id' => auth()->id()
+        ]);
 
         if ($user->userRole->role == 'hiring-manager') {
-            $user->hmCompanyAdmin()->updateOrCreate([
-                'company_admin_id' => auth()->id()
-            ]);
-
             Mail::to($user)->send(new UserCredentialMail([
                 'role'       => $user->userRole->role,
                 'first_name' => $user->first_name,
@@ -64,8 +64,6 @@ class CompanyUsersController extends Controller
                 'email'      => $user->email,
                 'password'   => $password
             ]));
-        } else {
-            $user->hmCompanyAdmin()->delete();
         }
 
         if ($request->id) {

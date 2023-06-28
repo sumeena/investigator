@@ -4,17 +4,24 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class CompanyUser extends Model
 {
     use HasFactory;
 
-    protected $guarded = ['id'];
 
-    public function company(){
-        return $this->hasMany(User::class, 'parent_id');
-    }
+        protected $guarded = ['id'];
 
+        public function company(): BelongsTo
+        {
+            return $this->belongsTo(User::class, 'parent_id');
+        }
 
+        public function user(): BelongsTo
+        {
+            return $this->belongsTo(User::class, 'user_id');
+        }
 
 }
