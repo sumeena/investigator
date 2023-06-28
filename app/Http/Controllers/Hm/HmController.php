@@ -65,22 +65,25 @@ class HmController extends Controller
     {
         $user = auth()->user();
 
+        $user->load([
+            'companyAdmin',
+            'companyAdmin.company',
+            'companyAdmin.company.CompanyAdminProfile',
+        ]);
+
+//        dd($user->toArray());
+
         if (
-            !$user->hmCompanyAdmin
-            || !$user->hmCompanyAdmin->companyAdmin
-            || !$user->hmCompanyAdmin->companyAdmin->CompanyAdminProfile
+            !$user->companyAdmin
+            || !$user->companyAdmin->company
+            || !$user->companyAdmin->company->CompanyAdminProfile
         ) {
             session()->flash('error', 'Please tell your company admin to complete company profile first!');
             return redirect()->route('hm.index');
         }
 
-        $user->load([
-            'hmCompanyAdmin',
-            'hmCompanyAdmin.companyAdmin',
-            'hmCompanyAdmin.companyAdmin.CompanyAdminProfile',
-        ]);
 
-        $CompanyAdminProfile = $user->hmCompanyAdmin->companyAdmin->CompanyAdminProfile;
+        $CompanyAdminProfile = $user->companyAdmin->company->CompanyAdminProfile;
 
         return view('hm.company-profile', compact(
             'CompanyAdminProfile'
@@ -89,16 +92,14 @@ class HmController extends Controller
 
     public function companyUsers()
     {
-      $user               = Auth::user()->id;
-      $currentUserData    = CompanyUser::where('user_id',$user)->first();
-      $companyUsers       = [];
-      if ($currentUserData) {
-            $companies    = CompanyUser::where('parent_id', $currentUserData->parent_id)->pluck('user_id');
-            $companyUsers = User::whereIn('id', $companies)->paginate(10);
-        }
+        $companyUsers = User::whereHas('companyAdmin', function ($q) {
+            $q->where('parent_id', auth()->user()->companyAdmin->parent_id);
+        })->whereHas('userRole', function ($q) {
+            $q->where('role', 'hiring-manager');
+        })->latest()->paginate(10);
         return view('hm.company-users', compact(
             'companyUsers'
         ));
-   }
+    }
 
 }

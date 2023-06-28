@@ -1,5 +1,7 @@
 @extends('layouts.dashboard')
+
 @section('title', 'Company Users')
+
 @section('content')
     <div class="card manage-index-list">
         <h5 class="card-header">Manage Company Users</h5>
@@ -14,6 +16,7 @@
                     {{ session('success') }}
                 </div>
             @endif
+
             <table class="table">
                 <thead>
                 <tr>
@@ -58,6 +61,7 @@
                         </td>
                     </tr>
                     </tfoot>
+                @endif
             </table>
         </div>
     </div>

@@ -86,7 +86,9 @@ class RegisterController extends Controller
      */
     protected function validator(array $data)
     {
-        $data["website"] = $data["pre_link"]."".$data["website"];
+        if(!empty($data["website"])){
+          $data["website"] = $data["pre_link"]."".$data["website"];
+        }
         return Validator::make($data, [
             'first_name' => ['required', 'string', 'max:255'],
             'email'      => ['required', 'string', 'email', 'max:255', 'unique:users', new CompanyAdminMatchDomain($data["website"], $data['role'])],

@@ -23,19 +23,24 @@
                     <div data-i18n="Analytics">Dashboard</div>
                 </a>
             @endif
-            @if(request()->segment(1) == 'investigator')
-                <a href="{{ route('investigator.index') }}" class="menu-link">
-                    <i class="menu-icon tf-icons bx bx-home-circle"></i>
-                    <div data-i18n="Analytics">Dashboard</div>
-                </a>
+            @if(auth()->user()->is_investigator_profile_submitted == 1)
+              @if(request()->segment(1) == 'investigator')
+                  <a href="{{ route('investigator.index') }}" class="menu-link">
+                      <i class="menu-icon tf-icons bx bx-home-circle"></i>
+                      <div data-i18n="Analytics">Dashboard</div>
+                  </a>
+              @endif
             @endif
 
-            @if(request()->segment(1) == 'company-admin')
-                <a href="{{ route('company-admin.index') }}" class="menu-link">
-                    <i class="menu-icon tf-icons bx bx-home-circle"></i>
-                    <div data-i18n="Analytics">Dashboard</div>
-                </a>
-            @endif
+            @if(auth()->user()->CompanyAdminProfile && auth()->user()->CompanyAdminProfile->is_company_profile_submitted)
+                  @if(request()->segment(1) == 'company-admin')
+                      <a href="{{ route('company-admin.index') }}" class="menu-link">
+                          <i class="menu-icon tf-icons bx bx-home-circle"></i>
+                          <div data-i18n="Analytics">Dashboard</div>
+                      </a>
+                  @endif
+              @endif
+
 
             @if(request()->segment(1) == 'hm')
                 <a href="{{ route('hm.index') }}" class="menu-link">
@@ -68,17 +73,24 @@
         @endif
 
         @if(auth()->user()->userRole && auth()->user()->userRole->role == 'company-admin')
-            <li class="menu-item {{ request()->routeIs('company-admin.find_investigator') ? 'active' : '' }}">
-                <a href="{{ route('company-admin.find_investigator') }}" class="menu-link">
-                    <i class="bx bx-user me-2"></i>
-                    <div data-i18n="Analytics">Find Investigators</div>
-                </a>
-            </li>
+
             @if(auth()->user()->CompanyAdminProfile && auth()->user()->CompanyAdminProfile->is_company_profile_submitted)
+                <li class="menu-item {{ request()->routeIs('company-admin.find_investigator') ? 'active' : '' }}">
+                    <a href="{{ route('company-admin.find_investigator') }}" class="menu-link">
+                        <i class="bx bx-user me-2"></i>
+                        <div data-i18n="Analytics">Find Investigators</div>
+                    </a>
+                </li>
                 <li class="menu-item {{ request()->routeIs('company-admin.view') ? 'active' : '' }}">
                     <a href="{{ route('company-admin.view') }}" class="menu-link">
                         <i class="bx bx-building me-2"></i>
                         <div data-i18n="Analytics">View Company profile</div>
+                    </a>
+                </li>
+                <li class="menu-item {{ request()->routeIs('company-admin.company-users.index') ? 'active' : '' }}">
+                    <a href="{{ route('company-admin.company-users.index') }}" class="menu-link">
+                        <i class="bx bxs-user me-2"></i>
+                        <div data-i18n="Analytics">Company Users</div>
                     </a>
                 </li>
             @else
@@ -90,12 +102,7 @@
                 </li>
             @endif
 
-            <li class="menu-item {{ request()->routeIs('company-admin.company-users.index') ? 'active' : '' }}">
-                <a href="{{ route('company-admin.company-users.index') }}" class="menu-link">
-                    <i class="bx bxs-user me-2"></i>
-                    <div data-i18n="Analytics">Company Users</div>
-                </a>
-            </li>
+
         @endif
 
         @if(auth()->user()->userRole && auth()->user()->userRole->role == 'investigator')
@@ -104,6 +111,12 @@
                     <a href="{{ route('investigator.view-profile') }}" class="menu-link">
                         <i class="bx bx-user me-2"></i>
                         <div data-i18n="Analytics">View Profile</div>
+                    </a>
+                </li>
+                <li class="menu-item {{ request()->routeIs('investigator.company-admins.index') ? 'active' : '' }}">
+                    <a href="{{ route('investigator.company-admins.index') }}" class="menu-link">
+                        <i class="bx bx-user me-2"></i>
+                        <div data-i18n="Analytics">Companies</div>
                     </a>
                 </li>
             @else
@@ -115,12 +128,7 @@
                 </li>
             @endif
 
-            <li class="menu-item {{ request()->routeIs('investigator.company-admins.index') ? 'active' : '' }}">
-                <a href="{{ route('investigator.company-admins.index') }}" class="menu-link">
-                    <i class="bx bx-user me-2"></i>
-                    <div data-i18n="Analytics">Companies</div>
-                </a>
-            </li>
+
         @endif
 
         @if(auth()->user()->userRole && auth()->user()->userRole->role == 'hiring-manager')

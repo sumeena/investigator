@@ -98,8 +98,7 @@ class User extends Authenticatable
     public function getCompanyIsAdminAttribute(): bool
     {
         /* If logged in user role is admin or investigator. Then return false as user can't be company admin. */
-        if(Auth::user()->role === USER::ADMIN || Auth::user()->role === USER::INVESTIGATOR)
-        {
+        if (Auth::user()->role === USER::ADMIN || Auth::user()->role === USER::INVESTIGATOR) {
             return false;
         }
 
@@ -120,6 +119,7 @@ class User extends Authenticatable
     {
         return $this->hasOne(CompanyAdminProfile::class);
     }
+
 
     /**
      * Get the investigator's review.
@@ -184,16 +184,6 @@ class User extends Authenticatable
         return $this->hasOne(InvestigatorAvailability::class);
     }
 
-    public function hmCompanyAdmin() // hiring manager company admin for company profile access
-    {
-        return $this->hasOne(HiringManagerCompany::class, 'hiring_manager_id');
-    }
-
-    public function companyAdminHiringManagers()
-    {
-        return $this->hasMany(HiringManagerCompany::class, 'company_admin_id');
-    }
-
     public function investigatorBlockedCompanyAdmins(): BelongsToMany
     {
         return $this->belongsToMany(
@@ -253,7 +243,7 @@ class User extends Authenticatable
                 $q->where('role', 'investigator');
             })
             // check companyId is in blocked list or not
-            ->whereDoesntHave('investigatorBlockedCompanyAdmins', function ($q) use ($companyId){
+            ->whereDoesntHave('investigatorBlockedCompanyAdmins', function ($q) use ($companyId) {
                 $q->where('company_admin_id', $companyId);
             })
             // Get calculated distance from lat lng
