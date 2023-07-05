@@ -9,31 +9,28 @@
                     <h5 class="mb-0">Company Profile</h5>
                 </div>
                 <div class="card-body">
-                    @if(session('success'))
+                    @if (session('success'))
                         <div class="alert alert-success" role="alert">
                             {{ session('success') }}
                         </div>
                     @endif
 
-                    @if(session('error'))
+                    @if (session('error'))
                         <div class="alert alert-danger" role="alert">
                             {{ session('error') }}
                         </div>
                     @endif
 
-                    <form method="POST" action="{{ route('company-admin.profile.submit') }}"
-                          enctype="multipart/form-data">
+                    <form method="POST" action="{{ route('company-admin.profile.submit') }}" enctype="multipart/form-data">
                         @csrf
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label class="form-label" for="basic-default-fullname">Company Name</label>
-                                    <input type="text" class="form-control @error('company_name') is-invalid @enderror"
-                                           name="company_name"
-                                           value="{{ old('company_name',$profile->company_name ?? '') }}">
+                                    <input type="text" class="form-control @error('company_name') is-invalid @enderror" name="company_name" value="{{ !empty($parentCompany?->company_name) ? $parentCompany?->company_name : old('company_name', $profile->company_name ?? '') }}">
                                 </div>
                                 @error('company_name')
-                                <span role="alert" class="text-danger small">
+                                    <span role="alert" class="text-danger small">
                                         {{ $message }}
                                     </span>
                                 @enderror
@@ -41,14 +38,12 @@
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label class="form-label" for="basic-default-fullname">Company Phone</label>
-                                    <input type="text" class="form-control @error('company_phone') is-invalid @enderror"
-                                           name="company_phone"
-                                           value="{{ old('company_phone', $profile->company_phone ?? '') }}">
+                                    <input type="text" class="form-control @error('company_phone') is-invalid @enderror" name="company_phone" value="{{ !empty($parentCompany?->company_phone) ? $parentCompany?->company_phone : old('company_phone', $profile->company_phone ?? '') }}">
                                 </div>
                                 @error('company_phone')
-                                <span role="alert" class="text-danger small">
-                                      {{ $message }}
-                                  </span>
+                                    <span role="alert" class="text-danger small">
+                                        {{ $message }}
+                                    </span>
                                 @enderror
                             </div>
                         </div>
@@ -57,12 +52,10 @@
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label class="form-label" for="basic-default-fullname">Address</label>
-                                    <input type="text" id="autocomplete"
-                                           class="form-control @error('address') is-invalid @enderror" name="address"
-                                           value="{{ old('address', $profile->address ?? '') }}">
+                                    <input type="text" id="autocomplete" class="form-control @error('address') is-invalid @enderror" name="address" value="{{ old('address', $profile->address ?? '') }}">
                                 </div>
                                 @error('address')
-                                <span role="alert" class="text-danger small">
+                                    <span role="alert" class="text-danger small">
                                         {{ $message }}
                                     </span>
                                 @enderror
@@ -70,8 +63,7 @@
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label class="form-label" for="basic-default-company">Address 1</label>
-                                    <input type="text" class="form-control" name="address_1"
-                                           value="{{ old('address_1', $profile->address_1 ?? '') }}">
+                                    <input type="text" class="form-control" name="address_1" value="{{ old('address_1', $profile->address_1 ?? '') }}">
                                 </div>
                                 <input type="hidden" id="street_number">
                             </div>
@@ -81,12 +73,10 @@
                                 <div class="mb-3">
                                     <label class="form-label" for="basic-default-email">City</label>
                                     <div class="input-group input-group-merge">
-                                        <input type="text" id="locality"
-                                               class="form-control @error('city') is-invalid @enderror" name="city"
-                                               value="{{ old('city', $profile->city ?? '') }}">
+                                        <input type="text" id="locality" class="form-control @error('city') is-invalid @enderror" name="city" value="{{ old('city', $profile->city ?? '') }}">
                                     </div>
                                     @error('city')
-                                    <span role="alert" class="text-danger small">
+                                        <span role="alert" class="text-danger small">
                                             {{ $message }}
                                         </span>
                                     @enderror
@@ -96,36 +86,19 @@
                                 <div class="mb-3">
                                     <label class="form-label" for="basic-default-email">State</label>
                                     <div class="input-group input-group-merge">
-                                        <input type="text" id="administrative_area_level_1"
-                                               class="form-control @error('state') is-invalid @enderror" name="state"
-                                               value="{{  old('state', $profile->state ?? '') }}">
+                                        <input type="text" id="administrative_area_level_1" class="form-control @error('state') is-invalid @enderror" name="state" value="{{ old('state', $profile->state ?? '') }}">
                                         <!-- <select class="form-select @error('state') is-invalid @enderror" name="state">
-                                            @if(isset($states))
-                                            @foreach($states as $state)
-                                                <option
-                                                    value="{{$state->id}}" {{isset($user->state_id) && ($user->state_id == $state->id || old ('state') == $state->id ) ? 'selected' :'' }}>{{$state->code}}</option>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                                            @endforeach
-                                        @endif
-                                        </select> -->
+                                                                                    @if (isset($states))
+                                                                                    @foreach ($states as $state)
+    <option
+                                                                                            value="{{ $state->id }}" {{ isset($user->state_id) && ($user->state_id == $state->id || old('state') == $state->id) ? 'selected' : '' }}>{{ $state->code }}</option>
+    @endforeach
+                                                                                @endif
+                                                                                </select> -->
                                     </div>
                                 </div>
                                 @error('state')
-                                <span role="alert" class="text-danger small">
+                                    <span role="alert" class="text-danger small">
                                         {{ $message }}
                                     </span>
                                 @enderror
@@ -136,18 +109,16 @@
                                 <div class="mb-3">
                                     <label class="form-label" for="basic-default-email">Country</label>
                                     <div class="input-group input-group-merge">
-                                        <input type="text" id="country"
-                                               class="form-control @error('country') is-invalid @enderror"
-                                               name="country" value="{{ old('country', $profile->country ?? '') }}">
+                                        <input type="text" id="country" class="form-control @error('country') is-invalid @enderror" name="country" value="{{ old('country', $profile->country ?? '') }}">
                                         <!-- <select id="defaultSelect"
-                                                class="form-control @error('country') is-invalid @enderror"
-                                                name="country">
-                                            <option selected="selected" value="1">USA</option>
-                                        </select> -->
+                                                                                        class="form-control @error('country') is-invalid @enderror"
+                                                                                        name="country">
+                                                                                    <option selected="selected" value="1">USA</option>
+                                                                                </select> -->
                                     </div>
                                 </div>
                                 @error('country')
-                                <span role="alert" class="text-danger small">
+                                    <span role="alert" class="text-danger small">
                                         {{ $message }}
                                     </span>
                                 @enderror
@@ -156,12 +127,10 @@
                                 <div class="mb-3">
                                     <label class="form-label" for="basic-default-email">Zip Code</label>
                                     <div class="input-group input-group-merge">
-                                        <input type="text" id="postal_code"
-                                               class="form-control @error('zipcode') is-invalid @enderror"
-                                               name="zipcode" value="{{old('zipcode', $profile->zipcode ?? '') }}">
+                                        <input type="text" id="postal_code" class="form-control @error('zipcode') is-invalid @enderror" name="zipcode" value="{{ old('zipcode', $profile->zipcode ?? '') }}">
                                     </div>
                                     @error('zipcode')
-                                    <span role="alert" class="text-danger small">
+                                        <span role="alert" class="text-danger small">
                                             {{ $message }}
                                         </span>
                                     @enderror
@@ -171,29 +140,26 @@
                             <div class="col-md-12">
                                 <div class="mb-3">
                                     <label class="form-label" for="timezone">Timezone</label>
-                                    <select name="timezone" id="timezone"
-                                            class="form-control @error('timezone') is-invalid @enderror">
+                                    <select name="timezone" id="timezone" class="form-control @error('timezone') is-invalid @enderror">
                                         <option value="">Select Timezone</option>
-                                        @foreach($timezones as $timezone)
-                                            <option value="{{ $timezone->id }}"
-                                                @selected(old('timezone', $profile->timezone_id ?? '') == $timezone->id)>
+                                        @foreach ($timezones as $timezone)
+                                            <option value="{{ $timezone->id }}" @selected(old('timezone', $profile->timezone_id ?? '') == $timezone->id)>
                                                 {{ $timezone->timezone }} - [{{ $timezone->name }}]
                                             </option>
                                         @endforeach
                                     </select>
 
                                     @error('timezone')
-                                    <span role="alert" class="text-danger small">
-                                        {{ $message }}
-                                    </span>
+                                        <span role="alert" class="text-danger small">
+                                            {{ $message }}
+                                        </span>
                                     @enderror
                                 </div>
                             </div>
                         </div>
 
                         <hr>
-                        <button type="submit"
-                                class="btn btn-primary">{{isset($profile) && !empty($profile->id) ? 'Update':'Submit'}}</button>
+                        <button type="submit" class="btn btn-primary">{{ isset($profile) && !empty($profile->id) ? 'Update' : 'Submit' }}</button>
                     </form>
                 </div>
             </div>
@@ -219,8 +185,6 @@
 @endpush
 
 @push('scripts')
-    <script
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAB80hPTftX9xYXqy6_NcooDtW53kiIH3A&libraries=places&callback=initAutocomplete"
-        async defer></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAB80hPTftX9xYXqy6_NcooDtW53kiIH3A&libraries=places&callback=initAutocomplete" async defer></script>
     <script src="{{ asset('html/assets/js/address-auto-complete.js') }}"></script>
 @endpush

@@ -86,17 +86,17 @@ class RegisterController extends Controller
      */
     protected function validator(array $data)
     {
-        if(!empty($data["website"])){
-          $data["website"] = $data["pre_link"]."".$data["website"];
-        }
+        // Extract the domain name from the email
+        $data['website'] = preg_replace('/^www\./', '', $data['website']);
+
         return Validator::make($data, [
             'first_name' => ['required', 'string', 'max:255'],
             'email'      => ['required', 'string', 'email', 'max:255', 'unique:users', new CompanyAdminMatchDomain($data["website"], $data['role'])],
             'role'       => ['required', 'exists:roles,id'],
-            'website'    => ['nullable', new RequiredIf(function () use ($data) {
+            'website'    => ['nullable', 'unique:users,website', new RequiredIf(function () use ($data) {
                 return $this->checkIsCompanyAdminRole($data['role']);
-            }), 'url', 'max:255'],
-            'password'   => ['required', 'string', 'min:10', 'confirmed', 'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{10,}$/'],
+            }), 'regex:/^(?:[a-zA-Z0-9](?:[a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$/', 'max:255'],
+            'password'   => ['required', 'string', 'min:10', 'confirmed', 'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&()]{10,}$/'],
         ], [
             'password.regex' => 'Password is invalid, please follow the instructions below!',
         ]);
@@ -115,7 +115,7 @@ class RegisterController extends Controller
             'last_name'  => $data['last_name'],
             'role'       => $data['role'],
             'email'      => $data['email'],
-            'website'    => $this->checkIsCompanyAdminRole($data['role']) ? $data['website'] : null,
+            'website'    => $this->checkIsCompanyAdminRole($data['role']) ? preg_replace('/^www\./', '', $data['website']) : null,
             'password'   => Hash::make($data['password']),
         ]);
     }
@@ -128,7 +128,6 @@ class RegisterController extends Controller
     private function checkIsCompanyAdminRole($roleId)
     {
         $role = Role::find($roleId);
-
         $hasCompanyAdminRole = false;
 
         if ($role && $role->role == 'company-admin') {
@@ -137,5 +136,4 @@ class RegisterController extends Controller
 
         return $hasCompanyAdminRole;
     }
-
 }

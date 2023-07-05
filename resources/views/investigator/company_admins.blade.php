@@ -1,7 +1,7 @@
 @extends('layouts.dashboard')
 @section('title', 'Company Admins')
 @section('content')
-    <div class="card">
+    <div class="card manage-index-list">
         <h5 class="card-header">Companies</h5>
         <p class="card-body">You can block the companies so that your profile is not visible in their search.</p>
 

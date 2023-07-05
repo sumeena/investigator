@@ -32,11 +32,7 @@ class CompanyAdminMatchDomain implements Rule
     {
         // Extract the domain name from the email
         $emailDomain = explode('@', $value)[1];
-
-        // Extract the domain name from the website URL
-        $host          = parse_url($this->domain, PHP_URL_HOST);
-        $websiteDomain = preg_replace('/^www\./', '', $host);
-
+        $websiteDomain = preg_replace('/^www\./', '', $this->domain);
         // Compare the two domain names
         return !$this->checkIsCompanyAdminRole() || $emailDomain === $websiteDomain;
     }

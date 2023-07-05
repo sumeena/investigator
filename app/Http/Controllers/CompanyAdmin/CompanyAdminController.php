@@ -10,8 +10,6 @@ use App\Http\Requests\CompanyAdmin\ProfileRequest;
 use App\Http\Requests\CompanyAdmin\CompanyAdminProfileRequest;
 use App\Http\Requests\CompanyAdmin\PasswordRequest;
 use App\Models\InvestigatorLanguage;
-use App\Models\CompanyUser;
-use App\Models\CompanyAdminProfile;
 use App\Models\State;
 use App\Models\User;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -30,19 +28,14 @@ class CompanyAdminController extends Controller
     public function viewProfile()
     {
         $user = auth()->user();
-        $parent_id = CompanyUser::where('user_id',auth()->user()->id)->first();
-
-
         $user->load([
             'CompanyAdminProfile',
+            'parentCompany.company.CompanyAdminProfile'
         ]);
         $profile = $user->CompanyAdminProfile;
-        if(!empty($parent_id)){
-          $profile = CompanyAdminProfile::where('id',$parent_id->parent_id)->first();
-        }
+        $parentCompany = $user?->parentCompany?->company?->CompanyAdminProfile;
         $timezones = Timezone::where('active', 1)->get();
-
-        return view('company-admin.profile', compact('profile', 'timezones'));
+        return view('company-admin.profile', compact('profile', 'timezones', 'parentCompany'));
     }
 
 
@@ -86,7 +79,6 @@ class CompanyAdminController extends Controller
             $filtered = true;
             $investigators = User::investigatorFiltered($request)
                 ->paginate(10);
-
         }
 
         if ($request->ajax()) {
@@ -98,7 +90,8 @@ class CompanyAdminController extends Controller
         }
 
 
-        return view('company-admin.find-investigator',
+        return view(
+            'company-admin.find-investigator',
             compact(
                 'states',
                 'languageOptions',
@@ -182,12 +175,10 @@ class CompanyAdminController extends Controller
     public function companyProfile()
     {
         $user = auth()->user();
-
-        if (!$user->CompanyAdminProfile->is_company_profile_submitted) {
+        if (empty($user->CompanyAdminProfile->is_company_profile_submitted)) {
             session()->flash('error', 'Please complete your profile first!');
             return redirect()->route('company-admin.profile');
         }
-
         $user->load([
             'CompanyAdminProfile'
         ]);
@@ -198,5 +189,4 @@ class CompanyAdminController extends Controller
             'CompanyAdminProfile'
         ));
     }
-
 }

@@ -92,14 +92,31 @@ class HmController extends Controller
 
     public function companyUsers()
     {
-        $companyUsers = User::whereHas('companyAdmin', function ($q) {
-            $q->where('parent_id', auth()->user()->companyAdmin->parent_id);
-        })->whereHas('userRole', function ($q) {
-            $q->where('role', 'hiring-manager');
-        })->latest()->paginate(10);
-        return view('hm.company-users', compact(
-            'companyUsers'
-        ));
+      $user = auth()->user();
+
+      $user->load([
+          'companyAdmin',
+          'companyAdmin.company',
+          'companyAdmin.company.CompanyAdminProfile',
+      ]);
+
+      if (
+          !$user->companyAdmin
+          || !$user->companyAdmin->company
+          || !$user->companyAdmin->company->CompanyAdminProfile
+      ) {
+          session()->flash('error', 'Please tell your company admin to complete company profile first!');
+          return redirect()->route('hm.index');
+      }
+
+      $companyUsers = User::whereHas('companyAdmin', function ($q) {
+          $q->where('parent_id', auth()->user()->companyAdmin->parent_id);
+      })->whereHas('userRole', function ($q) {
+          $q->where('role', ['company-admin','hiring-manager']);
+      })->latest()->paginate(10);
+      return view('hm.company-users', compact(
+          'companyUsers'
+      ));
     }
 
 }

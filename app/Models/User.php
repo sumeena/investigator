@@ -44,6 +44,7 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'first_name',
+        'website',
         'last_name',
         'email',
         'role',
@@ -105,7 +106,6 @@ class User extends Authenticatable
 
         /* If logged in user is in parent_id, then logged in user is company admin else not an company admin */
         return CompanyUser::where('parent_id', Auth::id())->exists();
-
     }
 
     /**
@@ -299,13 +299,8 @@ class User extends Authenticatable
             });
     }
 
-    /**
-     * Get company admin info
-     * @return HasOne
-     */
-    public function checkAdminExist(): HasOne
+    public function parentCompany()
     {
-        return $this->hasOne(CompanyUser::class, 'user_id');
+        return $this->belongsTo(CompanyUser::class, 'id', 'user_id');
     }
-
 }
