@@ -35,7 +35,7 @@ class CompanyAdminController extends Controller
         $profile = $user->CompanyAdminProfile;
         $parentCompany = $user?->parentCompany?->company?->CompanyAdminProfile;
         $timezones = Timezone::where('active', 1)->get();
-        return view('company-admin.profile', compact('profile', 'timezones', 'parentCompany'));
+        return view('company-admin.profile', compact('profile', 'timezones', 'user', 'parentCompany'));
     }
 
 
@@ -78,7 +78,7 @@ class CompanyAdminController extends Controller
         if ($this->checkQueryAvailablity($request)) {
             $filtered = true;
             $investigators = User::investigatorFiltered($request)
-                ->paginate(10);
+                ->paginate(20);
         }
 
         if ($request->ajax()) {
@@ -180,13 +180,15 @@ class CompanyAdminController extends Controller
             return redirect()->route('company-admin.profile');
         }
         $user->load([
-            'CompanyAdminProfile'
+            'CompanyAdminProfile',
+            'parentCompany.company'
         ]);
 
         $CompanyAdminProfile = $user->CompanyAdminProfile;
 
         return view('company-admin.company-profile', compact(
-            'CompanyAdminProfile'
+            'CompanyAdminProfile',
+            'user'
         ));
     }
 }

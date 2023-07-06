@@ -113,7 +113,7 @@ class HmController extends Controller
           $q->where('parent_id', auth()->user()->companyAdmin->parent_id);
       })->whereHas('userRole', function ($q) {
           $q->where('role', ['company-admin','hiring-manager']);
-      })->latest()->paginate(10);
+      })->latest()->paginate(20);
       return view('hm.company-users', compact(
           'companyUsers'
       ));

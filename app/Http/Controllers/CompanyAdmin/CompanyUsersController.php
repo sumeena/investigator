@@ -21,7 +21,7 @@ class CompanyUsersController extends Controller
             $q->whereIn('role', ['company-admin', 'hiring-manager']);
         })->whereHas('companyAdmin', function ($q) {
             $q->where('parent_id', auth()->id());
-        })->with('CompanyAdminProfile', 'userRole')->paginate(10);
+        })->with('CompanyAdminProfile', 'userRole')->paginate(20);
 
         return view('company-admin.company-users.index', compact('companyAdmins'));
     }
@@ -30,7 +30,8 @@ class CompanyUsersController extends Controller
     { //return view for add new hr
         $roles = Role::where('role', 'company-admin')
             ->orWhere('role', 'hiring-manager')->get();
-        return view('company-admin.company-users.add', compact('roles'));
+        $user = User::with('parentCompany.company')->find(auth()->user()->id);
+        return view('company-admin.company-users.add', compact('roles', 'user'));
     }
 
     public function store(CompanyUserRequest $request)
@@ -81,7 +82,8 @@ class CompanyUsersController extends Controller
         $companyAdmin = User::find($id);
         $roles        = Role::where('role', 'company-admin')
             ->orWhere('role', 'hiring-manager')->get();
-        return view('company-admin.company-users.add', compact('companyAdmin', 'roles'));
+        $user = User::with('parentCompany.company')->find(auth()->user()->id);
+        return view('company-admin.company-users.add', compact('companyAdmin', 'roles', 'user'));
     }
 
     public function delete($id)

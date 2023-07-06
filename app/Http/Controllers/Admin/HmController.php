@@ -20,7 +20,7 @@ class HmController extends Controller
             $q->where('role', 'hiring-manager');
         })->with(['parentCompany' => function ($query) {
             $query->with('company');
-        }])->paginate(10);
+        }])->paginate(20);
         return view('admin.hm.index', compact('hiringManagers'));
     }
 
@@ -71,7 +71,7 @@ class HmController extends Controller
         $companyAdmins = User::whereHas('userRole', function ($q) {
             $q->where('role', 'company-admin');
         })->whereNotNull('website')->where('website', '!=', '')->get();
-        $hm = User::find($id);
+        $hm = User::with('parentCompany')->find($id);
         return view('admin.hm.add', compact('hm', 'companyAdmins'));
     }
 

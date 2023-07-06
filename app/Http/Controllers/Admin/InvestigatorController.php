@@ -20,7 +20,7 @@ class InvestigatorController extends Controller
     {  //listing for all investigator roles user
         $investigators = User::whereHas('userRole', function ($q) {
             $q->where('role', 'investigator');
-        })->paginate(10);
+        })->paginate(20);
 
         return view('admin.investigator.index', compact('investigators'));
     }

@@ -24,7 +24,7 @@ class CompanyAdminController extends Controller
             $q->where('role', 'company-admin');
         })->with('CompanyAdminProfile')->with(['parentCompany' => function ($query) {
             $query->with('company');
-        }])->paginate(10);
+        }])->paginate(20);
         return view('admin.company-admin.index', compact('companyAdmins'));
     }
 
@@ -52,7 +52,7 @@ class CompanyAdminController extends Controller
         }
         $request->validate([
             'first_name' => ['required', 'string', 'max:255'],
-            'email'      => ['required', 'string', 'email', 'max:255', 'unique:users', new CompanyAdminMatchDomain($website, $request->role)],
+            'email'      => ['required', 'string', 'email', 'max:255', 'unique:users,id,' . $request->id, new CompanyAdminMatchDomain($website, $request->role)],
             'role'       => ['required', 'exists:roles,id'],
             'website'    => ['nullable', 'regex:/^(?:[a-zA-Z0-9](?:[a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$/', 'max:255', 'unique:users'],
         ]);
@@ -102,7 +102,7 @@ class CompanyAdminController extends Controller
         $companyAdmins = User::whereHas('userRole', function ($q) {
             $q->where('role', 'company-admin');
         })->whereNotNull('website')->where('website', '!=', '')->get();
-        $companyAdmin = User::find($id);
+        $companyAdmin = User::with('parentCompany')->find($id);
         return view('admin.company-admin.add', compact('companyAdmin', 'companyAdmins'));
     }
 

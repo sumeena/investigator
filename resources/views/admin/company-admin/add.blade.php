@@ -59,22 +59,27 @@
                             @enderror
                         </div>
                         <input type="hidden" name="id" value="{{ isset($companyAdmin) && !empty($companyAdmin) ? $companyAdmin->id : '' }}">
-
                         <div class="mb-2">
-                            <label class="form-label" for="basic-default-message">Select Company Admin</label>
-                            <select id="defaultSelect" class="form-select " name="company_admin">
-                                <option value="">Enter New Company</option>
-                                @foreach ($companyAdmins as $companyadmin)
-                                    <option value="{{ $companyadmin->id }}">{{ $companyadmin->first_name }} {{ $companyadmin->first_name }} -- {{ $companyadmin->website }}</option>
-                                @endforeach
-                            </select>
-                            @error('website')
-                                <span class="text-danger" role="alert" style="font-size: 12px;">
-                                    <strong>{{ $message }}</strong>
-                                </span>
-                            @enderror
+                            @if (isset($companyAdmin) && !empty($companyAdmin->id))
+                                <label class="form-label" for="basic-default-message">Company Admin</label>
+                                @if (!empty($companyAdmin?->parentCompany))
+                                    <input type="text" class="form-control" value="{{ $companyAdmin?->parentCompany->company->first_name . ' ' . $companyAdmin?->parentCompany->company->last_name . ' -- ' . $companyAdmin?->parentCompany->company?->website }}" disabled>
+                                    <input type="hidden" class="form-control" name="company_admin" value="{{ $companyAdmin?->parentCompany?->company?->id }}">
+                                @else
+                                    <input type="text" class="form-control" value="{{ $companyAdmin?->first_name . ' ' . $companyAdmin?->last_name . ' -- ' . $companyAdmin?->website }}" disabled>
+                                    <input type="hidden" class="form-control" name="company_admin" value="{{ $companyAdmin?->id }}">
+                                @endif
+                            @else
+                                <label class="form-label" for="basic-default-message">Select Company Admin</label>
+                                <select id="defaultSelect" class="form-select " name="company_admin">
+                                    <option value="">Enter New Company</option>
+                                    @foreach ($companyAdmins as $companyadmin)
+                                        <option value="{{ $companyadmin->id }}">{{ $companyadmin->first_name }} {{ $companyadmin->first_name }} -- {{ $companyadmin->website }}</option>
+                                    @endforeach
+                                </select>
+                            @endif
                         </div>
-                        <div class="mb-3" id="newCompanyLink">
+                        <div class="mb-3 {{ isset($companyAdmin) && !empty($companyAdmin->id) ? 'd-none' : '' }}" id="newCompanyLink">
                             <label class="form-label" for="basic-default-message">Company Link</label>
                             <div class="row">
                                 <div class="col-md-2">
@@ -85,6 +90,11 @@
                                 </div>
                                 <div class="col-md-10">
                                     <input type="text" name="website" class="form-control">
+                                    @error('website')
+                                        <span class="text-danger" role="alert" style="font-size: 12px;">
+                                            <strong>{{ $message }}</strong>
+                                        </span>
+                                    @enderror
                                 </div>
                             </div>
                             @error('website')
@@ -110,9 +120,7 @@
         </div>
         <div class="col-md-1"></div>
         <style>
-            #newCompanyLink {
-                display: none;
-            }
+
         </style>
     </div>
 

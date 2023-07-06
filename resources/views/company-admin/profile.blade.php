@@ -88,13 +88,13 @@
                                     <div class="input-group input-group-merge">
                                         <input type="text" id="administrative_area_level_1" class="form-control @error('state') is-invalid @enderror" name="state" value="{{ old('state', $profile->state ?? '') }}">
                                         <!-- <select class="form-select @error('state') is-invalid @enderror" name="state">
-                                                                                    @if (isset($states))
-                                                                                    @foreach ($states as $state)
+                                                                                                                                                        @if (isset($states))
+                                                                                                                                                        @foreach ($states as $state)
     <option
-                                                                                            value="{{ $state->id }}" {{ isset($user->state_id) && ($user->state_id == $state->id || old('state') == $state->id) ? 'selected' : '' }}>{{ $state->code }}</option>
+                                                                                                                                                                value="{{ $state->id }}" {{ isset($user->state_id) && ($user->state_id == $state->id || old('state') == $state->id) ? 'selected' : '' }}>{{ $state->code }}</option>
     @endforeach
-                                                                                @endif
-                                                                                </select> -->
+                                                                                                                                                    @endif
+                                                                                                                                                    </select> -->
                                     </div>
                                 </div>
                                 @error('state')
@@ -111,10 +111,10 @@
                                     <div class="input-group input-group-merge">
                                         <input type="text" id="country" class="form-control @error('country') is-invalid @enderror" name="country" value="{{ old('country', $profile->country ?? '') }}">
                                         <!-- <select id="defaultSelect"
-                                                                                        class="form-control @error('country') is-invalid @enderror"
-                                                                                        name="country">
-                                                                                    <option selected="selected" value="1">USA</option>
-                                                                                </select> -->
+                                                                                                                                                            class="form-control @error('country') is-invalid @enderror"
+                                                                                                                                                            name="country">
+                                                                                                                                                        <option selected="selected" value="1">USA</option>
+                                                                                                                                                    </select> -->
                                     </div>
                                 </div>
                                 @error('country')
@@ -136,7 +136,14 @@
                                     @enderror
                                 </div>
                             </div>
-
+                            <div class="col-md-12">
+                                <div class="mb-3">
+                                    <label class="form-label" for="basic-default-email">Website</label>
+                                    <div class="input-group input-group-merge">
+                                        <input type="text" class="form-control" value="{{ $user?->website ?? $user?->parentCompany?->company?->website }}" disabled>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="col-md-12">
                                 <div class="mb-3">
                                     <label class="form-label" for="timezone">Timezone</label>

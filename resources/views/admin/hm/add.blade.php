@@ -61,17 +61,28 @@
                             @enderror
                         </div>
                         <div class="mb-2">
-                            <label class="form-label" for="basic-default-message">Select Company Admin</label>
-                            <select id="defaultSelect" class="form-select " name="company_admin">
-                                @foreach ($companyAdmins as $companyAdmin)
-                                    <option value="{{ $companyAdmin->id }}">{{ $companyAdmin->first_name }} {{ $companyAdmin->first_name }} -- {{ $companyAdmin->website }}</option>
-                                @endforeach
-                            </select>
-                            @error('website')
-                                <span class="text-danger" role="alert" style="font-size: 12px;">
-                                    <strong>{{ $message }}</strong>
-                                </span>
-                            @enderror
+                            @if (isset($hm) && !empty($hm->id))
+                                <label class="form-label" for="basic-default-message">Company Admin</label>
+                                @if (!empty($hm?->parentCompany))
+                                    <input type="text" class="form-control" value="{{ $hm?->parentCompany->company->first_name . ' ' . $hm?->parentCompany->company->last_name . ' -- ' . $hm?->parentCompany->company?->website }}" disabled>
+                                    <input type="hidden" class="form-control" name="company_admin" value="{{ $hm?->parentCompany->company->id }}">
+                                @else
+                                    <input type="text" class="form-control" value="{{ $hm?->first_name . ' ' . $hm?->last_name . ' -- ' . $hm?->website }}" disabled>
+                                    <input type="hidden" class="form-control" name="company_admin" value="{{ $hm->id }}">
+                                @endif
+                            @else
+                                <label class="form-label" for="basic-default-message">Select Company Admin</label>
+                                <select id="defaultSelect" class="form-select " name="company_admin">
+                                    @foreach ($companyAdmins as $companyAdmin)
+                                        <option value="{{ $companyAdmin->id }}">{{ $companyAdmin->first_name }} {{ $companyAdmin->first_name }} -- {{ $companyAdmin->website }}</option>
+                                    @endforeach
+                                </select>
+                                @error('website')
+                                    <span class="text-danger" role="alert" style="font-size: 12px;">
+                                        <strong>{{ $message }}</strong>
+                                    </span>
+                                @enderror
+                            @endif
                         </div>
                         <input type="hidden" name="id" value="{{ isset($hm) && !empty($hm) ? $hm->id : '' }}">
 

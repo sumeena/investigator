@@ -63,7 +63,7 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label" for="basic-default-message">Role</label>
-                            <input type="text" class="form-control" value="HR" disabled>
+                            <input type="text" class="form-control" value="Company Admin" disabled>
                         </div>
                         <button type="submit"
                                 class="btn btn-primary">{{isset($profile) && !empty($profile->id) ? 'Update':'Submit'}}</button>
