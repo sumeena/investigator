@@ -273,4 +273,32 @@ class User extends Authenticatable
         return $this->investigatorServiceLines()->where('investigation_type', $service_type)->first();
     }
 
+    /**
+     * Get company admin users
+     * @return HasMany
+     */
+    public function companyUsers(): HasMany
+    {
+        return $this->hasMany(CompanyUser::class, 'parent_id');
+    }
+
+    /**
+     * Get company admin info
+     * @return HasOne
+     */
+    public function companyAdmin(): HasOne
+    {
+        return $this->hasOne(CompanyUser::class, 'user_id')
+            ->whereHas('company', function ($q) {
+                $q->whereHas('userRole', function ($q) {
+                    $q->where('role', 'company-admin');
+                });
+            });
+    }
+
+    public function parentCompany()
+    {
+        return $this->belongsTo(CompanyUser::class, 'id', 'user_id');
+    }
+
 }
