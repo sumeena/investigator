@@ -39,7 +39,7 @@ class AdminController extends Controller
             'email'      => $request->email,
             'phone'      => $request->phone,
         ]);
-        session()->flash('success', 'Hi Admin , Your Account Info Updated Sucessfully!');
+        session()->flash('success', 'Hi Admin , Your Account Info Updated Successfully!');
         return redirect()->route('admin.my-profile');
     }
 

@@ -11,6 +11,7 @@ use App\Models\Role;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 
 class HmController extends Controller
 {
@@ -34,7 +35,7 @@ class HmController extends Controller
 
     public function store(HmRequest $request)
     {
-        $password = isset($request->password) ? $request->password : '12345678';
+        $password = isset($request->password) ? $request->password : Str::random(10);
         $data = [
             'first_name' => $request->first_name,
             'last_name'  => $request->last_name,

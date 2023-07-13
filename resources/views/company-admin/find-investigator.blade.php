@@ -358,7 +358,7 @@
 
         function fetchData(data) {
             $.ajax({
-                url: '{{ route('company-admin.find_investigator') }}',
+                url: '{{ $action }}',
                 type: 'GET',
                 data: data,
                 success: function (response) {

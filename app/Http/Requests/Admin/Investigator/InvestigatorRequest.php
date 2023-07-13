@@ -26,7 +26,7 @@ class InvestigatorRequest extends FormRequest
         return [
           'first_name'         => 'required|max:20',
           'last_name'          => 'required|max:20',
-          'email'              => 'required|email|unique:users,id,'.$this->id,
+          'email'              => 'required|email|unique:users,email,'.$this->id,
           'phone'              => 'required|digits:10',
         ];
     }

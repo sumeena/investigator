@@ -33,7 +33,7 @@ class CompanyAdminController extends Controller
             'parentCompany.company.CompanyAdminProfile'
         ]);
         $profile = $user->CompanyAdminProfile;
-        $parentCompany = $user?->parentCompany?->company?->CompanyAdminProfile;
+        $parentCompany = $user->companyAdmin?->company?->CompanyAdminProfile;
         $timezones = Timezone::where('active', 1)->get();
         return view('company-admin.profile', compact('profile', 'timezones', 'user', 'parentCompany'));
     }
@@ -135,7 +135,7 @@ class CompanyAdminController extends Controller
             'email' => $request->email,
             'phone' => $request->phone,
         ]);
-        session()->flash('success', 'Hi, Your Account Info Updated Sucessfully!');
+        session()->flash('success', 'Hi, Your Account Info Updated Successfully!');
         return redirect()->route('company-admin.my-profile');
     }
 
@@ -175,19 +175,28 @@ class CompanyAdminController extends Controller
     public function companyProfile()
     {
         $user = auth()->user();
-        if (empty($user->CompanyAdminProfile->is_company_profile_submitted)) {
+        if (
+            (!$user->CompanyAdminProfile || !$user->CompanyAdminProfile->is_company_profile_submitted)
+            &&
+            (!$user?->companyAdmin?->company?->CompanyAdminProfile
+                || !$user?->companyAdmin?->company?->CompanyAdminProfile?->is_company_profile_submitted)
+        ) {
             session()->flash('error', 'Please complete your profile first!');
             return redirect()->route('company-admin.profile');
         }
         $user->load([
             'CompanyAdminProfile',
-            'parentCompany.company'
+            'companyAdmin',
+            'companyAdmin.company',
+            'companyAdmin.company.CompanyAdminProfile'
         ]);
 
         $CompanyAdminProfile = $user->CompanyAdminProfile;
+        $parentProfile = $user->companyAdmin?->company?->CompanyAdminProfile;
 
         return view('company-admin.company-profile', compact(
             'CompanyAdminProfile',
+            'parentProfile',
             'user'
         ));
     }

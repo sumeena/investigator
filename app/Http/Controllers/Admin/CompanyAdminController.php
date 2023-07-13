@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Mail;
 use App\Rules\CompanyAdminMatchDomain;
 use Exception;
 use Illuminate\Validation\Rules\RequiredIf;
+use Illuminate\Support\Str;
 
 class CompanyAdminController extends Controller
 {
@@ -52,18 +53,18 @@ class CompanyAdminController extends Controller
         }
         $request->validate([
             'first_name' => ['required', 'string', 'max:255'],
-            'email'      => ['required', 'string', 'email', 'max:255', 'unique:users,id,' . $request->id, new CompanyAdminMatchDomain($website, $request->role)],
-            'role'       => ['required', 'exists:roles,id'],
-            'website'    => ['nullable', 'regex:/^(?:[a-zA-Z0-9](?:[a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$/', 'max:255', 'unique:users'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,' . $request->id, new CompanyAdminMatchDomain($website, $request->role)],
+            'role' => ['required', 'exists:roles,id'],
+            'website' => ['nullable', 'regex:/^(?:[a-zA-Z0-9](?:[a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$/', 'max:255', 'unique:users'],
         ]);
-        $password = isset($request->password) ? $request->password : '12345678';
-        $data     = [
+        $password = isset($request->password) ? $request->password : Str::random(10);
+        $data = [
             'first_name' => $request->first_name,
-            'last_name'  => $request->last_name,
-            'phone'      => $request->phone,
-            'email'      => $request->email,
-            'password'   => Hash::make($password),
-            'role'       => Role::where('role', 'company-admin')->first()->id,
+            'last_name' => $request->last_name,
+            'phone' => $request->phone,
+            'email' => $request->email,
+            'password' => Hash::make($password),
+            'role' => Role::where('role', 'company-admin')->first()->id,
         ];
 
         if (empty($request->company_admin)) {
@@ -80,16 +81,13 @@ class CompanyAdminController extends Controller
         if ($request->id) {
             session()->flash('success', 'Hi Admin , Company Admin Record Updated Successfully!');
         } else {
-            try {
-                Mail::to($user)->send(new UserCredentialMail([
-                    'role'       => $user->userRole->role,
-                    'first_name' => $user->first_name,
-                    'last_name'  => $user->last_name,
-                    'email'      => $user->email,
-                    'password'   => $password
-                ]));
-            } catch (Exception $e) {
-            }
+              Mail::to($user)->send(new UserCredentialMail([
+                  'role'       => $user->userRole->role,
+                  'first_name' => $user->first_name,
+                  'last_name'  => $user->last_name,
+                  'email'      => $user->email,
+                  'password'   => $password
+              ]));
             session()->flash('success', 'Hi Admin , Company Admin Record Added Successfully!');
         }
 
@@ -134,13 +132,19 @@ class CompanyAdminController extends Controller
         $user = User::findOrFail($id);
 
         $user->load([
-            'CompanyAdminProfile'
+            'CompanyAdminProfile',
+            'companyAdmin',
+            'companyAdmin.company',
+            'companyAdmin.company.CompanyAdminProfile'
         ]);
 
-        $companyAdminProfile = $user->CompanyAdminProfile;
+        $CompanyAdminProfile = $user->CompanyAdminProfile;
+        $parentProfile = $user->companyAdmin?->company?->CompanyAdminProfile;
 
         return view('admin.company-admin.profile-view', compact(
-            'companyAdminProfile'
+            'CompanyAdminProfile',
+            'parentProfile',
+            'user'
         ));
     }
 

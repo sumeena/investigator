@@ -12,18 +12,21 @@ use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\Admin\CompanyAdmin\CompanyAdminRequest;
 use App\Http\Requests\Admin\CompanyAdmin\PasswordRequest;
 use Illuminate\Support\Facades\Mail;
+use App\Rules\CompanyAdminMatchDomain;
+use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class CompanyUsersController extends Controller
 {
     public function index()
     {   //listing for all hm + company admin roles user
-        $companyAdmins = User::whereHas('userRole', function ($q) {
-            $q->whereIn('role', ['company-admin', 'hiring-manager']);
-        })->whereHas('companyAdmin', function ($q) {
-            $q->where('parent_id', auth()->id());
-        })->with('CompanyAdminProfile', 'userRole')->paginate(20);
+      $companyAdmins = User::whereHas('userRole', function ($q) {
+             $q->whereIn('role', ['company-admin', 'hiring-manager']);
+         })->whereHas('companyAdmin', function ($q) {
+             $q->where('parent_id', auth()->id());
+         })->with('CompanyAdminProfile', 'userRole')->paginate(20);
 
-        return view('company-admin.company-users.index', compact('companyAdmins'));
+         return view('company-admin.company-users.index', compact('companyAdmins'));
     }
 
     public function view()
@@ -36,8 +39,7 @@ class CompanyUsersController extends Controller
 
     public function store(CompanyUserRequest $request)
     {
-        //for storing data new and update hr
-        $password = isset($request->password) ? $request->password : '12345678';
+        $password = isset($request->password) ? $request->password : Str::random(10);
         $data     = [
             'first_name' => $request->first_name,
             'last_name'  => $request->last_name,
@@ -56,8 +58,9 @@ class CompanyUsersController extends Controller
             'user_id'   => $user->id,
             'parent_id' => auth()->id()
         ]);
-
-        if ($user->userRole->role == 'hiring-manager') {
+        if ($request->id) {
+            session()->flash('success', 'Company User Record Updated Successfully!');
+        } else {
             Mail::to($user)->send(new UserCredentialMail([
                 'role'       => $user->userRole->role,
                 'first_name' => $user->first_name,
@@ -65,11 +68,6 @@ class CompanyUsersController extends Controller
                 'email'      => $user->email,
                 'password'   => $password
             ]));
-        }
-
-        if ($request->id) {
-            session()->flash('success', 'Company User Record Updated Successfully!');
-        } else {
             session()->flash('success', 'Company User Record Added Successfully!');
         }
 
