@@ -2,6 +2,10 @@
 
 namespace App\Http\Requests\Admin\Hm;
 
+use App\Models\Role;
+use App\Models\User;
+use App\Rules\CompanyAdminMatchDomain;
+use App\Rules\CompanyHmMatchDomain;
 use Illuminate\Foundation\Http\FormRequest;
 
 class HmRequest extends FormRequest
@@ -23,10 +27,12 @@ class HmRequest extends FormRequest
      */
     public function rules()
     {
+        $website = User::find($this->company_admin)->website ?? null;
+        $role = Role::where('role', 'hiring-manager')->first()->id;
         return [
             'first_name' => 'required|max:20',
             'last_name'  => 'required|max:20',
-            'email'      => 'required|email|unique:users,id,' . $this->id,
+            'email'      => ['required','email','unique:users,email,'. $this->id, new CompanyHmMatchDomain($website, $role)],
             'phone'      => 'required|digits:10',
         ];
     }

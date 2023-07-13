@@ -37,14 +37,19 @@ class LoginController extends Controller
                 break;
             case 'company-admin':
                 $this->redirectTo = 'company-admin/profile';
-                if ($user->CompanyAdminProfile && $user->CompanyAdminProfile->is_company_profile_submitted) {
-                    $this->redirectTo = 'company-admin/view-profile'; //'company';
+                if (
+                    ($user->CompanyAdminProfile && $user->CompanyAdminProfile->is_company_profile_submitted)
+                    || ($user->companyAdmin
+                        && $user->companyAdmin->company
+                        && $user->companyAdmin->company->CompanyAdminProfile->is_company_profile_submitted)
+                ) {
+                    $this->redirectTo = 'company-admin'; //'company';
                 }
                 break;
             case 'investigator':
                 $this->redirectTo = 'investigator/profile';
                 if ($user->is_investigator_profile_submitted) {
-                    $this->redirectTo = 'investigator'; //'investigator/investigator-profile';
+                    $this->redirectTo = 'investigator';
                 }
                 break;
             case 'hiring-manager':

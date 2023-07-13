@@ -6,10 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Hm\HmRequest;
 use App\Http\Requests\Admin\Hm\PasswordRequest;
 use App\Mail\UserCredentialMail;
+use App\Models\CompanyUser;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 
 class HmController extends Controller
 {
@@ -17,19 +19,23 @@ class HmController extends Controller
     {   //listing for all hr roles user
         $hiringManagers = User::whereHas('userRole', function ($q) {
             $q->where('role', 'hiring-manager');
-        })->paginate(10);
-
+        })->with(['parentCompany' => function ($query) {
+            $query->with('company');
+        }])->paginate(20);
         return view('admin.hm.index', compact('hiringManagers'));
     }
 
     public function view()
-    { //return view for add new hr
-        return view('admin.hm.add');
+    {
+        $companyAdmins = User::whereHas('userRole', function ($q) {
+            $q->where('role', 'company-admin');
+        })->whereNotNull('website')->where('website', '!=', '')->get();
+        return view('admin.hm.add', compact('companyAdmins'));
     }
 
     public function store(HmRequest $request)
-    { //for storing data new and update hr
-        $password = isset($request->password) ? $request->password : '12345678';
+    {
+        $password = isset($request->password) ? $request->password : Str::random(10);
         $data = [
             'first_name' => $request->first_name,
             'last_name'  => $request->last_name,
@@ -41,7 +47,10 @@ class HmController extends Controller
         $user = User::updateOrCreate([
             'id' => $request->id
         ], $data);
-
+        if (!empty($request->company_admin)) {
+            $parent = User::find($request->company_admin)->id ?? null;
+            $company_users = CompanyUser::create(['user_id' => $user->id, 'parent_id' => $parent]);
+        }
         if ($request->id) {
             session()->flash('success', 'Hi Admin , Hiring Manager Record Updated Successfully!');
         } else {
@@ -60,9 +69,11 @@ class HmController extends Controller
 
     public function edit($id)
     {
-        //find exist hr user and return data in form
-        $hm = User::find($id);
-        return view('admin.hm.add', compact('hm'));
+        $companyAdmins = User::whereHas('userRole', function ($q) {
+            $q->where('role', 'company-admin');
+        })->whereNotNull('website')->where('website', '!=', '')->get();
+        $hm = User::with('parentCompany')->find($id);
+        return view('admin.hm.add', compact('hm', 'companyAdmins'));
     }
 
     public function delete($id)
@@ -87,5 +98,4 @@ class HmController extends Controller
         session()->flash('success', 'Hi Admin , Hiring Manager Password Reset Successfully!');
         return redirect()->route('admin.hiring-managers.index');
     }
-
 }

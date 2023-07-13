@@ -18,7 +18,7 @@ class CompanyAdminsController extends Controller
                             ->groupBy('parent_id');
                         })
                         ->with('companyAdminProfile')
-                        ->paginate();
+                        ->paginate(20);
 
                         /* dd($companyAdminsQueryResult);
 

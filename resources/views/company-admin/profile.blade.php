@@ -9,13 +9,13 @@
                     <h5 class="mb-0">Company Profile</h5>
                 </div>
                 <div class="card-body">
-                    @if(session('success'))
+                    @if (session('success'))
                         <div class="alert alert-success" role="alert">
                             {{ session('success') }}
                         </div>
                     @endif
 
-                    @if(session('error'))
+                    @if (session('error'))
                         <div class="alert alert-danger" role="alert">
                             {{ session('error') }}
                         </div>
@@ -30,7 +30,7 @@
                                     <label class="form-label" for="basic-default-fullname">Company Name</label>
                                     <input type="text" class="form-control @error('company_name') is-invalid @enderror"
                                            name="company_name"
-                                           value="{{ old('company_name',$profile->company_name ?? '') }}">
+                                           value="{{ old('company_name', $profile->company_name ?? $parentCompany->company_name ?? '') }}">
                                 </div>
                                 @error('company_name')
                                 <span role="alert" class="text-danger small">
@@ -43,12 +43,12 @@
                                     <label class="form-label" for="basic-default-fullname">Company Phone</label>
                                     <input type="text" class="form-control @error('company_phone') is-invalid @enderror"
                                            name="company_phone"
-                                           value="{{ old('company_phone', $profile->company_phone ?? '') }}">
+                                           value="{{ old('company_phone', $profile->company_phone ?? $parentCompany->company_phone ?? '') }}">
                                 </div>
                                 @error('company_phone')
                                 <span role="alert" class="text-danger small">
-                                      {{ $message }}
-                                  </span>
+                                        {{ $message }}
+                                    </span>
                                 @enderror
                             </div>
                         </div>
@@ -59,7 +59,7 @@
                                     <label class="form-label" for="basic-default-fullname">Address</label>
                                     <input type="text" id="autocomplete"
                                            class="form-control @error('address') is-invalid @enderror" name="address"
-                                           value="{{ old('address', $profile->address ?? '') }}">
+                                           value="{{ old('address', $profile->address ?? $parentCompany->address ?? '') }}">
                                 </div>
                                 @error('address')
                                 <span role="alert" class="text-danger small">
@@ -71,7 +71,7 @@
                                 <div class="mb-3">
                                     <label class="form-label" for="basic-default-company">Address 1</label>
                                     <input type="text" class="form-control" name="address_1"
-                                           value="{{ old('address_1', $profile->address_1 ?? '') }}">
+                                           value="{{ old('address_1', $profile->address_1 ?? $parentCompany->address_1 ?? '') }}">
                                 </div>
                                 <input type="hidden" id="street_number">
                             </div>
@@ -83,7 +83,7 @@
                                     <div class="input-group input-group-merge">
                                         <input type="text" id="locality"
                                                class="form-control @error('city') is-invalid @enderror" name="city"
-                                               value="{{ old('city', $profile->city ?? '') }}">
+                                               value="{{ old('city', $profile->city ?? $parentCompany->city ?? '') }}">
                                     </div>
                                     @error('city')
                                     <span role="alert" class="text-danger small">
@@ -98,22 +98,12 @@
                                     <div class="input-group input-group-merge">
                                         <input type="text" id="administrative_area_level_1"
                                                class="form-control @error('state') is-invalid @enderror" name="state"
-                                               value="{{  old('state', $profile->state ?? '') }}">
+                                               value="{{ old('state', $profile->state ?? $parentCompany->state ?? '') }}">
                                         <!-- <select class="form-select @error('state') is-invalid @enderror" name="state">
-                                            @if(isset($states))
-                                            @foreach($states as $state)
+                                                                                                                                                        @if (isset($states))
+                                            @foreach ($states as $state)
                                                 <option
-                                                    value="{{$state->id}}" {{isset($user->state_id) && ($user->state_id == $state->id || old ('state') == $state->id ) ? 'selected' :'' }}>{{$state->code}}</option>
-
-
-
-
-
-
-
-
-
-
+                                                                                                                                                                                                            value="{{ $state->id }}" {{ isset($user->state_id) && ($user->state_id == $state->id || old('state') == $state->id) ? 'selected' : '' }}>{{ $state->code }}</option>
 
 
 
@@ -138,12 +128,13 @@
                                     <div class="input-group input-group-merge">
                                         <input type="text" id="country"
                                                class="form-control @error('country') is-invalid @enderror"
-                                               name="country" value="{{ old('country', $profile->country ?? '') }}">
+                                               name="country"
+                                               value="{{ old('country', $profile->country ?? $parentCompany->country ?? '') }}">
                                         <!-- <select id="defaultSelect"
-                                                class="form-control @error('country') is-invalid @enderror"
-                                                name="country">
-                                            <option selected="selected" value="1">USA</option>
-                                        </select> -->
+                                                                                                                                                            class="form-control @error('country') is-invalid @enderror"
+                                                                                                                                                            name="country">
+                                                                                                                                                        <option selected="selected" value="1">USA</option>
+                                                                                                                                                    </select> -->
                                     </div>
                                 </div>
                                 @error('country')
@@ -158,7 +149,8 @@
                                     <div class="input-group input-group-merge">
                                         <input type="text" id="postal_code"
                                                class="form-control @error('zipcode') is-invalid @enderror"
-                                               name="zipcode" value="{{old('zipcode', $profile->zipcode ?? '') }}">
+                                               name="zipcode"
+                                               value="{{ old('zipcode', $profile->zipcode ?? $parentCompany->zipcode ?? '') }}">
                                     </div>
                                     @error('zipcode')
                                     <span role="alert" class="text-danger small">
@@ -167,16 +159,25 @@
                                     @enderror
                                 </div>
                             </div>
-
+                            <div class="col-md-12">
+                                <div class="mb-3">
+                                    <label class="form-label" for="basic-default-email">Website</label>
+                                    <div class="input-group input-group-merge">
+                                        <input type="text" class="form-control"
+                                               value="{{ $user?->website ?? $user?->companyAdmin?->company?->website ?? '' }}"
+                                               disabled>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="col-md-12">
                                 <div class="mb-3">
                                     <label class="form-label" for="timezone">Timezone</label>
                                     <select name="timezone" id="timezone"
                                             class="form-control @error('timezone') is-invalid @enderror">
                                         <option value="">Select Timezone</option>
-                                        @foreach($timezones as $timezone)
-                                            <option value="{{ $timezone->id }}"
-                                                @selected(old('timezone', $profile->timezone_id ?? '') == $timezone->id)>
+                                        @foreach ($timezones as $timezone)
+                                            <option
+                                                value="{{ $timezone->id }}" @selected(old('timezone', $profile->timezone_id ?? $parentCompany->timezone_id ?? '') == $timezone->id)>
                                                 {{ $timezone->timezone }} - [{{ $timezone->name }}]
                                             </option>
                                         @endforeach
@@ -184,8 +185,8 @@
 
                                     @error('timezone')
                                     <span role="alert" class="text-danger small">
-                                        {{ $message }}
-                                    </span>
+                                            {{ $message }}
+                                        </span>
                                     @enderror
                                 </div>
                             </div>
@@ -193,7 +194,7 @@
 
                         <hr>
                         <button type="submit"
-                                class="btn btn-primary">{{isset($profile) && !empty($profile->id) ? 'Update':'Submit'}}</button>
+                                class="btn btn-primary">{{ isset($profile) && !empty($profile->id) ? 'Update' : 'Submit' }}</button>
                     </form>
                 </div>
             </div>

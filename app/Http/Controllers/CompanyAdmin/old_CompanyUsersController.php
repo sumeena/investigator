@@ -12,35 +12,29 @@ use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\Admin\CompanyAdmin\CompanyAdminRequest;
 use App\Http\Requests\Admin\CompanyAdmin\PasswordRequest;
 use Illuminate\Support\Facades\Mail;
-use App\Rules\CompanyAdminMatchDomain;
-use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 
 class CompanyUsersController extends Controller
 {
     public function index()
-    {   //listing for all hm + company admin roles user
-      $companyAdmins = User::whereHas('userRole', function ($q) {
-             $q->whereIn('role', ['company-admin', 'hiring-manager']);
-         })->whereHas('companyAdmin', function ($q) {
-             $q->where('parent_id', auth()->id());
-         })->with('CompanyAdminProfile', 'userRole')->paginate(20);
+    {   //listing for all hr roles user
+        $companyAdmins = User::whereHas('userRole', function ($q) {
+            $q->whereIn('role', ['company-admin', 'hiring-manager']);
+        })->with('CompanyAdminProfile', 'userRole')->paginate(10);
 
-         return view('company-admin.company-users.index', compact('companyAdmins'));
+        return view('company-admin.company-users.index', compact('companyAdmins'));
     }
 
     public function view()
     { //return view for add new hr
         $roles = Role::where('role', 'company-admin')
             ->orWhere('role', 'hiring-manager')->get();
-        $user = User::with('parentCompany.company')->find(auth()->user()->id);
-        return view('company-admin.company-users.add', compact('roles', 'user'));
+        return view('company-admin.company-users.add', compact('roles'));
     }
 
     public function store(CompanyUserRequest $request)
-    {
-        $password = isset($request->password) ? $request->password : Str::random(10);
-        $data     = [
+    { //for storing data new and update hr
+        $password = isset($request->password) ? $request->password : '12345678';
+        $data = [
             'first_name' => $request->first_name,
             'last_name'  => $request->last_name,
             'phone'      => $request->phone,
@@ -48,18 +42,21 @@ class CompanyUsersController extends Controller
             'password'   => Hash::make($password),
             'role'       => $request->role,
         ];
+
         $user     = User::updateOrCreate([
             'id' => $request->id
         ], $data);
 
-        // Create company user data
-        CompanyUser::updateOrCreate([
-            'user_id'   => $user->id,
-            'parent_id' => auth()->id()
-        ]);
-        if ($request->id) {
-            session()->flash('success', 'Company User Record Updated Successfully!');
-        } else {
+
+        $companyUsersData = array('user_id' => $user->id, 'parent_id' => auth()->id());
+
+        CompanyUser::create($companyUsersData);
+
+        if ($user->userRole->role == 'hiring-manager') {
+            $user->hmCompanyAdmin()->updateOrCreate([
+                'company_admin_id' => auth()->id()
+            ]);
+
             Mail::to($user)->send(new UserCredentialMail([
                 'role'       => $user->userRole->role,
                 'first_name' => $user->first_name,
@@ -67,6 +64,13 @@ class CompanyUsersController extends Controller
                 'email'      => $user->email,
                 'password'   => $password
             ]));
+        } else {
+            $user->hmCompanyAdmin()->delete();
+        }
+
+        if ($request->id) {
+            session()->flash('success', 'Company User Record Updated Successfully!');
+        } else {
             session()->flash('success', 'Company User Record Added Successfully!');
         }
 
@@ -79,8 +83,7 @@ class CompanyUsersController extends Controller
         $companyAdmin = User::find($id);
         $roles        = Role::where('role', 'company-admin')
             ->orWhere('role', 'hiring-manager')->get();
-        $user = User::with('parentCompany.company')->find(auth()->user()->id);
-        return view('company-admin.company-users.add', compact('companyAdmin', 'roles', 'user'));
+        return view('company-admin.company-users.add', compact('companyAdmin', 'roles'));
     }
 
     public function delete($id)

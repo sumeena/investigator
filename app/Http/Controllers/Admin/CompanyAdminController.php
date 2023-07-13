@@ -10,7 +10,12 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\Admin\CompanyAdmin\CompanyAdminRequest;
 use App\Http\Requests\Admin\CompanyAdmin\PasswordRequest;
+use App\Models\CompanyUser;
 use Illuminate\Support\Facades\Mail;
+use App\Rules\CompanyAdminMatchDomain;
+use Exception;
+use Illuminate\Validation\Rules\RequiredIf;
+use Illuminate\Support\Str;
 
 class CompanyAdminController extends Controller
 {
@@ -18,42 +23,71 @@ class CompanyAdminController extends Controller
     {   //listing for all hr roles user
         $companyAdmins = User::whereHas('userRole', function ($q) {
             $q->where('role', 'company-admin');
-        })->with('CompanyAdminProfile')->paginate(10);
-
+        })->with('CompanyAdminProfile')->with(['parentCompany' => function ($query) {
+            $query->with('company');
+        }])->paginate(20);
         return view('admin.company-admin.index', compact('companyAdmins'));
     }
 
     public function view()
     { //return view for add new hr
-        return view('admin.company-admin.add');
+        $companyAdmins = User::whereHas('userRole', function ($q) {
+            $q->where('role', 'company-admin');
+        })->whereNotNull('website')->where('website', '!=', '')->get();
+        return view('admin.company-admin.add', compact('companyAdmins'));
     }
 
-    public function store(CompanyAdminRequest $request)
-    { //for storing data new and update hr
-        $password = isset($request->password) ? $request->password : '12345678';
-        $data     = [
+    /**
+     * Store Company Admin
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function store(Request $request)
+    {
+        if (!empty($request->company_admin)) {
+            $request->website = null;
+            $website = User::find($request->company_admin)->website ?? null;
+        } else {
+            $website = $request->website;
+        }
+        $request->validate([
+            'first_name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,' . $request->id, new CompanyAdminMatchDomain($website, $request->role)],
+            'role' => ['required', 'exists:roles,id'],
+            'website' => ['nullable', 'regex:/^(?:[a-zA-Z0-9](?:[a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$/', 'max:255', 'unique:users'],
+        ]);
+        $password = isset($request->password) ? $request->password : Str::random(10);
+        $data = [
             'first_name' => $request->first_name,
-            'last_name'  => $request->last_name,
-            'phone'      => $request->phone,
-            'email'      => $request->email,
-            'password'   => Hash::make($password),
-            'role'       => Role::where('role', 'company-admin')->first()->id,
+            'last_name' => $request->last_name,
+            'phone' => $request->phone,
+            'email' => $request->email,
+            'password' => Hash::make($password),
+            'role' => Role::where('role', 'company-admin')->first()->id,
         ];
 
+        if (empty($request->company_admin)) {
+            $data['website'] = preg_replace('/^www\./', '', $request->website);
+        }
         $user = User::updateOrCreate([
             'id' => $request->id
         ], $data);
+        if (!empty($request->company_admin) && empty($request->id)) {
+            $parent = User::find($request->company_admin)->id ?? null;
+            $company_users = CompanyUser::create(['user_id' => $user->id, 'parent_id' => $parent]);
+        }
 
         if ($request->id) {
             session()->flash('success', 'Hi Admin , Company Admin Record Updated Successfully!');
         } else {
-            Mail::to($user)->send(new UserCredentialMail([
-                'role'       => $user->userRole->role,
-                'first_name' => $user->first_name,
-                'last_name'  => $user->last_name,
-                'email'      => $user->email,
-                'password'   => $password
-            ]));
+              Mail::to($user)->send(new UserCredentialMail([
+                  'role'       => $user->userRole->role,
+                  'first_name' => $user->first_name,
+                  'last_name'  => $user->last_name,
+                  'email'      => $user->email,
+                  'password'   => $password
+              ]));
             session()->flash('success', 'Hi Admin , Company Admin Record Added Successfully!');
         }
 
@@ -63,8 +97,11 @@ class CompanyAdminController extends Controller
     public function edit($id)
     {
         //find exist hr user and return data in form
-        $companyAdmin = User::find($id);
-        return view('admin.company-admin.add', compact('companyAdmin'));
+        $companyAdmins = User::whereHas('userRole', function ($q) {
+            $q->where('role', 'company-admin');
+        })->whereNotNull('website')->where('website', '!=', '')->get();
+        $companyAdmin = User::with('parentCompany')->find($id);
+        return view('admin.company-admin.add', compact('companyAdmin', 'companyAdmins'));
     }
 
     public function delete($id)
@@ -95,13 +132,32 @@ class CompanyAdminController extends Controller
         $user = User::findOrFail($id);
 
         $user->load([
-            'CompanyAdminProfile'
+            'CompanyAdminProfile',
+            'companyAdmin',
+            'companyAdmin.company',
+            'companyAdmin.company.CompanyAdminProfile'
         ]);
 
-        $companyAdminProfile = $user->CompanyAdminProfile;
+        $CompanyAdminProfile = $user->CompanyAdminProfile;
+        $parentProfile = $user->companyAdmin?->company?->CompanyAdminProfile;
 
         return view('admin.company-admin.profile-view', compact(
-            'companyAdminProfile'
+            'CompanyAdminProfile',
+            'parentProfile',
+            'user'
         ));
+    }
+
+    private function checkIsCompanyAdminRole($roleId)
+    {
+        $role = Role::find($roleId);
+
+        $hasCompanyAdminRole = false;
+
+        if ($role && $role->role == 'company-admin') {
+            $hasCompanyAdminRole = true;
+        }
+
+        return $hasCompanyAdminRole;
     }
 }

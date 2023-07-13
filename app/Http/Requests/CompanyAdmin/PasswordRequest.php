@@ -25,7 +25,7 @@ class PasswordRequest extends FormRequest
     {
       return [
         // 'password'    => 'required|confirmed|min:8|max:10',
-        'password'   => ['required', 'string', 'min:10', 'confirmed', 'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{10,}$/']
+        'password'   => ['required', 'string', 'min:10', 'confirmed', 'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&()]{10,}$/']
       ];
     }
 

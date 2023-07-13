@@ -5,7 +5,7 @@ namespace App\Rules;
 use App\Models\Role;
 use Illuminate\Contracts\Validation\Rule;
 
-class CompanyAdminMatchDomain implements Rule
+class CompanyHmMatchDomain implements Rule
 {
     protected $domain;
     protected $role;
@@ -34,20 +34,20 @@ class CompanyAdminMatchDomain implements Rule
         $emailDomain = explode('@', $value)[1];
         $websiteDomain = preg_replace('/^www\./', '', $this->domain);
         // Compare the two domain names
-        return !$this->checkIsCompanyAdminRole() || $emailDomain === $websiteDomain;
+        return !$this->checkIsCompanyHmRole() || $emailDomain === $websiteDomain;
     }
 
     /**
      * Check if the role is a company admin.
      * @return bool
      */
-    private function checkIsCompanyAdminRole()
+    private function checkIsCompanyHmRole()
     {
         $role = Role::find($this->role);
 
         $hasCompanyAdminRole = false;
 
-        if ($role && $role->role == 'company-admin') {
+        if ($role && $role->role == 'hiring-manager') {
             $hasCompanyAdminRole = true;
         }
 

@@ -42,7 +42,7 @@
                             <label class="form-label" for="basic-default-email">Email</label>
                             <div class="input-group input-group-merge">
                                 <input type="text" class="form-control @error('email') is-invalid @enderror"
-                                       name="email"
+                                       name="email" readonly
                                        value="{{isset($profile) && !empty($profile->email) ? $profile->email:''}}">
                             </div>
                             @error('email')

@@ -8,18 +8,10 @@
         <div class="d-flex align-items-end row">
           <div class="col-sm-7">
             <div class="card-body">
-              @if(auth()->user()->is_investigator_profile_submitted == 1)
-              <h5 class="card-title text-primary">Dashboard</h5>
-              <p class="mb-4">
-                <span class="fw-bold">Investigator</span> Welcome <span class="fw-bold">to your </span> Investigator profile!
-              </p>
-              <a href="/investigator/investigator-profile">View your profile</a>
-              @else
               <h5 class="card-title text-primary">Dashboard</h5>
               <p class="mb-4">
                 <span class="fw-bold">Investigator</span> Dashboard <span class="fw-bold">Features</span> Coming Soon!
               </p>
-              @endif
             </div>
           </div>
           <div class="col-sm-5 text-center text-sm-left">

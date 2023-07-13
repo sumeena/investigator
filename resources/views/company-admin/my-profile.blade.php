@@ -42,13 +42,15 @@
                             <label class="form-label" for="basic-default-email">Email</label>
                             <div class="input-group input-group-merge">
                                 <input type="text" class="form-control @error('email') is-invalid @enderror"
-                                       name="email"
-                                       value="{{isset($profile) && !empty($profile->email) ? $profile->email:''}}">
+                                       value="{{isset($profile) && !empty($profile->email) ? $profile->email:''}}" disabled>
+                                 <input type="hidden" class="form-control @error('email') is-invalid @enderror"
+                                        name="email"
+                                        value="{{isset($profile) && !empty($profile->email) ? $profile->email:''}}">
                             </div>
                             @error('email')
                             <span class="invalid-feedback" role="alert">
-                    <strong>{{ $message }}</strong>
-                </span>
+                              <strong>{{ $message }}</strong>
+                            </span>
                             @enderror
                         </div>
                         <div class="mb-3">
@@ -63,7 +65,7 @@
                         </div>
                         <div class="mb-3">
                             <label class="form-label" for="basic-default-message">Role</label>
-                            <input type="text" class="form-control" value="HR" disabled>
+                            <input type="text" class="form-control" value="Company Admin" disabled>
                         </div>
                         <button type="submit"
                                 class="btn btn-primary">{{isset($profile) && !empty($profile->id) ? 'Update':'Submit'}}</button>

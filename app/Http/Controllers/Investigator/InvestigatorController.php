@@ -218,7 +218,7 @@ class InvestigatorController extends Controller
             $user->update(['is_investigator_profile_submitted' => true]);
 
 
-            session()->flash('success', 'Data has been saved successfully.');
+            session()->flash('success', 'Profile has been saved successfully.');
 
             return redirect('investigator/investigator-profile');
         } catch (ValidationException $e) {

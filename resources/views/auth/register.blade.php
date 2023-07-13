@@ -111,7 +111,6 @@
                                     <input id="website" type="text"
                                            class="form-control @error('website') is-invalid @enderror" name="website"
                                            value="{{ old('website') }}">
-
                                     @error('website')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>

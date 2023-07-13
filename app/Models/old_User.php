@@ -2,9 +2,21 @@
 
 namespace App\Models;
 
+use App\Filters\InvestigatorFilters\AddressFilter;
+use App\Filters\InvestigatorFilters\CityFilter;
+use App\Filters\InvestigatorFilters\DistanceFilter;
 use App\Filters\InvestigatorFilters\LanguageFilter;
 use App\Filters\InvestigatorFilters\LicenseFilter;
+use App\Filters\InvestigatorFilters\MiscFilter;
 use App\Filters\InvestigatorFilters\ServiceTypeFilter;
+use App\Filters\InvestigatorFilters\ServiceTypeMiscFilter;
+use App\Filters\InvestigatorFilters\ServiceTypeStatementsFilter;
+use App\Filters\InvestigatorFilters\ServiceTypeSurveillanceFilter;
+use App\Filters\InvestigatorFilters\StateFilter;
+use App\Filters\InvestigatorFilters\StatementFilter;
+use App\Filters\InvestigatorFilters\SurveillanceFilter;
+use App\Filters\InvestigatorFilters\ZipcodeFilter;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -20,10 +32,10 @@ class User extends Authenticatable
     use HasApiTokens, HasFactory, Notifiable;
 
     // Roles
-    const ADMIN = 1;
+    const ADMIN        = 1;
     const COMPANYADMIN = 2;
     const INVESTIGATOR = 3;
-    const HR = 4;
+    const HR           = 4;
 
     /**
      * The attributes that are mass assignable.
@@ -32,7 +44,6 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'first_name',
-        'website',
         'last_name',
         'email',
         'role',
@@ -83,17 +94,19 @@ class User extends Authenticatable
         return $this->belongsTo(Role::class, 'role', 'id');
     }
 
+    
     /* Check if logged in user is company admin or not */
     public function getCompanyIsAdminAttribute(): bool
     {
         /* If logged in user role is admin or investigator. Then return false as user can't be company admin. */
-        // if (Auth::user()->userRole == 'admin' || Auth::user()->role == 'investigator') {
-        if (Auth::user()->role === USER::ADMIN || Auth::user()->role === USER::INVESTIGATOR) {
+        if(Auth::user()->role === USER::ADMIN || Auth::user()->role === USER::INVESTIGATOR)
+        {
             return false;
         }
 
         /* If logged in user is in parent_id, then logged in user is company admin else not an company admin */
-        return CompanyUser::where('parent_id', Auth::id())->exists();
+        return  CompanyUser::where('parent_id', Auth::id())->exists();
+         
     }
 
     /**
@@ -109,7 +122,6 @@ class User extends Authenticatable
     {
         return $this->hasOne(CompanyAdminProfile::class);
     }
-
 
     /**
      * Get the investigator's review.
@@ -174,6 +186,16 @@ class User extends Authenticatable
         return $this->hasOne(InvestigatorAvailability::class);
     }
 
+    public function hmCompanyAdmin() // hiring manager company admin for company profile access
+    {
+        return $this->hasOne(HiringManagerCompany::class, 'hiring_manager_id');
+    }
+
+    public function companyAdminHiringManagers()
+    {
+        return $this->hasMany(HiringManagerCompany::class, 'company_admin_id');
+    }
+
     public function investigatorBlockedCompanyAdmins(): BelongsToMany
     {
         return $this->belongsToMany(
@@ -212,12 +234,10 @@ class User extends Authenticatable
         $user = Auth::user();
         /* Assuming logged in user as Company Admin */
         $companyId = $user->id;
-        // $userRole = $user->userRole;
         $userRole = $user->role;
-
+        
         /* If logged in user's role is sub admin or HR. Then get the company id of the logged in user */
         if (($userRole === USER::COMPANYADMIN && !$user->company_is_admin) || $userRole === USER::HR) {
-        // if ((($userRole == 'company-admin' && !$user->company_is_admin) || $userRole == 'hiring-manager') && $user->companyAdmin) {
             $companyId = CompanyUser::where('user_id', $user->id)->select('parent_id')->first()->parent_id;
         }
 
@@ -236,7 +256,7 @@ class User extends Authenticatable
                 $q->where('role', 'investigator');
             })
             // check companyId is in blocked list or not
-            ->whereDoesntHave('investigatorBlockedCompanyAdmins', function ($q) use ($companyId) {
+            ->whereDoesntHave('investigatorBlockedCompanyAdmins', function ($q) use ($companyId){
                 $q->where('company_admin_id', $companyId);
             })
             // Get calculated distance from lat lng
@@ -266,31 +286,4 @@ class User extends Authenticatable
         return $this->investigatorServiceLines()->where('investigation_type', $service_type)->first();
     }
 
-    /**
-     * Get company admin users
-     * @return HasMany
-     */
-    public function companyUsers(): HasMany
-    {
-        return $this->hasMany(CompanyUser::class, 'parent_id');
-    }
-
-    /**
-     * Get company admin info
-     * @return HasOne
-     */
-    public function companyAdmin(): HasOne
-    {
-        return $this->hasOne(CompanyUser::class, 'user_id')
-            ->whereHas('company', function ($q) {
-                $q->whereHas('userRole', function ($q) {
-                    $q->where('role', 'company-admin');
-                });
-            });
-    }
-
-    public function parentCompany()
-    {
-        return $this->belongsTo(CompanyUser::class, 'id', 'user_id');
-    }
 }

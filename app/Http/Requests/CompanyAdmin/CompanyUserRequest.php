@@ -2,6 +2,10 @@
 
 namespace App\Http\Requests\CompanyAdmin;
 
+use App\Models\Role;
+use App\Models\User;
+use App\Rules\CompanyAdminMatchDomain;
+use App\Rules\CompanyHmMatchDomain;
 use Illuminate\Foundation\Http\FormRequest;
 
 class CompanyUserRequest extends FormRequest
@@ -23,12 +27,14 @@ class CompanyUserRequest extends FormRequest
      */
     public function rules()
     {
+        $website = User::find(auth()->user()->id)->website ?? User::with('companyAdmin.company')->find(auth()->user()->id)?->parentCompany?->company?->website;
+
         return [
             'first_name' => 'required|max:20',
-            'last_name'  => 'required|max:20',
-            'email'      => 'required|email|unique:users,id,' . $this->id,
-            'phone'      => 'required|digits:10',
-            'role'       => 'required|integer|exists:roles,id'
+            'last_name' => 'required|max:20',
+            'email' => ['required','email','unique:users,email', new CompanyAdminMatchDomain($website, $this->role)],
+            'phone' => 'required|digits:10',
+            'role' => 'required|integer|exists:roles,id'
         ];
     }
 }

@@ -33,12 +33,12 @@ class HmController extends Controller
 
         $user->update([
             'first_name' => $request->first_name,
-            'last_name'  => $request->last_name,
-            'email'      => $request->email,
-            'phone'      => $request->phone,
+            'last_name' => $request->last_name,
+            'email' => $request->email,
+            'phone' => $request->phone,
         ]);
 
-        session()->flash('success', 'Hi, Your Account Info Updated Sucessfully!');
+        session()->flash('success', 'Hi, Your Account Info Updated Successfully!');
 
         return redirect()->route('hm.my-profile');
     }
@@ -65,13 +65,48 @@ class HmController extends Controller
     {
         $user = auth()->user();
 
+
+        if (
+            (!$user->companyAdmin
+                || !$user->companyAdmin->company
+                || !$user->companyAdmin->company->CompanyAdminProfile)
+            &&
+            (!$user?->companyAdmin?->company?->companyAdmin
+                || !$user?->companyAdmin?->company?->companyAdmin?->company
+                || !$user?->companyAdmin?->company?->companyAdmin?->company?->CompanyAdminProfile
+                || !$user?->companyAdmin?->company?->companyAdmin?->company?->CompanyAdminProfile?->is_company_profile_submitted)
+        ) {
+            session()->flash('error', 'Please tell your company admin to complete company profile first!');
+            return redirect()->route('hm.index');
+        }
+
+
         $user->load([
             'companyAdmin',
             'companyAdmin.company',
             'companyAdmin.company.CompanyAdminProfile',
         ]);
 
-//        dd($user->toArray());
+        $CompanyAdminProfile = $user->companyAdmin->company->CompanyAdminProfile;
+        $parentProfile = $user->companyAdmin?->company?->companyAdmin?->company?->CompanyAdminProfile;
+        $companyAdmin = $user->companyAdmin?->company;
+
+        return view('hm.company-profile', compact(
+            'CompanyAdminProfile',
+            'parentProfile',
+            'companyAdmin'
+        ));
+    }
+
+    public function companyUsers()
+    {
+        $user = auth()->user();
+
+        $user->load([
+            'companyAdmin',
+            'companyAdmin.company',
+            'companyAdmin.company.CompanyAdminProfile',
+        ]);
 
         if (
             !$user->companyAdmin
@@ -82,21 +117,11 @@ class HmController extends Controller
             return redirect()->route('hm.index');
         }
 
-
-        $CompanyAdminProfile = $user->companyAdmin->company->CompanyAdminProfile;
-
-        return view('hm.company-profile', compact(
-            'CompanyAdminProfile'
-        ));
-    }
-
-    public function companyUsers()
-    {
         $companyUsers = User::whereHas('companyAdmin', function ($q) {
             $q->where('parent_id', auth()->user()->companyAdmin->parent_id);
         })->whereHas('userRole', function ($q) {
-            $q->where('role', 'hiring-manager');
-        })->latest()->paginate(10);
+            $q->where('role', ['company-admin', 'hiring-manager']);
+        })->latest()->paginate(20);
         return view('hm.company-users', compact(
             'companyUsers'
         ));

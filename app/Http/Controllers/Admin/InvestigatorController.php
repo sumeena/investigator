@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\Admin\Investigator\InvestigatorRequest;
 use App\Http\Requests\Admin\Investigator\PasswordRequest;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 
 class InvestigatorController extends Controller
 {
@@ -20,7 +21,7 @@ class InvestigatorController extends Controller
     {  //listing for all investigator roles user
         $investigators = User::whereHas('userRole', function ($q) {
             $q->where('role', 'investigator');
-        })->paginate(10);
+        })->paginate(20);
 
         return view('admin.investigator.index', compact('investigators'));
     }
@@ -32,7 +33,7 @@ class InvestigatorController extends Controller
 
     public function store(InvestigatorRequest $request)
     {  //update & store for admin investigator
-        $password = isset($request->password) ? $request->password : '12345678';
+        $password = isset($request->password) ? $request->password : Str::random(10);
         $data     = [
             'first_name' => $request->first_name,
             'last_name'  => $request->last_name,

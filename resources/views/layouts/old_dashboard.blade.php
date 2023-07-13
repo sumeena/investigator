@@ -166,20 +166,6 @@
         }
     }
 </script>
-<script>
-  $(document).ready(function() {
-    // Target the button element
-    $('#defaultSelect').change(function() {
-       var selectedValue = $(this).val();
-        if(selectedValue == ''){
-          $('#newCompanyLink').toggle();
-       }
-       else{
-         $('#newCompanyLink').css('display', 'none');
-       }
-    });
-  });
-</script>
 <script type="text/javascript">
     $(document).ready(function () {
         toggleInsurance();
@@ -255,12 +241,6 @@
             toggleBonded();
         });
 
-        // ajax setup
-        $.ajaxSetup({
-            headers : {
-                'X-CSRF-TOKEN' : $('meta[name="csrf-token"]').attr('content')
-            }
-        });
     });
 </script>
 
