@@ -72,6 +72,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['admin']],
         Route::get('/reset-password/{id}', [AdminInvestigatorController::class, 'investigatorResetPassword'])->name('reset-password');
         Route::post('/update-password', [AdminInvestigatorController::class, 'investigatorResetUpdate'])->name('update-password');
         Route::get('/{id}/view', [AdminInvestigatorController::class, 'profileView'])->name('view');
+
     });
 
 });
@@ -127,14 +128,28 @@ Route::group(['prefix' => 'investigator', 'as' => 'investigator.', 'middleware' 
     Route::post('/profile/submit', [InvestigatorController::class, 'store'])->name('profile.submit');
     Route::get('/investigator-profile', [InvestigatorController::class, 'profileView'])->name('view-profile');
     Route::get('/my-profile', [InvestigatorController::class, 'myProfile'])->name('my-profile');
-    Route::get('/reset-password', [InvestigatorController::class, 'investigatorResetPassword'])
-        ->name('reset-password');
-    Route::post('/update-password', [InvestigatorController::class, 'investigatorPasswordUpdate'])
-        ->name('update-password');
-    Route::post('/my-profile/update', [InvestigatorController::class, 'investigatorProfileUpdate'])
-        ->name('profile.update');
-    Route::get('/company-admins', [CompanyAdminsController::class, 'index'])
-        ->name('company-admins.index');
-    Route::post('/company-admins/block-unblock/{company_admin_id}', [CompanyAdminsController::class, 'blockUnblockCompanyAdmin'])
-        ->name('company-admins.block-unblock');
+    Route::post('/sync-calendar', [InvestigatorController::class, 'investigatorSyncCalendar'])->name('sync-calendar'); // CALENDAR SYNC ROUTE
+
+    Route::get('/checkToken', [InvestigatorController::class, 'checkTokenExpiry'])->name('checkToken');
+    Route::delete('/disconnect-calendar', [InvestigatorController::class, 'disconnectCalendar'])->name('disconnect-calendar');
+
+    Route::get('/sync-calendar/google-oauth2callback', [InvestigatorController::class, 'googleOauth2Callback'])->name('sync-calendar/google-oauth2callback'); // GOOGLE AUTH ROUTE
+
+    Route::get('/calendar', [InvestigatorController::class, 'investigatorCalendar'])->name('calendar');
+
+
+    Route::post('/calendar/fetch-events', [InvestigatorController::class, 'investigatorCalendarEvents'])->name('calendar.fetch-events');
+    Route::get('/calendar/fetch-events-onload', [InvestigatorController::class, 'investigatorCalendarEventsOnLoad'])->name('calendar.fetch-events-onload');
+
+
+    
+
+
+    Route::get('/reset-password', [InvestigatorController::class, 'investigatorResetPassword'])->name('reset-password');
+    Route::post('/update-password', [InvestigatorController::class, 'investigatorPasswordUpdate'])->name('update-password');
+    Route::post('/my-profile/update', [InvestigatorController::class, 'investigatorProfileUpdate'])->name('profile.update');
+    Route::get('/company-admins', [CompanyAdminsController::class, 'index'])->name('company-admins.index');
+    Route::post('/company-admins/block-unblock/{company_admin_id}', [CompanyAdminsController::class, 'blockUnblockCompanyAdmin'])->name('company-admins.block-unblock');
+    
+
 });

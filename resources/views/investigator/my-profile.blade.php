@@ -7,7 +7,13 @@
     <div class="card mb-4">
       <div class="card-header d-flex justify-content-between align-items-center">
         <h5 class="mb-0">My Profile</h5>
+          @if(!$googleAuthDeatils)
+            <button type="button" data-toggle="modal" data-target="#sync-calendar" class="float-right btn btn-primary">Sync Calendar</button>
+          @else
+            <button type="button" data-toggle="modal" data-target="#disconnect-calendar" class="float-right btn btn-danger">Disconnect Calendar</button>
+          @endif
       </div>
+
       <div class="card-body">
         @if(session('success'))
             <div class="alert alert-success" role="alert">
@@ -66,4 +72,7 @@
   </div>
   <div class="col-md-1"></div>
 </div>
+
+@include('investigator.calendar-sync-modal')
+
 @endsection

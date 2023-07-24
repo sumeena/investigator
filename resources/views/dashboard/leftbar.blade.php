@@ -137,6 +137,14 @@
                 </li>
             @endif
 
+
+            <li class="menu-item {{ request()->routeIs('calendar') ? 'active' : '' }}">
+                <a href="calendar" class="menu-link">
+                    <i class="bx bx-user me-2"></i>
+                    <div data-i18n="Analytics">Calendar</div>
+                </a>
+            </li>
+
         @endif
 
         @if(auth()->user()->userRole && auth()->user()->userRole->role == 'hiring-manager')

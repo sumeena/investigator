@@ -6,19 +6,29 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Investigator\InvestigatorProfileRequest;
 use App\Http\Requests\Investigator\ProfileRequest;
 use App\Http\Requests\Investigator\PasswordRequest;
+use App\Models\CalendarEvents;
+use App\Models\GoogleAuthUsers;
 use App\Models\Language;
 use App\Models\Timezone;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\State;
 use App\Models\InvestigatorLanguage;
+use App\Models\NylasUsers;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\URL;
 
 class InvestigatorController extends Controller
 {
+    protected $base_url;
+    function __construct() {
+        $this->base_url = URL::to('/');
+    }
     public function index()
     {
         return view('investigator.index');
@@ -31,6 +41,8 @@ class InvestigatorController extends Controller
         $timezones       = Timezone::where('active', 1)->get();
 
         $user = auth()->user();
+        $userId = Auth::user()->id;
+        $googleAuthDeatils = GoogleAuthUsers::where('user_id', $userId)->exists();
         $user->load([
             'investigatorServiceLines',
             'investigatorLicenses',
@@ -69,7 +81,8 @@ class InvestigatorController extends Controller
             'document',
             'availability',
             'languageOptions',
-            'timezones'
+            'timezones',
+            'googleAuthDeatils'
         ));
     }
 
@@ -227,7 +240,6 @@ class InvestigatorController extends Controller
             session()->flash('error', 'Something went wrong, please try again later!');
             return redirect()->back();
         }
-
     }
 
     /**
@@ -390,7 +402,7 @@ class InvestigatorController extends Controller
      */
     private function saveDocument(User $user, Request $request)
     {
-//        dd($request->all());
+        //        dd($request->all());
         if ($request->hasFile('document_dl')) {
             $user->investigatorDocument()->updateOrCreate([
                 'user_id' => $user->id
@@ -541,6 +553,8 @@ class InvestigatorController extends Controller
         }
 
         $states = State::all();
+        $userId = Auth::user()->id;
+        $googleAuthDeatils = GoogleAuthUsers::where('user_id', $userId)->exists();
 
         $user->load([
             'investigatorServiceLines',
@@ -574,14 +588,18 @@ class InvestigatorController extends Controller
             'review',
             'equipment',
             'document',
-            'availability'
+            'availability',
+            'googleAuthDeatils'
         ));
     }
 
     public function myProfile()
     {  //show my profile page for investigator
         $profile = Auth::user();
-        return view('investigator.my-profile', compact('profile'));
+        $userId = Auth::user()->id;
+        $googleAuthDeatils = GoogleAuthUsers::where('user_id', $userId)->exists();
+
+        return view('investigator.my-profile', compact('profile','googleAuthDeatils'));
     }
 
     public function investigatorProfileUpdate(ProfileRequest $request)
@@ -631,4 +649,338 @@ class InvestigatorController extends Controller
         return redirect()->route('investigator.my-profile');
     }
 
+
+    /** Sync Calendar */
+
+    public function investigatorSyncCalendar(Request $request)
+    {
+        // $user    = User::find($user_id);
+
+        if (isset($request->google)) {
+            $this->googleOauth2Callback();
+        }
+    }
+
+    public function googleOauth2Callback()
+    {
+        $userId = Auth::user()->id;
+       
+        $userInfo = GoogleAuthUsers::where('user_id', $userId)->get();
+
+        // Generate new Access Token and Refresh Token if token.json doesn't exist
+
+        if (!GoogleAuthUsers::where('user_id', $userId)->exists()) {
+            // $redirectUri = Config::get('constants.REDIRECT_URI');
+            $redirectUri = $this->base_url.'/investigator/sync-calendar/google-oauth2callback';
+            $googleConfigs = [
+                'response_type' => 'code',
+                'access_type' => 'offline',
+                'client_id' => Config::get('constants.GOOGLE_CLIENT_ID'),
+                'redirect_uri' => $redirectUri,
+                'scope' => implode(' ', Config::get('constants.GOOGLE_SCOPES')),
+                'prompt' => 'consent',
+                'include_granted_scopes' => 'true',
+                'state' => 'state_parameter_passthrough_value',
+            ];
+
+            $authUrl = Config::get('constants.GOOGLE_OAUTH_AUTH_URL') . '?' . http_build_query($googleConfigs);
+            // echo '<a href = "'.$authUrl.'">Authorize</a></br>';
+
+            if (!isset($_GET['code'])) {
+                header('Location:' . $authUrl);
+                exit;
+            }
+
+            if (isset($_GET['code'])) {
+                $code = $_GET['code'];         // Visit $authUrl and get the authentication code
+            } else {
+                return;
+            }
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, Config::get('constants.GOOGLE_OAUTH_ACCESS_TOKEN_URL'));
+            curl_setopt($ch, CURLOPT_POST, TRUE);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/x-www-form-urlencoded']);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query([
+                'code'          => $code,
+                'client_id'     => Config::get('constants.GOOGLE_CLIENT_ID'),
+                'client_secret' => Config::get('constants.GOOGLE_CLIENT_SECRET'),
+                'redirect_uri'  => $redirectUri,
+                'grant_type'    => 'authorization_code',
+            ]));
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            $response = curl_exec($ch);
+            curl_close($ch);
+            $responseArray = json_decode($response);
+
+            GoogleAuthUsers::updateOrCreate(['user_id' => $userId], ['access_token' => $responseArray->access_token, 'expires_in' => date("Y-m-d H:i:s", strtotime("+$responseArray->expires_in seconds")), 'refresh_token' => $responseArray->refresh_token, 'scope' => $responseArray->scope, 'token_type' => $responseArray->token_type, 'id_token' => $responseArray->id_token]);
+        } else if (GoogleAuthUsers::where('user_id', $userId)->exists() && strtotime($userInfo[0]->expires_in) < strtotime(date('Y-m-d H:i:s'))) {
+            $access_token = $userInfo[0]->access_token;
+            $refresh_token = $userInfo[0]->refresh_token;
+            // Check if the access token already expired
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, Config::get('constants.GOOGLE_OAUTH_TOKEN_VALIDATION_URL') . '?access_token=' . $access_token);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            $error_response = curl_exec($ch);
+            $array = json_decode($error_response);
+            if (isset($array->error)) {
+                // Generate new Access Token using old Refresh Token
+                $ch = curl_init();
+                curl_setopt($ch, CURLOPT_URL, Config::get('constants.GOOGLE_NEW_ACCESS_TOKEN_URL'));
+                curl_setopt($ch, CURLOPT_POST, TRUE);
+                curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/x-www-form-urlencoded']);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query([
+                    'client_id'     => Config::get('constants.GOOGLE_CLIENT_ID'),
+                    'client_secret' => Config::get('constants.GOOGLE_CLIENT_SECRET'),
+                    'refresh_token'  => $refresh_token,
+                    'grant_type'    => 'refresh_token',
+                ]));
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                $response = curl_exec($ch);
+                curl_close($ch);
+
+                $responseArray = json_decode($response);
+                GoogleAuthUsers::updateOrCreate(['user_id' => $userId], ['access_token' => $responseArray->access_token, 'expires_in' => date("Y-m-d H:i:s", strtotime("+$responseArray->expires_in seconds")), 'id_token' => $responseArray->id_token]);
+            }
+        }
+        
+        header('Location: '.$this->base_url.'/investigator/calendar');
+        exit;
+    }
+
+    public function investigatorCalendar()
+    {
+        $userId = Auth::user()->id;
+        $userName = Auth::user()->first_name;
+        $userEmail = Auth::user()->email;
+        $googleAuthUser = GoogleAuthUsers::where('user_id', $userId)->exists();
+
+        $nylasUser = NylasUsers::where(['user_id'=> $userId, 'provider' => 'gmail'])->exists();
+     
+        $profile = array();
+
+        if($googleAuthUser && !$nylasUser) {
+
+        $userInfo = GoogleAuthUsers::where('user_id', $userId)->get();
+
+        $ch = curl_init();
+
+        curl_setopt($ch, CURLOPT_URL, 'https://www.googleapis.com/oauth2/v2/userinfo?access_token='.$userInfo[0]->access_token);
+
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
+
+        $result = curl_exec($ch);
+        curl_close ($ch);
+
+        $userProfile = json_decode($result);
+
+        $google_settings = [
+            'google_client_id' => Config::get('constants.GOOGLE_CLIENT_ID'),
+            'google_client_secret' => Config::get('constants.GOOGLE_CLIENT_SECRET'),
+            'google_refresh_token' => $userInfo[0]->refresh_token,
+        ];
+
+        $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => Config::get('constants.NYLAS_API_URL') . 'connect/authorize',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS => '{
+                "client_id": "' . Config::get('constants.NYLAS_CLIENT_ID') . '",
+                "name": "' . $userName . '",
+                "email_address": "'.$userProfile->email.'",
+                "provider": "gmail",
+                "settings": ' . json_encode($google_settings) . ',
+                "scopes": "email, calendar"
+            }',
+            CURLOPT_HTTPHEADER => array(
+                'Content-Type: application/json'
+            ),
+        ));
+
+        $response = curl_exec($curl);
+        $array = json_decode($response);
+        curl_close($curl);
+        // var_dump($response);
+
+        $curl = curl_init();
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => Config::get('constants.NYLAS_API_URL') . 'connect/token',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS => '{
+                "client_id": "' . Config::get('constants.NYLAS_CLIENT_ID') . '",
+                "client_secret": "' . Config::get('constants.NYLAS_CLIENT_SECRET') . '",
+                "code": "' . $array->code . '"
+            }',
+            CURLOPT_HTTPHEADER => array(
+                'Content-Type: application/json'
+            ),
+        ));
+
+        $nylasResponse = curl_exec($curl);
+        curl_close($curl);
+        $nylasResponseArray = json_decode($nylasResponse);
+        NylasUsers::updateOrCreate(['user_id' => $userId, 'provider' => 'gmail'], ['nylas_id' => $nylasResponseArray->id, 'access_token' => $nylasResponseArray->access_token, 'account_id' => $nylasResponseArray->account_id, 'billing_state' => $nylasResponseArray->billing_state, 'email_address' => $nylasResponseArray->email_address, 'linked_at' => $nylasResponseArray->linked_at, 'name' => $nylasResponseArray->name, 'object' => $nylasResponseArray->object, 'organization_unit' => $nylasResponseArray->organization_unit, 'provider' => $nylasResponseArray->provider, 'sync_state' => $nylasResponseArray->sync_state ]);
+
+        $curl = curl_init();
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => Config::get('constants.NYLAS_API_URL') . 'calendars',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'GET',
+            CURLOPT_HTTPHEADER => array(
+                'Content-Type: application/json',
+                'Authorization: Bearer ' . $nylasResponseArray->access_token
+            ),
+        ));
+        $response = curl_exec($curl);
+        curl_close($curl);
+        $responseArr['calendars'] = json_decode($response);
+        $profile['calendars'] = $responseArr['calendars'];
+       
+        }
+
+        $profile['user'] = Auth::user();
+
+        $userId = Auth::user()->id;
+
+        return view('investigator.calendar', compact('profile','nylasUser', 'googleAuthUser'));
+    }
+
+    /** Check google access token expiry */
+    public function checkTokenExpiry(Request $request) {
+        $userId = Auth::user()->id;
+        $userInfo = GoogleAuthUsers::where('user_id', $userId)->get();
+        // dd($userInfo);
+        if ( GoogleAuthUsers::where('user_id', $userId)->exists() && strtotime($userInfo[0]->expires_in) < strtotime(date('Y-m-d H:i:s'))) {
+            $access_token = $userInfo[0]->access_token;
+            $refresh_token = $userInfo[0]->refresh_token;
+            // Check if the access token already expired
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, Config::get('constants.GOOGLE_OAUTH_TOKEN_VALIDATION_URL') . '?access_token=' . $access_token);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            $error_response = curl_exec($ch);
+            $array = json_decode($error_response);
+            if (isset($array->error)) {
+                // Generate new Access Token using old Refresh Token
+                $ch = curl_init();
+                curl_setopt($ch, CURLOPT_URL, Config::get('constants.GOOGLE_NEW_ACCESS_TOKEN_URL'));
+                curl_setopt($ch, CURLOPT_POST, TRUE);
+                curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/x-www-form-urlencoded']);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query([
+                    'client_id'     => Config::get('constants.GOOGLE_CLIENT_ID'),
+                    'client_secret' => Config::get('constants.GOOGLE_CLIENT_SECRET'),
+                    'refresh_token'  => $refresh_token,
+                    'grant_type'    => 'refresh_token',
+                ]));
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                $response = curl_exec($ch);
+                curl_close($ch);
+
+                $responseArray = json_decode($response);
+                GoogleAuthUsers::updateOrCreate(['user_id' => $userId], ['access_token' => $responseArray->access_token, 'expires_in' => date("Y-m-d H:i:s", strtotime("+$responseArray->expires_in seconds")), 'id_token' => $responseArray->id_token]);
+            }
+        }
+    }
+
+    public function investigatorCalendarEvents(Request $request)
+    {
+        $userId = Auth::user()->id;
+        $nylasUser = NylasUsers::where(['user_id' => $userId, 'provider' => 'gmail'])->get();
+        $calendarId = $request->calendarId;
+        $curl = curl_init();
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => Config::get('constants.NYLAS_API_URL') .'events?calendar_id='.$calendarId,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'GET',
+            CURLOPT_HTTPHEADER => array(
+                'Content-Type: application/json',
+                'Authorization: Bearer '.$nylasUser[0]->access_token
+            ),
+        ));
+        $response = curl_exec($curl);
+        curl_close($curl);
+
+        $events = json_decode($response);
+
+        $calEventsArray = array();
+        $calendarEvents = '[';
+
+        foreach($events as $event) {
+            if(isset($event->when->start_time) && isset($event->when->end_time )) {
+                $calendarEvents .= json_encode(['title' => $event->title, 'start' => $event->when->start_time * 1000 , 'end' => $event->when->end_time * 1000]).',';
+
+                $calEventsArray[] = [ 'user_id' => $userId, 'calendar_id' => $calendarId, 'title' => $event->title, 'start_time' => $event->when->start_time * 1000 , 'end_time' => $event->when->end_time * 1000];
+
+            }
+            else {
+                $calendarEvents .= json_encode(['title' => $event->title, 'start' => $event->when->date]).',';
+
+                $calEventsArray[] = [ 'user_id' => $userId, 'calendar_id' => $calendarId, 'title' => $event->title, 'start_time' => $event->when->date->timestamp , 'end_time' => $event->when->date->timestamp];
+
+            }
+            
+        }
+        $calEvents = trim($calendarEvents,',').']';
+
+        // dd($calEventsArray);
+
+        CalendarEvents::insert($calEventsArray);
+
+        return $calEvents;
+    }
+
+    public function disconnectCalendar(Request $request) {
+        $userId = Auth::user()->id;
+        $user = GoogleAuthUsers::where('user_id',$userId)->delete();
+        $nylasUser = NylasUsers::where(['user_id'=> $userId, 'provider' => 'gmail'])->delete();
+        $calEvents = CalendarEvents::where('user_id',$userId)->delete();
+        return $user;
+    }
+
+
+    public function investigatorCalendarEventsOnLoad() {
+        $userId = Auth::user()->id;
+        $events = CalendarEvents::where('user_id',$userId)->get();
+
+        $calendarEvents = '[';
+
+        foreach($events as $event) {
+            if(isset($event->start_time) && isset($event->end_time )) {
+            $calendarEvents .= json_encode(['title' => $event->title, 'start' => (int)$event->start_time , 'end' => (int)$event->end_time]).',';
+            }
+            else {
+                $calendarEvents .= json_encode(['title' => $event->title, 'start' => $event->start_time]).',';
+            }
+        }
+
+        $calEvents = trim($calendarEvents,',').']';
+
+        return $calEvents;
+    }
 }
