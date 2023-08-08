@@ -133,6 +133,8 @@ Route::group(['prefix' => 'investigator', 'as' => 'investigator.', 'middleware' 
     Route::get('/checkToken', [InvestigatorController::class, 'checkTokenExpiry'])->name('checkToken');
     Route::delete('/disconnect-calendar', [InvestigatorController::class, 'disconnectCalendar'])->name('disconnect-calendar');
 
+    Route::delete('/remove-events', [InvestigatorController::class, 'removeEvents'])->name('remove-events');
+
     Route::get('/sync-calendar/google-oauth2callback', [InvestigatorController::class, 'googleOauth2Callback'])->name('sync-calendar/google-oauth2callback'); // GOOGLE AUTH ROUTE
 
     Route::get('/calendar', [InvestigatorController::class, 'investigatorCalendar'])->name('calendar');

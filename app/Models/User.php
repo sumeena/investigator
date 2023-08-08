@@ -5,6 +5,9 @@ namespace App\Models;
 use App\Filters\InvestigatorFilters\LanguageFilter;
 use App\Filters\InvestigatorFilters\LicenseFilter;
 use App\Filters\InvestigatorFilters\ServiceTypeFilter;
+use Carbon\Carbon;
+use DatePeriod;
+use DateTime;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -208,18 +211,18 @@ class User extends Authenticatable
     // Filter method through pipeline
     public static function investigatorFiltered($request)
     {
-
         $user = Auth::user();
         /* Assuming logged in user as Company Admin */
         $companyId = $user->id;
         // $userRole = $user->userRole;
         $userRole = $user->role;
-
         /* If logged in user's role is sub admin or HR. Then get the company id of the logged in user */
-        if (($userRole === USER::COMPANYADMIN && !$user->company_is_admin) || $userRole === USER::HR) {
+        if (($userRole === USER::COMPANYADMIN && $user->company_is_admin) || $userRole === USER::HR) {
         // if ((($userRole == 'company-admin' && !$user->company_is_admin) || $userRole == 'hiring-manager') && $user->companyAdmin) {
-            $companyId = CompanyUser::where('user_id', $user->id)->select('parent_id')->first()->parent_id;
+            $companyId = CompanyUser::where('user_id', $user->id)->orWhere('parent_id',$user->id)->select('parent_id')->first()->parent_id;
         }
+
+        $investigatorsWithoutEvents = self::investigatorsWithoutEvents($request['availability']);
 
         $query = self::query()
             ->with([
@@ -228,8 +231,10 @@ class User extends Authenticatable
                 'investigatorLanguages',
                 'investigatorReview',
                 'investigatorAvailability',
-                'investigatorBlockedCompanyAdmins'
-            ])->where('zipcode', '!=', null)
+                'investigatorBlockedCompanyAdmins',
+                'calendarEvents'
+            ])
+            ->where('zipcode', '!=', null)
             ->where('lat', '!=', null)
             ->where('lng', '!=', null)
             ->whereHas('userRole', function ($q) {
@@ -239,6 +244,8 @@ class User extends Authenticatable
             ->whereDoesntHave('investigatorBlockedCompanyAdmins', function ($q) use ($companyId) {
                 $q->where('company_admin_id', $companyId);
             })
+            ->whereIn('users.id', $investigatorsWithoutEvents)
+          
             // Get calculated distance from lat lng
             ->selectRaw(
                 'users.*, ST_Distance_Sphere(point(users.lng, users.lat), point(?, ?)) * .000621371192 as calculated_distance',
@@ -246,10 +253,7 @@ class User extends Authenticatable
             )
             ->join('investigator_availabilities', 'investigator_availabilities.user_id', '=', 'users.id')
             // check investigators distance within calculated distance
-            ->whereRaw(
-                'ST_Distance_Sphere(point(users.lng, users.lat), point(?, ?)) * .000621371192 <= investigator_availabilities.distance',
-                [request('lng'), request('lat')]
-            );
+            ->whereRaw( 'ST_Distance_Sphere(point(users.lng, users.lat), point(?, ?)) * .000621371192 <= investigator_availabilities.distance', [request('lng'), request('lat')]);
 
         return app(Pipeline::class)
             ->send($query)
@@ -259,6 +263,56 @@ class User extends Authenticatable
                 new ServiceTypeFilter($request)
             ])
             ->thenReturn();
+    }
+
+    public static function investigatorsWithoutEvents($dateRange) {
+
+        $dateRange = explode('-', $dateRange);
+        $onlyStartDate = explode(' ', trim($dateRange[0])); // search date start
+        $onlyEndDate = explode(' ', trim($dateRange[1]));   // search date end
+
+        $searchStartDate = Carbon::parse($onlyStartDate[0])->format('Y-m-d');
+        $searchEndDate = Carbon::parse($onlyEndDate[0])->format('Y-m-d');
+
+        $eventDetails = CalendarEvents::whereBetween('start_date', [$searchStartDate, $searchEndDate])->select('user_id','id','start_date','end_date','start_time','end_time')->get()->toArray();
+
+        $events = [];
+        $users = User::where('role', User::INVESTIGATOR)->pluck('id')->toArray();
+        foreach($eventDetails as $eventDetail) {
+            $events[] = ['user_id' => $eventDetail['user_id'], 'start_date' => $eventDetail['start_date']. ' '.$eventDetail['start_time'], 'end_date' => $eventDetail['end_date'] . ' '. $eventDetail['end_time']];
+        }
+
+        $start_date  = strtotime(Carbon::parse($dateRange[0])->format('Y-m-d'));
+        $end_date  = strtotime(Carbon::parse($dateRange[1])->format('Y-m-d'));
+
+        $start_time   = strtotime(Carbon::parse($dateRange[0])->format('h:i A'));
+        $end_time   = strtotime(Carbon::parse($dateRange[1])->format('h:i A'));
+
+        $users_without_events = array_filter($users, function($user) use ($events, $start_date, $end_date, $start_time, $end_time) {
+            for ($date = $start_date; $date <= $end_date; $date = strtotime("+1 day", $date)) {
+                $start_of_range = strtotime(date("Y-m-d", $date) . " " . date("h:i A", $start_time));
+                $end_of_range = strtotime(date("Y-m-d", $date) . " " . date("h:i A", $end_time));
+        
+                if (!self::hasOverlappingEvents($events, $start_of_range, $end_of_range)) {
+                    return true;
+                }
+            }
+            return false;
+        });
+        // dd($users_without_events);
+        return $users_without_events;
+    }
+
+    public static function hasOverlappingEvents($events, $start_date_time, $end_date_time) {
+        foreach ($events as $event) {
+            $event_start = strtotime($event["start_date"]);
+            $event_end = strtotime($event["end_date"]);
+
+            if ($event_start <= $end_date_time && $event_end >= $start_date_time) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public function getServiceType($service_type)
@@ -292,5 +346,9 @@ class User extends Authenticatable
     public function parentCompany()
     {
         return $this->belongsTo(CompanyUser::class, 'id', 'user_id');
+    }
+
+    public function calendarEvents() {
+        return $this->hasMany(CalendarEvents::class);
     }
 }

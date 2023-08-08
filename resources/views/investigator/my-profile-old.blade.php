@@ -8,9 +8,9 @@
       <div class="card-header d-flex justify-content-between align-items-center">
         <h5 class="mb-0">My Profile</h5>
           @if(!$googleAuthDeatils)
-            <button type="button" data-toggle="modal" data-target="#sync-calendar" class="float-end btn btn-outline-primary btn-sm mt-n1 mr-10">Sync Calendar</button>
+            <button type="button" data-toggle="modal" data-target="#sync-calendar" class="float-right btn btn-primary">Sync Calendar</button>
           @else
-            <button type="button" data-toggle="modal" data-target="#disconnect-calendar" class="float-end btn btn-outline-primary btn-sm mt-n1 mr-10">Disconnect Calendar</button>
+            <button type="button" data-toggle="modal" data-target="#disconnect-calendar" class="float-right btn btn-danger">Disconnect Calendar</button>
           @endif
       </div>
 

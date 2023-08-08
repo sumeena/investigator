@@ -89,7 +89,6 @@ class CompanyAdminController extends Controller
             ]);
         }
 
-
         return view(
             'company-admin.find-investigator',
             compact(

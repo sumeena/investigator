@@ -15,8 +15,7 @@
                                 $action = route('hm.find_investigator');
                             }
                         @endphp
-                        <form method="get" action="{{ $action }}"
-                              id="find-investigator-form">
+                        <form method="get" action="{{ $action }}" id="find-investigator-form">
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="mb-1">
@@ -197,12 +196,34 @@
                                         </div>
                                     </div>
                                 </div>
+
                                 <div class="col-md-6">
                                     <div class="mb-1">
                                         <div class="card">
+                                            <h5 class="card-header pt-2 pb-0">Availability</h5>
+                                            <table class="table"> <!-- hr_contact -->
+                                                <tbody>
+                                                <tr>
+                                                    <td>
+
+                                                    <input type="text" class="form-control caseAvailabilityField" name="datetimes" placeholder="Availability" value="<?php echo date('m/d/Y'); ?>" id="availability" />
+
+                                                        <span role="alert" class="text-danger small d-none" id="availability-error"> Availability is required! </span>
+                                                    </td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                            <div class="col-md-6">
+                                    <div class="mb-1">
+                                        <div class="card">
                                             <div class="table-responsive">
-                                                <button type="submit" class="btn btn-primary hr_investigator_search"
-                                                        id="form-submit-btn">
+                                                <button type="submit" class="btn btn-primary hr_investigator_search" id="form-submit-btn">
                                                     Search
                                                 </button>
                                             </div>
@@ -391,6 +412,7 @@
                 const license = $('#license-select');
                 const lat = $('#lat');
                 const lng = $('#lng');
+                const availability = $('#availability');
 
 
                 // values
@@ -402,6 +424,7 @@
                 const licenseValue = license.val();
                 const latValue = lat.val();
                 const lngValue = lng.val();
+                const availabilityValue = availability.val();
 
                 const data = {
                     page: 1
@@ -476,6 +499,10 @@
                     data['license'] = licenseValue;
                 }
 
+                if (availabilityValue) {
+                    data['availability'] = availabilityValue;
+                }
+
                 fetchData(data);
             });
 
@@ -497,6 +524,7 @@
                 const license = $('#license-select');
                 const lat = $('#lat');
                 const lng = $('#lng');
+                const availability = $('#availability');
 
 
                 // values
@@ -507,7 +535,8 @@
                 const licenseValue = license.val();
                 const latValue = lat.val();
                 const lngValue = lng.val();
-
+                const availabilityValue = availability.val();
+                
                 let page = $(this).attr('href').split('page=')[1];
                 const data = {
                     page: page
@@ -536,6 +565,10 @@
 
                 if (licenseValue) {
                     data['license'] = licenseValue;
+                }
+
+                if (availabilityValue) {
+                    data['availability'] = availabilityValue;
                 }
 
                 fetchData(data);
