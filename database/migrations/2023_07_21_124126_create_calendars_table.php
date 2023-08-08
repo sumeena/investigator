@@ -17,7 +17,10 @@ return new class extends Migration
             $table->id();
             $table->integer('user_id');
             $table->string('calendar_id')->nullable();
+            $table->string('event_id')->nullable();
             $table->string('title')->nullable();
+            $table->date('start_date')->nullable();
+            $table->date('end_date')->nullable();
             $table->string('start_time')->nullable();
             $table->string('end_time')->nullable();
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');

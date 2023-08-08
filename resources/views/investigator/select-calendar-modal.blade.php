@@ -1,12 +1,20 @@
-@if(!$nylasUser && $googleAuthUser)
 <div class="modal" id="calendars-list" tabindex="-1" role="dialog">
   <div class="modal-dialog" role="document">
     <div class="modal-content" style="width:50%">
       <div class="modal-header">
         <h5 class="modal-title">Choose Calendar</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <!-- <button type="button" class="close close-calendars-list-modal" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button> -->
+
+
+        <button type="button" class="close close-calendars-list-modal" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
+
+       <!--  <button
+          type="button" class="btn-close close-calendars-list-modal" data-dismiss="modal" aria-label="Close"></button> -->
+
       </div>
       <div class="modal-body text-center">
           <form class="sync-my-calendar" method="post">
@@ -29,4 +37,3 @@
     </div>
   </div>
 </div>
-@endif

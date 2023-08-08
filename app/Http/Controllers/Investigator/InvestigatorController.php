@@ -28,6 +28,9 @@ class InvestigatorController extends Controller
     protected $base_url;
     function __construct() {
         $this->base_url = URL::to('/');
+
+        // $this->base_url = preg_replace("/^http:/i", "https:", $this->base_url);
+
     }
     public function index()
     {
@@ -752,16 +755,19 @@ class InvestigatorController extends Controller
 
     public function investigatorCalendar()
     {
+        $this->checkTokenExpiry();
         $userId = Auth::user()->id;
         $userName = Auth::user()->first_name;
         $userEmail = Auth::user()->email;
         $googleAuthUser = GoogleAuthUsers::where('user_id', $userId)->exists();
 
         $nylasUser = NylasUsers::where(['user_id'=> $userId, 'provider' => 'gmail'])->exists();
-     
+
+        $calendarEvents = CalendarEvents::where('user_id',$userId)->exists();
+
         $profile = array();
 
-        if($googleAuthUser && !$nylasUser) {
+        if($googleAuthUser && (!$nylasUser || !$calendarEvents)) {
 
         $userInfo = GoogleAuthUsers::where('user_id', $userId)->get();
 
@@ -776,6 +782,8 @@ class InvestigatorController extends Controller
         curl_close ($ch);
 
         $userProfile = json_decode($result);
+
+        // dd($userProfile);
 
         $google_settings = [
             'google_client_id' => Config::get('constants.GOOGLE_CLIENT_ID'),
@@ -810,7 +818,7 @@ class InvestigatorController extends Controller
         $response = curl_exec($curl);
         $array = json_decode($response);
         curl_close($curl);
-        // var_dump($response);
+        // var_dump($array);
 
         $curl = curl_init();
         curl_setopt_array($curl, array(
@@ -863,11 +871,12 @@ class InvestigatorController extends Controller
 
         $userId = Auth::user()->id;
 
-        return view('investigator.calendar', compact('profile','nylasUser', 'googleAuthUser'));
+        return view('investigator.calendar', compact('profile','nylasUser', 'googleAuthUser', 'calendarEvents'));
     }
 
     /** Check google access token expiry */
-    public function checkTokenExpiry(Request $request) {
+    public function checkTokenExpiry() {
+
         $userId = Auth::user()->id;
         $userInfo = GoogleAuthUsers::where('user_id', $userId)->get();
         // dd($userInfo);
@@ -880,6 +889,8 @@ class InvestigatorController extends Controller
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
             $error_response = curl_exec($ch);
             $array = json_decode($error_response);
+
+            // print_r($array);
             if (isset($array->error)) {
                 // Generate new Access Token using old Refresh Token
                 $ch = curl_init();
@@ -898,7 +909,8 @@ class InvestigatorController extends Controller
                 curl_close($ch);
 
                 $responseArray = json_decode($response);
-                GoogleAuthUsers::updateOrCreate(['user_id' => $userId], ['access_token' => $responseArray->access_token, 'expires_in' => date("Y-m-d H:i:s", strtotime("+$responseArray->expires_in seconds")), 'id_token' => $responseArray->id_token]);
+                // dd($responseArray);
+                $updateGoogleAccessToken = GoogleAuthUsers::updateOrCreate(['user_id' => $userId], ['access_token' => $responseArray->access_token, 'expires_in' => date("Y-m-d H:i:s", strtotime("+$responseArray->expires_in seconds")), 'id_token' => $responseArray->id_token]);
             }
         }
     }
@@ -906,8 +918,10 @@ class InvestigatorController extends Controller
     public function investigatorCalendarEvents(Request $request)
     {
         $userId = Auth::user()->id;
+        $userInfo = GoogleAuthUsers::where('user_id', $userId)->get();
+
         $nylasUser = NylasUsers::where(['user_id' => $userId, 'provider' => 'gmail'])->get();
-        $calendarId = $request->calendarId;
+        $calendarId = $request->calendar_id;
         $curl = curl_init();
         curl_setopt_array($curl, array(
             CURLOPT_URL => Config::get('constants.NYLAS_API_URL') .'events?calendar_id='.$calendarId,
@@ -926,31 +940,102 @@ class InvestigatorController extends Controller
         $response = curl_exec($curl);
         curl_close($curl);
 
+        /* $curl = curl_init();
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => Config::get('constants.NYLAS_API_URL') . 'a/'.Config::get('constants.NYLAS_CLIENT_ID').'/accounts/'.$nylasUser[0]->account_id.'/token-info',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_USERPWD => "cg7lkuuvftx7yffwmz3xorqdk:",
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS, http_build_query([
+                'access_token' => $nylasUser[0]->access_token,
+            ]),
+            CURLOPT_HTTPHEADER => array(
+                'Content-Type: application/json',
+                'Accept: application/json'
+            ),
+        ));
+        echo $response = curl_exec($curl);
+        curl_close($curl);
+die; */
         $events = json_decode($response);
 
-        $calEventsArray = array();
+        if(isset($events->message))
+        {
+            $curl = curl_init();
+            curl_setopt_array($curl, array(
+            CURLOPT_URL => Config::get('constants.NYLAS_API_URL') . 'oauth/revoke',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_USERPWD => "cg7lkuuvftx7yffwmz3xorqdk:",
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS, http_build_query([
+                'user'     => $nylasUser[0]->access_token
+            ]),
+            CURLOPT_HTTPHEADER => array(
+                'Content-Type: application/json',
+                'Accept: application/json',
+                'Authorization: Bearer '.$nylasUser[0]->access_token
+            ),
+            ));
+
+            $response = curl_exec($curl);
+
+            curl_close($curl);
+            // echo $response;
+
+            $nylasResponseArray = json_decode($response);
+
+            // dd($nylasResponseArray);
+
+            //NylasUsers::updateOrCreate(['user_id' => $userId, 'provider' => 'gmail'], ['nylas_id' => $nylasResponseArray->id, 'access_token' => $nylasResponseArray->access_token, 'account_id' => $nylasResponseArray->account_id, 'billing_state' => $nylasResponseArray->billing_state, 'email_address' => $nylasResponseArray->email_address, 'linked_at' => $nylasResponseArray->linked_at, 'name' => $nylasResponseArray->name, 'object' => $nylasResponseArray->object, 'organization_unit' => $nylasResponseArray->organization_unit, 'provider' => $nylasResponseArray->provider, 'sync_state' => $nylasResponseArray->sync_state ]);
+
+// die;
+                
+        }
+
+        // dd($events);
+
+        $calEventsArray = '';
         $calendarEvents = '[';
 
         foreach($events as $event) {
-            if(isset($event->when->start_time) && isset($event->when->end_time )) {
+
+              if(isset($event->when->start_time) && isset($event->when->end_time )) {
                 $calendarEvents .= json_encode(['title' => $event->title, 'start' => $event->when->start_time * 1000 , 'end' => $event->when->end_time * 1000]).',';
 
-                $calEventsArray[] = [ 'user_id' => $userId, 'calendar_id' => $calendarId, 'title' => $event->title, 'start_time' => $event->when->start_time * 1000 , 'end_time' => $event->when->end_time * 1000];
+                $calEventsArray = array( 'user_id' => $userId, 'calendar_id' => $calendarId, 'event_id' => $event->id, 'title' => $event->title, 'start_date' => date('Y-m-d', $event->when->start_time), 'end_date' => date('Y-m-d', $event->when->end_time), 'start_time' => date('H:i:s', $event->when->start_time), 'end_time' => date('H:i:s',$event->when->end_time));
 
             }
             else {
                 $calendarEvents .= json_encode(['title' => $event->title, 'start' => $event->when->date]).',';
 
-                $calEventsArray[] = [ 'user_id' => $userId, 'calendar_id' => $calendarId, 'title' => $event->title, 'start_time' => $event->when->date->timestamp , 'end_time' => $event->when->date->timestamp];
+                $calEventsArray = array('user_id' => $userId, 'calendar_id' => $calendarId, 'event_id' => $event->id, 'title' => $event->title, 'start_date' => $event->when->date, 'end_date' => $event->when->date);
 
             }
-            
+
+            /* echo '<pre>';
+            print_r($calEventsArray);  */
+            // die;
+
+            CalendarEvents::updateOrCreate(['event_id' => $event->id], $calEventsArray);
+            $calEventsArray = '';
         }
         $calEvents = trim($calendarEvents,',').']';
 
         // dd($calEventsArray);
 
-        CalendarEvents::insert($calEventsArray);
+        // die;
+
+        // CalendarEvents::insert($calEventsArray);
 
         return $calEvents;
     }
@@ -963,14 +1048,38 @@ class InvestigatorController extends Controller
         return $user;
     }
 
+    public function removeEvents(Request $request) {
+        $userId = Auth::user()->id;
+        // $user = GoogleAuthUsers::where('user_id',$userId)->delete();
+        // $nylasUser = NylasUsers::where(['user_id'=> $userId, 'provider' => 'gmail'])->delete();
+        $calEvents = CalendarEvents::where('user_id',$userId)->delete();
+        return $calEvents;
+    }
 
-    public function investigatorCalendarEventsOnLoad() {
+    public function investigatorCalendarEventsOnLoad(Request $request) {
+        
         $userId = Auth::user()->id;
         $events = CalendarEvents::where('user_id',$userId)->get();
 
+        if(count($events) > 0) {
+
+        // dd($events[0]->calendar_id);
+        $content = new Request([
+            'calendar_id' => $events[0]->calendar_id
+        ]);
+
+        // print_r($content);
+        $events = $this->investigatorCalendarEvents($content);
+
+        return $events;
+    }
+        // dd($content);
+
+/* die;
         $calendarEvents = '[';
 
         foreach($events as $event) {
+            
             if(isset($event->start_time) && isset($event->end_time )) {
             $calendarEvents .= json_encode(['title' => $event->title, 'start' => (int)$event->start_time , 'end' => (int)$event->end_time]).',';
             }
@@ -981,6 +1090,6 @@ class InvestigatorController extends Controller
 
         $calEvents = trim($calendarEvents,',').']';
 
-        return $calEvents;
+        return $calEvents; */
     }
 }
