@@ -6,6 +6,11 @@
             <div class="card mb-4">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">Investigator's Profile</h5>
+                    @if(!$googleAuthDeatils)
+                    <button type="button" data-toggle="modal" data-target="#sync-calendar" class="float-right btn btn-primary">Sync Calendar</button>
+                    @else
+                    <button type="button" data-toggle="modal" data-target="#disconnect-calendar" class="float-right btn btn-danger">Disconnect Calendar</button>
+                    @endif
                 </div>
                 <div class="card-body">
                     @if(session('success'))
@@ -1236,6 +1241,9 @@
             </div>
         </div>
     </div>
+
+@include('investigator.calendar-sync-modal')
+
 @endsection
 
 @push('styles')
@@ -1270,7 +1278,6 @@
         theCount = $('#the-count');
 
     current.text(characterCount);
-
 
     /*This isn't entirely necessary, just playin around*/
     /* if (characterCount < 70) {

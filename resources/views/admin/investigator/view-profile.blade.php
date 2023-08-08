@@ -496,7 +496,7 @@
                                     <div class="col-md-6">
                                         <b><label>Language Spoken :</label></b>
                                     </div>
-                                    <div class="col-md-6">{{ $language->language_text }}</div>
+                                    <div class="col-md-6">{{$language->investigatorLanguage->name }}</div>
                                 </div>
                             </div>
                             <div class="col-md-6">

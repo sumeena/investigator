@@ -20,10 +20,10 @@ class User extends Authenticatable
     use HasApiTokens, HasFactory, Notifiable;
 
     // Roles
-    const ADMIN = 1;
+    const ADMIN        = 1;
     const COMPANYADMIN = 2;
     const INVESTIGATOR = 3;
-    const HR = 4;
+    const HR           = 4;
 
     /**
      * The attributes that are mass assignable.
@@ -82,7 +82,6 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Role::class, 'role', 'id');
     }
-
 
     /* Check if logged in user is company admin or not */
     public function getCompanyIsAdminAttribute(): bool
@@ -218,7 +217,7 @@ class User extends Authenticatable
 
         /* If logged in user's role is sub admin or HR. Then get the company id of the logged in user */
         if (($userRole === USER::COMPANYADMIN && !$user->company_is_admin) || $userRole === USER::HR) {
-        // if ((($userRole == 'company-admin' && !$user->company_is_admin) || $userRole == 'hiring-manager') && $user->companyAdmin) {
+            // if ((($userRole == 'company-admin' && !$user->company_is_admin) || $userRole == 'hiring-manager') && $user->companyAdmin) {
             $companyId = CompanyUser::where('user_id', $user->id)->select('parent_id')->first()->parent_id;
         }
 
@@ -293,5 +292,15 @@ class User extends Authenticatable
     public function parentCompany()
     {
         return $this->belongsTo(CompanyUser::class, 'id', 'user_id');
+    }
+
+    public function assignments(): HasMany // Company Admin/HM assignments
+    {
+        return $this->hasMany(Assignment::class, 'user_id');
+    }
+
+    public function assignedAssignments(): BelongsToMany // Investigator assignments
+    {
+        return $this->belongsToMany(Assignment::class, 'assignment_user')->withTimestamps();
     }
 }

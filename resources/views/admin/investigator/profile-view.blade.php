@@ -99,7 +99,7 @@
                             <div class="col-md-6">
                                 <div class="row">
                                     <div class="col-md-6">
-                                        <b><label>Conact Title</label></b>
+                                        <b><label>Contact Title</label></b>
                                     </div>
                                     <div class="col-md-6">{{ucfirst($hrCompanyContact->contact_title)}}</div>
                                 </div>
@@ -107,7 +107,7 @@
                             <div class="col-md-6">
                                 <div class="row">
                                     <div class="col-md-6">
-                                        <b><label>Conact Name :</label></b>
+                                        <b><label>Contact Name :</label></b>
                                     </div>
                                     <div class="col-md-6">{{ucfirst($hrCompanyContact->contact_name)}}</div>
                                 </div>
@@ -117,7 +117,7 @@
                             <div class="col-md-6">
                                 <div class="row">
                                     <div class="col-md-6">
-                                        <b><label>Conact Phone</label></b>
+                                        <b><label>Contact Phone</label></b>
                                     </div>
                                     <div class="col-md-6">{{$hrCompanyContact->contact_phone}}</div>
                                 </div>
@@ -125,7 +125,7 @@
                             <div class="col-md-6">
                                 <div class="row">
                                     <div class="col-md-6">
-                                        <b><label>Conact Email :</label></b>
+                                        <b><label>Contact Email :</label></b>
                                     </div>
                                     <div class="col-md-6">{{$hrCompanyContact->contact_email}}</div>
                                 </div>

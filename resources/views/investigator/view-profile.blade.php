@@ -20,6 +20,13 @@
                                    class="text-white float-end btn btn-outline-primary btn-sm mt-n1">
                                     Edit Investigator Profile
                                 </a>
+
+
+                                @if(!$googleAuthDeatils)
+            <button type="button" data-toggle="modal" data-target="#sync-calendar" class="float-right btn btn-primary">Sync Calendar</button>
+          @else
+            <button type="button" data-toggle="modal" data-target="#disconnect-calendar" class="float-right btn btn-danger">Disconnect Calendar</button>
+          @endif
                             </h5>
 
 
@@ -742,4 +749,6 @@
             </div>
         </div>
     </div>
+
+    @include('investigator.calendar-sync-modal')
 @endsection
