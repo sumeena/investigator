@@ -24,3 +24,10 @@ if (!function_exists('getDistance')) {
         return $distance * 0.000621371;
     }
 }
+
+if (!function_exists('getNotificationsCount')) {
+    function getNotificationsCount(): int
+    {
+        return \App\Models\Notification::where('user_id', auth()->id())->where('is_read', 0)->count();
+    }
+}

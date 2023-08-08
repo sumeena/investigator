@@ -23,10 +23,10 @@ class User extends Authenticatable
     use HasApiTokens, HasFactory, Notifiable;
 
     // Roles
-    const ADMIN = 1;
+    const ADMIN        = 1;
     const COMPANYADMIN = 2;
     const INVESTIGATOR = 3;
-    const HR = 4;
+    const HR           = 4;
 
     /**
      * The attributes that are mass assignable.
@@ -220,6 +220,9 @@ class User extends Authenticatable
         if (($userRole === USER::COMPANYADMIN && $user->company_is_admin) || $userRole === USER::HR) {
         // if ((($userRole == 'company-admin' && !$user->company_is_admin) || $userRole == 'hiring-manager') && $user->companyAdmin) {
             $companyId = CompanyUser::where('user_id', $user->id)->orWhere('parent_id',$user->id)->select('parent_id')->first()->parent_id;
+            
+            // if (($userRole === USER::COMPANYADMIN && !$user->company_is_admin) || $userRole === USER::HR) {
+            // $companyId = CompanyUser::where('user_id', $user->id)->select('parent_id')->first()->parent_id;
         }
 
         $investigatorsWithoutEvents = self::investigatorsWithoutEvents($request['availability']);
@@ -350,5 +353,15 @@ class User extends Authenticatable
 
     public function calendarEvents() {
         return $this->hasMany(CalendarEvents::class);
+    }
+    
+    public function assignments(): HasMany // Company Admin/HM assignments
+    {
+        return $this->hasMany(Assignment::class, 'user_id');
+    }
+
+    public function assignedAssignments(): BelongsToMany // Investigator assignments
+    {
+        return $this->belongsToMany(Assignment::class, 'assignment_user')->withTimestamps();
     }
 }

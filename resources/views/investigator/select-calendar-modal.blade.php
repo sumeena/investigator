@@ -3,11 +3,7 @@
     <div class="modal-content" style="width:50%">
       <div class="modal-header">
         <h5 class="modal-title">Choose Calendar</h5>
-        <!-- <button type="button" class="close close-calendars-list-modal" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button> -->
-
-
+        
         <button type="button" class="close close-calendars-list-modal" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>

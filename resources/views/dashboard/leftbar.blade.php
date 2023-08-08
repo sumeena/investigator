@@ -145,6 +145,13 @@
                 </a>
             </li>
 
+            <li class="menu-item {{ request()->routeIs('investigator.invitations.*') ? 'active' : '' }}">
+                <a href="{{ route('investigator.invitations.index') }}" class="menu-link">
+                    <i class="bx bxs-card me-2"></i>
+                    <div data-i18n="Analytics">Invitations</div>
+                </a>
+            </li>
+
         @endif
 
         @if(auth()->user()->userRole && auth()->user()->userRole->role == 'hiring-manager')

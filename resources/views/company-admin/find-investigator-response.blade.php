@@ -11,6 +11,7 @@
         <th>Misc</th>
         <th>Hourly Rate</th>
         <th class="text-center">Distance (In Miles)</th>
+        <th class="text-center">Action</th>
     </tr>
     </thead>
     <tbody>
@@ -32,6 +33,14 @@
             <td>{{ $misc ? $misc->hourly_rate : '-' }}</td>
             <td class="text-center">{{ number_format($investigator->calculated_distance, 2) }}
                 miles
+            </td>
+            <td class="text-center">
+                <button type="button"
+                        class="btn btn-info btn-sm inviteSendBtn"
+                        data-assignment-count="{{ $assignmentCount }}"
+                        data-investigator-id="{{ $investigator->id }}">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
             </td>
         </tr>
     @empty

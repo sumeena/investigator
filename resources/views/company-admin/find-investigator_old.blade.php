@@ -224,8 +224,8 @@
                         </h4>
                     </div>
                     <div class="card-body">
-                        <div class="table-responsive text-nowrap">
-                            <table class="table">
+                        <div class="table-responsive text-nowrap" id="data-container">
+                            <table class="table" id="investigator-table">
                                 <thead>
                                 <tr>
                                     <th>#</th>
@@ -276,7 +276,7 @@
                                     <tfoot>
                                     <tr>
                                         <td colspan="100%">
-                                            <div class="float-end">
+                                            <div class="float-end" id="pagination-links">
                                                 {{ $investigators->withQueryString()->links() }}
                                             </div>
                                         </td>
@@ -326,9 +326,6 @@
                     let lat = results[0].geometry.location.lat();
                     let lng = results[0].geometry.location.lng();
 
-                    console.log('Latitude: ' + lat);
-                    console.log('Longitude: ' + lng);
-
                     // check lat id and lng id is exist or not
                     if ($('#lat').length) {
                         $('#lat').val(lat);
@@ -359,6 +356,20 @@
             });
         }
 
+        function fetchData(data) {
+            $.ajax({
+                url: '{{ $action }}',
+                type: 'GET',
+                data: data,
+                success: function (response) {
+                    $('#data-container').html(response.data);
+                },
+                error: function (xhr) {
+                    console.log(xhr.responseText);
+                }
+            });
+        }
+
         $(document).ready(function () {
             $('#language-select').select2({
                 placeholder: 'Select Languages',
@@ -378,6 +389,8 @@
                 const misc = $('#misc');
                 const lang = $('#language-select');
                 const license = $('#license-select');
+                const lat = $('#lat');
+                const lng = $('#lng');
 
 
                 // values
@@ -386,16 +399,13 @@
                 const statValue = stat.is(':checked');
                 const miscValue = misc.is(':checked');
                 const languages = lang.val();
-                const licenses = license.val();
+                const licenseValue = license.val();
+                const latValue = lat.val();
+                const lngValue = lng.val();
 
-                console.log('languages', languages);
-                console.log('licenses', licenses);
-                console.log('survValue', survValue);
-                console.log('statValue', statValue);
-                console.log('miscValue', miscValue);
-                console.log('zipValue', zipValue);
-                return;
-
+                const data = {
+                    page: 1
+                };
 
                 // error selector
                 const zipError = $('#zipcode-error');
@@ -441,7 +451,32 @@
                 $('#zipcode-lat-lng-error').addClass('d-none');
                 $('#zipcode-lat-lng-loading').addClass('d-none');
 
-                form.submit();
+                if (latValue && lngValue) {
+                    data['lat'] = latValue;
+                    data['lng'] = lngValue;
+                }
+
+                if (statValue) {
+                    data['statements'] = 'statements';
+                }
+
+                if (miscValue) {
+                    data['misc'] = 'misc';
+                }
+
+                if (survValue) {
+                    data['surveillance'] = 'surveillance';
+                }
+
+                if (languages && languages.length) {
+                    data['languages'] = languages;
+                }
+
+                if (licenseValue) {
+                    data['license'] = licenseValue;
+                }
+
+                fetchData(data);
             });
 
             $('#postal_code').on('input', function () {
@@ -451,12 +486,60 @@
                 }
                 getLatLngFromZipCode(zipCode);
             });
-        });
-    </script>
 
-    <script type="text/javascript">
-        $(document).ready(function () {
+            $(document).on('click', '#pagination-links a', function(e) {
+                e.preventDefault();
+                // input selector
+                const surv = $('#surveillance');
+                const stat = $('#statements');
+                const misc = $('#misc');
+                const lang = $('#language-select');
+                const license = $('#license-select');
+                const lat = $('#lat');
+                const lng = $('#lng');
 
+
+                // values
+                const survValue = surv.is(':checked');
+                const statValue = stat.is(':checked');
+                const miscValue = misc.is(':checked');
+                const languages = lang.val();
+                const licenseValue = license.val();
+                const latValue = lat.val();
+                const lngValue = lng.val();
+
+                let page = $(this).attr('href').split('page=')[1];
+                const data = {
+                    page: page
+                };
+
+                if (latValue && lngValue) {
+                    data['lat'] = latValue;
+                    data['lng'] = lngValue;
+                }
+
+                if (statValue) {
+                    data['statements'] = 'statements';
+                }
+
+                if (miscValue) {
+                    data['misc'] = 'misc';
+                }
+
+                if (survValue) {
+                    data['surveillance'] = 'surveillance';
+                }
+
+                if (languages && languages.length) {
+                    data['languages'] = languages;
+                }
+
+                if (licenseValue) {
+                    data['license'] = licenseValue;
+                }
+
+                fetchData(data);
+            });
         });
     </script>
 @endpush

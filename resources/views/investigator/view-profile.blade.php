@@ -15,24 +15,21 @@
                         <div class="col">
                             <h5 class="">
                                 Investigator Profile
-
                                 <a href="/investigator/profile"
                                    class="text-white float-end btn btn-outline-primary btn-sm mt-n1">
                                     Edit Investigator Profile
                                 </a>
 
-
                                 @if(!$googleAuthDeatils)
-            <button type="button" data-toggle="modal" data-target="#sync-calendar" class="text-white float-end btn btn-outline-primary btn-sm mt-n1 mr-10">Sync Calendar</button>
-          @else
-            <button type="button" data-toggle="modal" data-target="#disconnect-calendar" class="text-white float-end btn btn-outline-primary btn-sm mt-n1 mr-10">Disconnect Calendar</button>
-          @endif
+                                    <button type="button" data-toggle="modal" data-target="#sync-calendar" class="text-white float-end btn btn-outline-primary btn-sm mt-n1 mr-10">Sync Calendar</button>
+                                @else
+                                    <button type="button" data-toggle="modal" data-target="#disconnect-calendar" class="text-white float-end btn btn-outline-primary btn-sm mt-n1 mr-10">Disconnect Calendar</button>
+                                @endif
                             </h5>
 
-
-                            {{--<a href="/investigator/profile" class="investigator-view-profile-link">
+                            <!-- <a href="/investigator/profile" class="investigator-view-profile-link">
                                 <button type="button">Edit Investigator Profile</button>
-                            </a>--}}
+                            </a> -->
                         </div>
                     </div>
                     <div class="row mx-0 py-1 px-3">

@@ -10,13 +10,23 @@
 
     <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
         <ul class="navbar-nav flex-row align-items-center ms-auto">
+            <!-- Notification -->
+            @if(auth()->user()->userRole->role == 'investigator')
+                <li class="nav-item" style="margin-right:20px; font-size: 20px;">
+                    <a class="nav-link" href="{{ route('investigator.notifications.index') }}">
+                        <i class="fas fa-bell"></i>
+                        <span class="badge bg-primary" style="font-size: 12px;">{{ getNotificationsCount() }}</span>
+                    </a>
+                </li>
+            @endif
+
             <!-- User -->
             <li class="nav-item" style="margin-right:20px">
                 <a class="nav-link" href="javascript:void(0);">
                     <div class="d-flex">
                         <div class="flex-grow-1">
                             <span
-                                class="fw-semibold d-block">{{auth()->user()->first_name}} {{auth()->user()->last_name}}</span>
+                                    class="fw-semibold d-block">{{auth()->user()->first_name}} {{auth()->user()->last_name}}</span>
                             <small class="text-muted">
                                 @switch(auth()->user()->userRole)
                                     @case(auth()->user()->userRole->role == 'admin')
