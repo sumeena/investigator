@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests\CompanyAdmin\ProfileRequest;
 use App\Http\Requests\CompanyAdmin\CompanyAdminProfileRequest;
 use App\Http\Requests\CompanyAdmin\PasswordRequest;
+use App\Models\AssignmentUser;
 use App\Models\InvestigatorLanguage;
 use App\Models\State;
 use App\Models\User;
@@ -72,12 +73,14 @@ class CompanyAdminController extends Controller
 
     public function findInvestigator(Request $request)
     {
+        // dd($request->all());
         $states          = State::all();
         $languageOptions = Language::all();
         $filtered        = false;
         $investigators   = [];
         $assignments     = Assignment::where('user_id', auth()->id())->paginate(10);
         $assignmentCount = Assignment::where('user_id', auth()->id())->count();
+        $assignmentUsers = AssignmentUser::where('assignment_id', $request->assignment_id)->pluck('user_id')->toArray();
 
         if ($this->checkQueryAvailablity($request)) {
             $filtered      = true;
@@ -86,7 +89,8 @@ class CompanyAdminController extends Controller
         }
 
         if ($request->ajax()) {
-            $html = view('company-admin.find-investigator-response', compact('investigators', 'assignmentCount'))->render();
+
+            $html = view('company-admin.find-investigator-response', compact('investigators', 'assignmentCount','assignmentUsers'))->render();
 
             return response()->json([
                 'data' => $html,
@@ -105,6 +109,7 @@ class CompanyAdminController extends Controller
             )
         );
     }
+    
 
     /**
      * @param Request $request
@@ -208,8 +213,36 @@ class CompanyAdminController extends Controller
 
     public function saveInvestigatorSearchHistory(Request $request)
     {
-
+        $availability = $request->availability.','.$request->start_time.' - '.$request->end_time;
         InvestigatorSearchHistory::updateOrCreate([
+            'user_id'      => auth()->id(),
+            'assignment_id'=> $request->assignment_id],[
+            'street'       => $request->street,
+            'city'         => $request->city,
+            'state'        => $request->state,
+            'zipcode'      => $request->zipcode,
+            'country'      => $request->country,
+            'lat'          => $request->lat,
+            'lng'          => $request->lng,
+            'surveillance' => $request->surveillance,
+            'statements'   => $request->statements,
+            'misc'         => $request->misc,
+            'license_id'   => $request->license,
+            'languages'    => $request->get('languages'),
+            'availability' => $availability
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Investigator search history saved successfully!',
+        ]);
+    }
+
+
+    public function updateInvestigatorSearchHistory(Request $request)
+    {
+        $availability = $request->availability.','.$request->start_time.' - '.$request->end_time;
+        InvestigatorSearchHistory::where('id',$request->search_history_id)->update([
             'user_id'      => auth()->id(),
             'street'       => $request->street,
             'city'         => $request->city,
@@ -223,6 +256,8 @@ class CompanyAdminController extends Controller
             'misc'         => $request->misc,
             'license_id'   => $request->license,
             'languages'    => $request->get('languages'),
+            'availability' => $availability,
+            'assignment_id'=> $request->assignment_id
         ]);
 
         return response()->json([

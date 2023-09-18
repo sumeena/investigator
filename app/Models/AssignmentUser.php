@@ -23,4 +23,15 @@ class AssignmentUser extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function companyAdminProfile()
+    {
+        return $this->belongsTo(CompanyAdminProfile::class,'user_id');
+    }
+
+    public function chats() {
+        return $this->hasMany(Chat::class,'id','investigator_id');
+    }
+
+    
 }

@@ -14,6 +14,7 @@ use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\CompanyAdminController as AdminCompanyController;
 use App\Http\Controllers\Admin\InvestigatorController as AdminInvestigatorController;
 use App\Http\Controllers\CompanyAdmin\CompanyAdminController;
+use App\Http\Controllers\CompanyAdmin\InvestigatorController as CAInvestigatorController;
 use App\Http\Controllers\Investigator\InvestigatorController;
 
 /*
@@ -84,18 +85,36 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['admin']],
 
 // Company Admin Dashboard Routes
 Route::group(['prefix' => 'company-admin', 'as' => 'company-admin.', 'middleware' => ['company-admin']], function () {
+
     Route::get('/', [CompanyAdminController::class, 'index'])->name('index');
     Route::get('/profile', [CompanyAdminController::class, 'viewProfile'])->name('profile');
     Route::get('/find-investigators', [CompanyAdminController::class, 'findInvestigator'])->name('find_investigator');
-    Route::post('/find-investigators-histories', [CompanyAdminController::class, 'saveInvestigatorSearchHistory'])
-        ->name('save-investigator-search-history');
+    
+    Route::post('/find-investigators-histories', [CompanyAdminController::class, 'saveInvestigatorSearchHistory'])->name('save-investigator-search-history');
+
+    Route::post('/assignment/save-notes', [AssignmentsController::class, 'saveAssignmentNotes'])->name('assignment.save-notes');
+    Route::get('/assignment/get-notes', [AssignmentsController::class, 'getAssignmentNotes'])->name('assignment.get-notes');
+
+    Route::post('/find-investigators-histories', [CompanyAdminController::class, 'saveInvestigatorSearchHistory'])->name('save-investigator-search-history');
+
+    Route::post('/search-investigators-histories', [CompanyAdminController::class, 'updateInvestigatorSearchHistory'])->name('update-investigator-search-history');
+    
     Route::get('/assignments', [AssignmentsController::class, 'index'])->name('assignments');
     Route::get('/assignments/create', [AssignmentsController::class, 'create'])->name('assignments.create');
     Route::post('/assignments/invite', [AssignmentsController::class, 'invite'])->name('assignments.invite');
     Route::post('/assignments/store', [AssignmentsController::class, 'store'])->name('assignments.store');
+
+    Route::get('/assignment/{assignment}/show', [AssignmentsController::class, 'show'])->name('assignment.show');
+    Route::get('/assignment/{assignment}/investigator/{user}/', [AssignmentsController::class, 'getInvestigator'])->name('assignment.show-investigator');
+
     Route::get('/assignments/{assignment}/edit', [AssignmentsController::class, 'edit'])->name('assignments.edit');
+    Route::get('/assignments/{assignment}/mark-as-complete', [AssignmentsController::class, 'markComplete'])->name('assignments.mark-as-complete');
+    
     Route::put('/assignments/{assignment}/update', [AssignmentsController::class, 'update'])->name('assignments.update');
     Route::delete('/assignments/{assignment}/destroy', [AssignmentsController::class, 'destroy'])->name('assignments.destroy');
+
+    Route::post('/assignments/{assignment}/delete', [AssignmentsController::class, 'softDeleteAssignment'])->name('assignments.delete');
+
     Route::get('/select2-assignments', [AssignmentsController::class, 'select2Assignments'])->name('select2-assignments');
     Route::post('/profile/submit', [CompanyAdminController::class, 'store'])->name('profile.submit');
     Route::get('/my-profile', [CompanyAdminController::class, 'myProfile'])->name('my-profile');
@@ -107,6 +126,14 @@ Route::group(['prefix' => 'company-admin', 'as' => 'company-admin.', 'middleware
         ->name('profile.update');
     Route::get('/view-profile', [CompanyAdminController::class, 'companyProfile'])->name('view');
 
+    Route::get('/assignments-list', [AssignmentsController::class, 'assignments_list'])->name('assignments-list');
+
+    Route::get('/assignment/fetchAssignmentUser', [AssignmentsController::class, 'getAssignmentUser'])->name('assignment.assignment-user.show');
+    Route::post('/assignment/hire-now', [AssignmentsController::class, 'hireInvestigator'])->name('assignment.hire-now');
+
+    // send msg from assignment
+    Route::post('/assignment/send-user-msg', [AssignmentsController::class, 'sendMessage'])->name('assignment.send-msg');
+    Route::post('/assignment/send-attachment', [AssignmentsController::class, 'sendAttachmentMessage'])->name('assignment.send-attachment');
 
     Route::group(['prefix' => 'company-users', 'as' => 'company-users.'], function () {
         Route::get('/', [CompanyUsersController::class, 'index'])->name('index');
@@ -119,6 +146,13 @@ Route::group(['prefix' => 'company-admin', 'as' => 'company-admin.', 'middleware
         Route::post('/update-password', [CompanyUsersController::class, 'passwordUpdate'])
             ->name('update-password');
     });
+
+
+    Route::group(['prefix' => 'investigators', 'as' => 'investigators.'], function () {
+        Route::get('/{id}/view', [CAInvestigatorController::class, 'profileView'])->name('view');
+    });
+
+
 });
 
 // HM Dashboard Routes
@@ -178,11 +212,16 @@ Route::group(['prefix' => 'investigator', 'as' => 'investigator.', 'middleware' 
     Route::get('/company-admins', [CompanyAdminsController::class, 'index'])->name('company-admins.index');
     Route::post('/company-admins/block-unblock/{company_admin_id}', [CompanyAdminsController::class, 'blockUnblockCompanyAdmin'])->name('company-admins.block-unblock');
 
+    // send msg from assignment
+    Route::post('/assignment/send-msg', [InvitationsController::class, 'sendMessage'])->name('assignment.send-msg');
+    Route::post('/assignment/send-attachment', [InvitationsController::class, 'sendAttachmentMessage'])->name('assignment.send-attachment');
+
 
     // Invitation routes
     Route::get('/invitations', [InvitationsController::class, 'index'])->name('invitations.index');
-    Route::get('/invitations/{assignment_user}/show', [InvitationsController::class, 'show'])->name('invitations.show');
-    Route::get('/invitations/{assignment_user}/destroy', [InvitationsController::class, 'destroy'])->name('invitations.destroy');
+    Route::get('/assignments-listing', [InvitationsController::class, 'index'])->name('assignments-listing');
+    Route::get('/assignment/{assignment_user}/show', [InvitationsController::class, 'show'])->name('assignment.show');
+    Route::get('/assignment/{assignment_user}/destroy', [InvitationsController::class, 'destroy'])->name('assignment.destroy');
 
     // Notification routes
     Route::get('/notifications', [NotificationsController::class, 'index'])->name('notifications.index');

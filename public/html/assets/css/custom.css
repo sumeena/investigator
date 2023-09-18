@@ -6,7 +6,7 @@
 }
 .investigator_profile_vechile_make{
   width:80px;
-}
+  }
 .investigator_profile_vechile_model{
   width:80px;
 }
@@ -99,7 +99,7 @@ padding-right: 5px;
   font-size: 18px;
   color: #fff;
   background: #0b509d;
-  padding: 10px 10px;
+  padding: 15px 10px;
 }
 .highlightRow {
   background: #e1efff;
@@ -108,7 +108,7 @@ padding-right: 5px;
 .investigator-view-profile-link{
   float: right;
   margin-right: 14px;
-  margin-top: -50px;
+  /* margin-top: -50px; */
 }
 
 .hrprofileview{
@@ -140,3 +140,166 @@ padding-right: 5px;
 .mr-10 {
   margin-right: 10px;
 }
+
+.btn.btn-rounded {
+  border-radius: 50px;
+}
+
+.pad-a-0 {
+  padding: 0;
+}
+
+.pad-a-10 
+{
+  padding: 10px;
+}
+
+.receive-msg {
+  background-color: #f3f3f3;
+  border-radius: 0px 15px 15px 15px
+}
+
+.send-msg {
+  background-color: rgba(57, 192, 237,.2);
+  border-radius: 15px 0px 15px 15px
+}
+
+.success-msg {
+  color: #008000;
+}
+
+#attachment {
+  display: none;
+}
+
+.attachment-src img {
+  border: 1px solid #ccc;
+}
+
+.assignment-heading button {
+  float: right;
+}
+
+.empty-error {
+  border: 1px solid #d60000;
+}
+
+.error {
+  color: #d60000;
+}
+
+.btn-back {
+  width: 100px;
+  margin-bottom: 12px;
+}
+
+.assignment-col {
+  background-color: #0b509d;
+}
+
+.assignment-col a {
+  padding: 11px 0px;
+}
+
+.row-heading {
+  padding: 0 15px 15px;
+}
+
+.hire-user button {
+    width: 100px;
+    font-weight: bolder;
+    font-size: 15px;
+}
+
+h5.assignment-heading {
+  background-color: transparent !important;
+  padding: 15px 10px 4px !important;
+}
+
+.m-l-20 {
+  margin-left: 20px;
+}
+
+button.btn.btn-outline-light.btn-sm.btn-hire-now, button.btn.btn-light.btn-sm.btn-hired {
+  width: 150px;
+}
+/*  Assignment Page Starts  */
+
+.assignmentMain .card{
+	box-shadow: 0 0 0 transparent;
+	background-color: transparent;
+}
+
+.assignmentMain > .row > .col-md-2 {
+	background: #f1f8fb;
+}
+.assignmentMain > .row > .col-md-2 {
+	background: #ebf4fb;
+}
+.assignmentMain > .row > .col-md-2 > .card > button.btn {
+	text-align: left;
+	background-color: transparent;
+	box-shadow: 0 0 0;
+	border: 0 none;
+	border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+	border-left: 5px solid transparent;
+	border-radius: 0;
+	color: rgba(0, 0, 0, 0.6);
+	text-transform: capitalize;
+	font-size: 14px;
+	padding: 1em 0.5em;
+	font-weight: 600;
+}
+
+.assignmentMain > .row > .col-md-2 > .card > .btn.active {
+	/* background-color: #0b509d; */
+	color: #0b509d;
+	border-left: 5px solid #0b509d;
+}
+.assignmentMain > .row > .col-md-2 > .card > button.btn.btn-success {
+	position: relative;
+	border-radius: 0;
+	box-shadow: 0 0 0;
+	margin: 0em 0;
+}
+.assignmentMain > .row > .col-md-2 > .card > button.btn.btn-success.active {
+	border-left-color: #0b509d;	
+}
+.assignmentMain .btn.btn-success.btn-users.users-list:after {
+	content: "\ebac";
+	font-family: boxicons !important;
+	color: #0b509d;
+	top: 5px;
+	position: absolute;
+	right: 0.7em;
+	font-size: 16px;
+}
+
+.assignmentMain .col-md-10 .card > .row:first-child .btn.btn-back {
+	background-color: #0b509d;
+	border-color: #0b509d;
+	color: #FFF;
+}
+.assignmentMain .col-md-10 .card > .row:first-child .btn.btn-back:hover,
+.assignmentMain .col-md-10 .card > .row:first-child .btn.btn-back:active,
+.assignmentMain .col-md-10 .card > .row:first-child .btn.btn-back:focus {
+	background-color: #FFFFFF;
+	border-color: #0b509d;
+	color: #0b509d;
+}
+
+
+@media(min-width: 767px){
+
+	.assignmentMain {
+		margin-top: 3.7em;
+	}
+	.assignmentMain .col-md-10 .card > .row:first-child {
+		margin-top: -5em;
+		margin-bottom: 1.5em;
+	}
+	
+}
+
+
+/*  Assignment Page  Ends  */

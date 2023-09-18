@@ -1,3 +1,4 @@
+{{assignmentUsers}}
 <table class="table" id="investigator-table">
     <thead>
     <tr>
@@ -24,10 +25,6 @@
                 $surv = $investigator->getServiceType('surveillance');
                 $stat = $investigator->getServiceType('statements');
                 $misc = $investigator->getServiceType('misc');
-                $disabled = '';
-
-                if(in_array($investigator->id,$assignmentUsers))
-                $disabled = 'disabled';
             @endphp
             <td>{{ $surv ? 'Yes' : '-' }}</td>
             <td>{{ $surv ? $surv->hourly_rate : '-' }}</td>
@@ -39,16 +36,12 @@
                 miles
             </td>
             <td class="text-center">
-                
-                @if(!empty($disabled))
-                    <button type="button" {{$disabled}} class="btn btn-success btn-sm inviteSendBtn" data-assignment-count="{{ $assignmentCount }}" data-investigator-id="{{ $investigator->id }}">
-                        <i class="fas fa-check"></i>
-                    </button>
-                @else
-                    <button type="button" class="btn btn-info btn-sm inviteSendBtn" data-assignment-count="{{ $assignmentCount }}" data-investigator-id="{{ $investigator->id }}">
-                        <i class="fas fa-paper-plane"></i>
-                    </button>
-                @endif
+                <button type="button"
+                        class="btn btn-info btn-sm inviteSendBtn"
+                        data-assignment-count="{{ $assignmentCount }}"
+                        data-investigator-id="{{ $investigator->id }}">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
             </td>
         </tr>
     @empty

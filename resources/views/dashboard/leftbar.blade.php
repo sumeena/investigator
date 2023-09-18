@@ -91,6 +91,14 @@
                         <div data-i18n="Analytics">Find Investigators</div>
                     </a>
                 </li>
+
+                <li class="menu-item {{ request()->routeIs('company-admin.assignments-list') ? 'active' : '' }}">
+                    <a href="{{ route('company-admin.assignments-list') }}" class="menu-link">
+                        <i class="bx bx-user me-2"></i>
+                        <div data-i18n="Analytics">Assignments</div>
+                    </a>
+                </li>
+
                 <li class="menu-item {{ request()->routeIs('company-admin.view') ? 'active' : '' }}">
                     <a href="{{ route('company-admin.view') }}" class="menu-link">
                         <i class="bx bx-building me-2"></i>
@@ -122,6 +130,14 @@
                         <div data-i18n="Analytics">View Profile</div>
                     </a>
                 </li>
+
+                <li class="menu-item {{ request()->routeIs('investigator.assignments-listing') ? 'active' : '' }}">
+                    <a href="{{ route('investigator.assignments-listing') }}" class="menu-link">
+                        <i class="bx bxs-card me-2"></i>
+                        <div data-i18n="Analytics">Assignments</div>
+                    </a>
+                </li>
+
                 <li class="menu-item {{ request()->routeIs('investigator.company-admins.index') ? 'active' : '' }}">
                     <a href="{{ route('investigator.company-admins.index') }}" class="menu-link">
                         <i class="bx bx-user me-2"></i>
@@ -145,12 +161,7 @@
                 </a>
             </li>
 
-            <li class="menu-item {{ request()->routeIs('investigator.invitations.*') ? 'active' : '' }}">
-                <a href="{{ route('investigator.invitations.index') }}" class="menu-link">
-                    <i class="bx bxs-card me-2"></i>
-                    <div data-i18n="Analytics">Invitations</div>
-                </a>
-            </li>
+            
 
         @endif
 

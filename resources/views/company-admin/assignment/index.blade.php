@@ -47,24 +47,13 @@
                                         <td>{{ @$invitation->assignment->author->CompanyAdminProfile->company_phone ?? 'N/A' }}</td>
                                         <td>{{ @Str::upper($invitation->assignment->client_id) }}</td>
                                         <td>{{ @Str::upper($invitation->assignment->assignment_id) }}</td>
-                                        <td>
-
-                                        @php
-                                        $status = '';
-                                        if($invitation->hired == 1 && $invitation->assignment->status == 'ASSIGNED')
-                                            $status = 'ASSIGNED';
-                                        else if(($invitation->hired == 0 && $invitation->assignment->status == 'ASSIGNED') || ($invitation->hired == 0 && $invitation->assignment->status == 'COMPLETED'))
-                                            $status = 'CLOSED';
-                                        else
-                                            $status = $invitation->assignment->status;
-                                        @endphp
-                                        
-                                        {{ @Str::upper($status) }}</td>
+                                        <td>{{ @Str::upper($invitation->assignment->status) }}</td>
                                         <!-- <td>{{ $invitation->created_at->diffForHumans() }}</td> -->
                                         <td>{{ $invitation->created_at->format('d-m-Y') }}</td>
                                         <td class="text-center">
                                             <a href="{{ route('investigator.assignment.show', $invitation->id) }}">View</a> |
-                                            <a onclick="return confirm('Are you sure want to delete?')" href="{{ route('investigator.assignment.destroy', $invitation->id) }}">Delete</a>
+                                            <a onclick="return confirm('Are you sure want to delete?')"
+                                               href="{{ route('investigator.assignment.destroy', $invitation->id) }}">Delete</a>
                                         </td>
                                     </tr>
                                 @empty

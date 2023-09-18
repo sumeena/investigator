@@ -39,6 +39,7 @@
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
 
+    <link rel="stylesheet" href="{{ asset('html/assets/css/wickedpicker.min.css') }}" >
     @stack('styles')
 
     <!-- Helpers -->
@@ -125,6 +126,9 @@
 
     <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+
+    <script type="text/javascript" src="{{ asset('html/assets/js/wickedpicker.min.js') }}"></script>
+
     <!-- custom js -->
     <script src="{{ asset('html/assets/js/custom.js') }}"></script>
 

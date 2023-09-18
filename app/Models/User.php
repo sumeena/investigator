@@ -225,7 +225,7 @@ class User extends Authenticatable
             // $companyId = CompanyUser::where('user_id', $user->id)->select('parent_id')->first()->parent_id;
         }
 
-        $investigatorsWithoutEvents = self::investigatorsWithoutEvents($request['availability']);
+        $investigatorsWithoutEvents = self::investigatorsWithoutEvents($request->all());
 
         $query = self::query()
             ->with([
@@ -268,14 +268,13 @@ class User extends Authenticatable
             ->thenReturn();
     }
 
-    public static function investigatorsWithoutEvents($dateRange) {
-
+    public static function investigatorsWithoutEvents($data) {
+        // dd($data);
+        $dateRange = $data['availability'];
         $dateRange = explode('-', $dateRange);
-        $onlyStartDate = explode(' ', trim($dateRange[0])); // search date start
-        $onlyEndDate = explode(' ', trim($dateRange[1]));   // search date end
-
-        $searchStartDate = Carbon::parse($onlyStartDate[0])->format('Y-m-d');
-        $searchEndDate = Carbon::parse($onlyEndDate[0])->format('Y-m-d');
+        
+        $searchStartDate = Carbon::parse(trim($dateRange[0]))->format('Y-m-d');
+        $searchEndDate = Carbon::parse(trim($dateRange[1]))->format('Y-m-d');
 
         $eventDetails = CalendarEvents::whereBetween('start_date', [$searchStartDate, $searchEndDate])->select('user_id','id','start_date','end_date','start_time','end_time')->get()->toArray();
 
@@ -285,37 +284,41 @@ class User extends Authenticatable
             $events[] = ['user_id' => $eventDetail['user_id'], 'start_date' => $eventDetail['start_date']. ' '.$eventDetail['start_time'], 'end_date' => $eventDetail['end_date'] . ' '. $eventDetail['end_time']];
         }
 
-        $start_date  = strtotime(Carbon::parse($dateRange[0])->format('Y-m-d'));
-        $end_date  = strtotime(Carbon::parse($dateRange[1])->format('Y-m-d'));
+        $start_date  = strtotime($searchStartDate);
+        $end_date  = strtotime($searchEndDate);
 
-        $start_time   = strtotime(Carbon::parse($dateRange[0])->format('h:i A'));
-        $end_time   = strtotime(Carbon::parse($dateRange[1])->format('h:i A'));
+        $data['start_time'] = $searchStartDate.' '.str_replace(' ', '', $data['start_time']);
+        $data['end_time'] = $searchEndDate.' '.str_replace(' ', '', $data['end_time']);
+        $start_time   = strtotime(Carbon::parse($data['start_time']));
+        $end_time   = strtotime(Carbon::parse($data['end_time']));
 
         $users_without_events = array_filter($users, function($user) use ($events, $start_date, $end_date, $start_time, $end_time) {
+            $usersWithEvents = array();
             for ($date = $start_date; $date <= $end_date; $date = strtotime("+1 day", $date)) {
+
                 $start_of_range = strtotime(date("Y-m-d", $date) . " " . date("h:i A", $start_time));
                 $end_of_range = strtotime(date("Y-m-d", $date) . " " . date("h:i A", $end_time));
         
-                if (!self::hasOverlappingEvents($events, $start_of_range, $end_of_range)) {
-                    return true;
-                }
+               $usersWithEvents = self::hasOverlappingEvents($events, $start_of_range, $end_of_range, $user);
             }
-            return false;
+            return !in_array($user, $usersWithEvents);
         });
-        // dd($users_without_events);
-        return $users_without_events;
+
+        // dd( array_values($users_without_events));
+        return array_values($users_without_events);
     }
 
-    public static function hasOverlappingEvents($events, $start_date_time, $end_date_time) {
+    public static function hasOverlappingEvents($events, $start_date_time, $end_date_time, $user) {
+        $userIds = array();
         foreach ($events as $event) {
             $event_start = strtotime($event["start_date"]);
             $event_end = strtotime($event["end_date"]);
-
             if ($event_start <= $end_date_time && $event_end >= $start_date_time) {
-                return true;
-            }
+                    $userIds[] = $event['user_id'];
+                    // return true;
+                }
         }
-        return false;
+        return $userIds;
     }
 
     public function getServiceType($service_type)
