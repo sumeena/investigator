@@ -49,13 +49,32 @@ class InvestigatorController extends Controller
         if ($request->id) {
             session()->flash('success', 'Hi Admin , Investigator Record Updated Successfully!');
         } else {
-            Mail::to($user)->send(new UserCredentialMail([
-                'role'       => $user->userRole->role,
-                'first_name' => $user->first_name,
-                'last_name'  => $user->last_name,
-                'email'      => $user->email,
-                'password'   => $password
-            ]));
+            try {
+                // echo $user->email; die;
+
+                $mailData = [
+                    'role' => $user->userRole->role,
+                    'first_name' => $user->first_name,
+                    'last_name'  => $user->last_name,
+                    'email'      => $user->email,
+                    'password'   => $password
+                ];
+
+                $abc = new UserCredentialMail($mailData);
+                /* echo '<pre>';
+                print_r($abc); */
+
+
+
+            $mail = Mail::to($user->email)->send(new UserCredentialMail($mailData));
+
+            if (Mail::failures()) {
+                print_r(response()->Fail('Sorry! Please try again latter'));
+           }
+
+        }
+            catch(\Exception $e){
+            }
             session()->flash('success', 'Hi Admin , Investigator Record Added Successfully!');
         }
 

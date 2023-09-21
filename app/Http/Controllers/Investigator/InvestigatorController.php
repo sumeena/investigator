@@ -808,7 +808,7 @@ class InvestigatorController extends Controller
                 "email_address": "'.$userProfile->email.'",
                 "provider": "gmail",
                 "settings": ' . json_encode($google_settings) . ',
-                "scopes": "email, calendar"
+                "scopes": "calendar"
             }',
             CURLOPT_HTTPHEADER => array(
                 'Content-Type: application/json'

@@ -220,8 +220,8 @@
 @endpush
 
 @push('scripts')
-    <script
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAB80hPTftX9xYXqy6_NcooDtW53kiIH3A&libraries=places&callback=initAutocomplete"
-        async defer></script>
+   <script
+            src="https://maps.googleapis.com/maps/api/js?key={{ config('services.google.api_key') }}&libraries=places&callback=initAutocomplete"
+            async defer></script>
     <script src="{{ asset('html/assets/js/address-auto-complete.js') }}"></script>
 @endpush

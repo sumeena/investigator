@@ -30,7 +30,7 @@ class UserCredentialMail extends Mailable
      *
      * @return \Illuminate\Mail\Mailables\Envelope
      */
-    public function envelope()
+    /* public function envelope()
     {
         $subject = 'Hiring Manager Credential Mail';
         if ($this->data['role'] == 'admin') {
@@ -44,14 +44,14 @@ class UserCredentialMail extends Mailable
         return new Envelope(
             subject: $subject,
         );
-    }
+    } */
 
     /**
      * Get the message content definition.
      *
      * @return \Illuminate\Mail\Mailables\Content
      */
-    public function content()
+    /* public function content()
     {
         $roleText = 'hiring manager';
         if ($this->data['role'] == 'admin') {
@@ -65,6 +65,31 @@ class UserCredentialMail extends Mailable
             markdown: 'emails.user_credential',
             with: ['data' => $this->data, 'roleText' => $roleText]
         );
+    }
+ */
+
+    public function build()
+    {
+        $roleText = 'hiring manager';
+        if ($this->data['role'] == 'admin') {
+            $roleText = 'admin';
+        } elseif ($this->data['role'] == 'company-admin') {
+            $roleText = 'company admin';
+        } elseif ($this->data['role'] == 'investigator') {
+            $roleText = 'investigator';
+        }
+
+        $subject = 'Hiring Manager Credential Mail';
+        if ($this->data['role'] == 'admin') {
+            $subject = 'Admin Credential Mail';
+        } elseif ($this->data['role'] == 'company-admin') {
+            $subject = 'Company Admin Credential Mail';
+        } elseif ($this->data['role'] == 'investigator') {
+            $subject = 'Investigator Credential Mail';
+        }
+
+        return $this->subject($subject)->markdown('emails.user_credential',['data' => $this->data, 'roleText' => $roleText]);
+        // return $this->view('emails.user_credential',['data' => $this->data, 'roleText' => $roleText]);
     }
 
     /**
