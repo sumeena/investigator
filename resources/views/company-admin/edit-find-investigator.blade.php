@@ -215,13 +215,13 @@
                             </div>
 
                             @php
-                            
+
                             $availability = explode(',',$assignment->searchHistory->availability);
 
                             $minDate = explode('-', $availability[0]);
 
                             $timeAvailability = explode('-', $availability[1]);
-                            
+
                             @endphp
 
                             <div class="col-md-6">
@@ -656,8 +656,7 @@
 <link href="//cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 @endpush
 @push('scripts')
-<script src="https://maps.googleapis.com/maps/api/js?key=<?php
- echo Config::get('constants.GOOGLE_MAPS_API_KEY'); ?>&libraries=places&callback=initAutocomplete" async defer></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=<?php echo Config::get('constants.GOOGLE_MAPS_API_KEY'); ?>&libraries=places&callback=initAutocomplete" async defer></script>
 <script src="{{ asset('html/assets/js/address-auto-complete.js') }}"></script>
 <script src="//cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
@@ -1102,7 +1101,7 @@
         /* $('#assignmentCreateModal').on('show.bs.modal', function(event) {
             const modal = $(this)
 
-            
+
         }); */
 
         // Create Assignment

@@ -13,7 +13,7 @@
         'GOOGLE_OAUTH_ACCESS_TOKEN_URL' => 'https://www.googleapis.com/oauth2/v4/token',
         'GOOGLE_OAUTH_TOKEN_VALIDATION_URL' => 'https://www.googleapis.com/oauth2/v1/tokeninfo',
         'GOOGLE_NEW_ACCESS_TOKEN_URL' => 'https://accounts.google.com/o/oauth2/token',
-        'GOOGLE_MAPS_API_KEY' => 'AIzaSyDfccuvGPbdoIokm9W3OTKy6zrqWv3sHpw'
+        'GOOGLE_MAPS_API_KEY' => 'AIzaSyDsP9ruE-smZF33jlozIx9BtE1pjy0Elec'
         //'GOOGLE_MAPS_API_KEY' => 'AIzaSyAB80hPTftX9xYXqy6_NcooDtW53kiIH3A'
     ];
 ?>
