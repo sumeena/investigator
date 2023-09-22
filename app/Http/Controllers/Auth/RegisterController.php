@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Auth;
 use Illuminate\Validation\Rules\RequiredIf;
-
+use App\Notifications\WelcomeMailNotification;
 class RegisterController extends Controller
 {
     /*
@@ -110,7 +110,7 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
-        return User::create([
+        $userData = User::create([
             'first_name' => $data['first_name'],
             'last_name'  => $data['last_name'],
             'role'       => $data['role'],
@@ -118,6 +118,8 @@ class RegisterController extends Controller
             'website'    => $this->checkIsCompanyAdminRole($data['role']) ? preg_replace('/^www\./', '', $data['website']) : null,
             'password'   => Hash::make($data['password']),
         ]);
+        $userData->notify(new WelcomeMailNotification($userData));
+        return $userData;
     }
 
     /**
