@@ -264,6 +264,13 @@ function checkGoogleAccessToken() {
 
 document.addEventListener('DOMContentLoaded', function() {
 
+    var calendarEl = document.getElementById('calendar');
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+    });
+    calendar.render();
+
+
     var currentURL = window.location.href;
     var checkURL = currentURL.includes('/investigator/');
 
@@ -320,14 +327,14 @@ function fetchEvents() {
         url: '/investigator/calendar/fetch-events-onload',
         method: 'GET',
         success: function(data) {
+            console.log(data);
+            if(data) {
             var events = JSON.parse(data);
             if(events.length > 0)
             $('.update-calender-button').removeClass('d-none');
-
             var source = {
                 events: events
             };
-
             var calendarEl = document.getElementById('calendar');
                 var calendar = new FullCalendar.Calendar(calendarEl, {
                     initialView: 'dayGridMonth',
@@ -335,6 +342,7 @@ function fetchEvents() {
                     dayMaxEvents: 3
                 });
                 calendar.render();
+            }
         }
     });
 }

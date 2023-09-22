@@ -1,12 +1,12 @@
 <?php
 
-
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
 
 if (!function_exists('getDistance')) {
     function getDistance($lat1, $lon1, $lat2, $lon2)
     {
-        $url = "https://maps.googleapis.com/maps/api/distancematrix/json?destinations=" . $lat1 . "," . $lon1 . "&origins=" . $lat2 . "," . $lon2 . "&key=AIzaSyAB80hPTftX9xYXqy6_NcooDtW53kiIH3A&units=imperial";
+        $url = "https://maps.googleapis.com/maps/api/distancematrix/json?destinations=" . $lat1 . "," . $lon1 . "&origins=" . $lat2 . "," . $lon2 . "&key=".Config::get('constants.GOOGLE_MAPS_API_KEY')."&units=imperial";
 //        dd($url);
         $response = Http::get($url);
         $data     = $response->json();
