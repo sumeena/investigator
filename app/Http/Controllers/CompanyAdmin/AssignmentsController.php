@@ -25,6 +25,7 @@ class AssignmentsController extends Controller
 {
     public function index()
     {
+        
         $assignments = Assignment::withCount('users')->where(['user_id' => auth()->id(), 'is_delete' => NULL])->orderBy('created_at','desc')->paginate(10);
 
         $html = view('company-admin.assignments-response', compact('assignments'))->render();
