@@ -4,7 +4,7 @@ namespace App\Http\Controllers\CompanyAdmin;
 
 use App\Http\Controllers\Controller;
 use App\Mail\JobInvitationMail;
-use App\Mail\hireJob;
+use App\Mail\HireJob;
 use App\Mail\CloseJob;
 use App\Models\Assignment;
 use App\Models\AssignmentUser;
@@ -244,10 +244,12 @@ class AssignmentsController extends Controller
     /** hire investigator */
 
     public function hireInvestigator(Request $request) {
+        $authUser = auth()->user();
         $authUserId = $request->user_id;
         $assignmentId = $request->assignment_id;
         $assignmentUser = AssignmentUser::where(['assignment_id' => $assignmentId, 'user_id' => $authUserId])->update(['hired' => 1]);
-        $assignment = Assignment::where('id' , $assignmentId)->update(array('status' => 'ASSIGNED'));
+        Assignment::where('id' , $assignmentId)->update(array('status' => 'ASSIGNED'));
+        $assignment = Assignment::find($assignmentId);
         $login=route('login');
         $assignmentUserInfo = AssignmentUser::where(['assignment_id'=>$assignmentId])->get();
         $notificationDataClosed = [
@@ -260,13 +262,16 @@ class AssignmentsController extends Controller
         $notificationDataHired = [
            'title'        => 'Congratulations! You have been selected for a new assignment.',
            'login'        => ' to your account so view the details.',
+           'assigmentId'  => 'Assigment ID: ' . Str::upper($assignment->assignment_id),
+           'clientId'     => 'Client ID: ' . Str::upper($assignment->client_id),
            'loginUrl'        => $login,
+           'companyName'  => 'Company Name: ' .$authUser->parentCompany->company->CompanyAdminProfile?->company_name,
            'thanks'        => 'Ilogistics Team',
          ];
          foreach ($assignmentUserInfo as $item) {
              $investigatorUser = User::find($item->user_id);
              if($item->hired == 1){
-                Mail::to($investigatorUser->email)->send(new hireJob($notificationDataHired));
+                Mail::to($investigatorUser->email)->send(new HireJob($notificationDataHired));
              }else{
                 Mail::to($investigatorUser->email)->send(new CloseJob($notificationDataClosed));
              }
@@ -365,7 +370,7 @@ class AssignmentsController extends Controller
                    'title'        => 'You have been invited to an assignment by ' .$authUser->first_name . ' ' . $authUser->last_name,
                    'assigmentId'  => 'Assigment ID: ' . Str::upper($assignment->assignment_id),
                    'clientId'     => 'Client ID: ' . Str::upper($assignment->client_id),
-                   'companyName'  => 'Company Name: ' .$authUser->CompanyAdminProfile->company_name,
+                   'companyName'  => 'Company Name: ' .$authUser->parentCompany->company->CompanyAdminProfile?->company_name,
                    'login'        => ' to your account so view the details.',
                    'loginUrl'        => $login,
                    'type'         => Notification::INVITATION,
