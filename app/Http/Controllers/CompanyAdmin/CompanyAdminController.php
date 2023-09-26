@@ -96,7 +96,7 @@ class CompanyAdminController extends Controller
 
             $html = view('company-admin.find-investigator-response', compact('investigators', 'assignmentCount','assignmentUsers'))->render();
             $login=route('login');
-            
+
             $notificationData = [
                'title'        => 'The assignment ID '.$assignmentID[0].' which you were invited for has been updated.',
                'loginUrl'        => $login,
@@ -108,6 +108,7 @@ class CompanyAdminController extends Controller
               $assignmentUsers = AssignmentUser::where(['assignment_id' => $request->assignment_id,'hired' => 0])->get();
                 foreach ($assignmentUsers as $item) {
                     $investigatorUser = User::find($item->user_id);
+                    
                       Mail::to($investigatorUser->email)->send(new JobUpdate($notificationData));
                 }
             }
