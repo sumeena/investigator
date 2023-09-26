@@ -1,4 +1,3 @@
-{{assignmentUsers}}
 <table class="table" id="investigator-table">
     <thead>
     <tr>

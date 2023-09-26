@@ -248,9 +248,77 @@ $(document).ready(function(){
                 $('.job-status').html('HIRED'); */
             }
         })
-    })
+    });
+
+
+    /** clone assignment module start */
+    $(document).on('click', '.callCloneAssignmentModal', function() {
+
+        var assignmentUrl = $(this).data('assignment-url');
+        var assignmentId = $(this).data('assignment-id');
+        var clientId = $(this).data('client-id');
+
+        $.ajax({
+            url: assignmentUrl,
+            type: 'GET',
+            success: function(response) {
+                $('#assignmentId').val(response.data.assignment_id);
+            },
+            error: function(xhr) {
+                console.log(xhr.responseText);
+            }
+        });
+        
+        $('#clientId').val(clientId);
+        $('#sourceAssignmentId').val(assignmentId);
+        $('#cloneAssignmentModal').modal('show');
+    });
+
+
+    $('#assignmentCloneForm').on('submit', function(e) {
+
+        e.preventDefault();
+
+        var assignmentId = $('#assignmentId');
+        var sourceAssignmentId = $('#sourceAssignmentId');
+        var clientId = $('#clientId');
+
+        var formAction = $(this).attr('action');
+
+        var assignmentIdVal = assignmentId.val();
+        var clientIdVal = clientId.val();
+        var sourceAssignmentIdVal = sourceAssignmentId.val();
+
+        var data = {
+            assignment_id: assignmentIdVal,
+            old_assignment_id : sourceAssignmentIdVal,
+            client_id: clientIdVal,
+            type : 'clone'
+        };
+
+        $.ajax({
+            url: formAction,
+            method: 'POST',
+            data: data,
+            success: function(response) {
+                window.location.replace(response);
+                // window.location.href="/company-admin/assignments/"+response.assignmentID+"/edit";
+                /* $('#assignment-flash').text(response.message);
+                $('#assignment-flash').show();
+                fetchAssignmentData({
+                    page: 1
+                });
+                $('#assignmentCreateModal').modal('hide'); */
+            },
+            error: function(xhr) {
+                console.log(xhr.responseText);
+            }
+        });
+    });
 
 });
+
+
 
 
 function checkGoogleAccessToken() {
