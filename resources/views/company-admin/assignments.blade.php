@@ -82,7 +82,8 @@
                                                 @endphp
                                                 <a style="@php echo $pointer; @endphp" href="javascript:void(0)" class="deleteAssignmentBtn" data-id="{{ $assignment->id }}">
                                                     <i class="fas fa-trash"></i>
-                                                </a>
+                                                </a> | 
+                                                <a class="callCloneAssignmentModal" data-assignment-url="{{ $assignmentCreateAction }}" data-client-id="{{ $assignment->client_id }}" href="javascript:void(0)"><i class="fa-solid fa-clone"></i></a>
                                             </td>
                                         </tr>
                                         @empty
@@ -111,6 +112,45 @@
                 </div>
             </div>
 
+        </div>
+    </div>
+</div>
+
+
+{{-- Create Assignment Modal --}}
+<div class="modal fade" id="cloneAssignmentModal" tabindex="-1" aria-labelledby="cloneAssignmentModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="cloneAssignmentModalLabel">Create Assignment</h5>
+                <button type="button" class="close btn btn-danger" data-dismiss="modal" aria-label="Close" id="createModalCloseIconBtn">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form action="{{ $assignmentStoreAction }}" method="post" id="assignmentCloneForm">
+                <div class="modal-body">
+                    <div class="form-group mb-3">
+                        <label for="assignment-id">
+                            Assignment ID
+                        </label>
+                        <input type="text" name="assignment_id" class="form-control" id="assignmentId" placeholder="Enter assignment ID" readonly required>
+                    </div>
+                    <div class="form-group">
+                        <label for="client-id">
+                            Client ID
+                        </label>
+                        <input type="text" name="client_id" class="form-control" id="clientId" placeholder="Enter client ID" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal" id="createModalCloseBtn">
+                        Close
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        Save
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -153,6 +193,7 @@
         </div>
     </div>
 </div>
+
 
 {{-- No Assignment Create Assignment Modal --}}
 <div class="modal fade" id="noAssignmentCreateModal" tabindex="-1" aria-labelledby="noAssignmentCreateModalLabel" aria-hidden="true">

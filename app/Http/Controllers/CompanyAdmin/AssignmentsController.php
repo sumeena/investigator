@@ -50,7 +50,7 @@ class AssignmentsController extends Controller
     {
         $request->validate([
             'assignment_id' => 'bail|required|string|max:255|unique:assignments',
-            'client_id'     => 'bail|required|string|max:255|unique:assignments',
+            'client_id'     => 'bail|required|string|max:255',
         ]);
 
         $storeAssignment = Assignment::create([

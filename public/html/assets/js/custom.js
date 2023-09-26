@@ -248,9 +248,71 @@ $(document).ready(function(){
                 $('.job-status').html('HIRED'); */
             }
         })
-    })
+    });
+
+
+    /** clone assignment module start */
+    $(document).on('click', '.callCloneAssignmentModal', function() {
+
+        var assignmentUrl = $(this).data('assignment-url');
+        var clientId = $(this).data('client-id');
+
+        $.ajax({
+            url: assignmentUrl,
+            type: 'GET',
+            success: function(response) {
+                $('#assignmentId').val(response.data.assignment_id);
+            },
+            error: function(xhr) {
+                console.log(xhr.responseText);
+            }
+        });
+        
+        $('#clientId').val(clientId);
+        $('#cloneAssignmentModal').modal('show');
+    });
+
+
+    $('#assignmentCloneForm').on('submit', function(e) {
+
+        e.preventDefault();
+
+        const assignmentId = $('#assignmentId');
+        const clientId = $('#clientId');
+
+        var formAction = $(this).attr('action');
+
+        const assignmentIdVal = assignmentId.val();
+        const clientIdVal = clientId.val();
+
+        const data = {
+            assignment_id: assignmentIdVal,
+            client_id: clientIdVal
+        };
+
+        $.ajax({
+            url: formAction,
+            method: 'POST',
+            data: data,
+            success: function(response) {
+                console.log(response);
+                window.location.href="/company-admin/assignments/60/edit";
+                /* $('#assignment-flash').text(response.message);
+                $('#assignment-flash').show();
+                fetchAssignmentData({
+                    page: 1
+                });
+                $('#assignmentCreateModal').modal('hide'); */
+            },
+            error: function(xhr) {
+                console.log(xhr.responseText);
+            }
+        });
+    });
 
 });
+
+
 
 
 function checkGoogleAccessToken() {
