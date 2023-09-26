@@ -255,6 +255,7 @@ $(document).ready(function(){
     $(document).on('click', '.callCloneAssignmentModal', function() {
 
         var assignmentUrl = $(this).data('assignment-url');
+        var assignmentId = $(this).data('assignment-id');
         var clientId = $(this).data('client-id');
 
         $.ajax({
@@ -269,6 +270,7 @@ $(document).ready(function(){
         });
         
         $('#clientId').val(clientId);
+        $('#sourceAssignmentId').val(assignmentId);
         $('#cloneAssignmentModal').modal('show');
     });
 
@@ -277,17 +279,21 @@ $(document).ready(function(){
 
         e.preventDefault();
 
-        const assignmentId = $('#assignmentId');
-        const clientId = $('#clientId');
+        var assignmentId = $('#assignmentId');
+        var sourceAssignmentId = $('#sourceAssignmentId');
+        var clientId = $('#clientId');
 
         var formAction = $(this).attr('action');
 
-        const assignmentIdVal = assignmentId.val();
-        const clientIdVal = clientId.val();
+        var assignmentIdVal = assignmentId.val();
+        var clientIdVal = clientId.val();
+        var sourceAssignmentIdVal = sourceAssignmentId.val();
 
-        const data = {
+        var data = {
             assignment_id: assignmentIdVal,
-            client_id: clientIdVal
+            old_assignment_id : sourceAssignmentIdVal,
+            client_id: clientIdVal,
+            type : 'clone'
         };
 
         $.ajax({
@@ -295,8 +301,8 @@ $(document).ready(function(){
             method: 'POST',
             data: data,
             success: function(response) {
-                console.log(response);
-                window.location.href="/company-admin/assignments/60/edit";
+                window.location.replace(response);
+                // window.location.href="/company-admin/assignments/"+response.assignmentID+"/edit";
                 /* $('#assignment-flash').text(response.message);
                 $('#assignment-flash').show();
                 fetchAssignmentData({

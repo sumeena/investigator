@@ -83,7 +83,7 @@
                                                 <a style="@php echo $pointer; @endphp" href="javascript:void(0)" class="deleteAssignmentBtn" data-id="{{ $assignment->id }}">
                                                     <i class="fas fa-trash"></i>
                                                 </a> | 
-                                                <a class="callCloneAssignmentModal" data-assignment-url="{{ $assignmentCreateAction }}" data-client-id="{{ $assignment->client_id }}" href="javascript:void(0)"><i class="fa-solid fa-clone"></i></a>
+                                                <a class="callCloneAssignmentModal" data-assignment-id="{{ $assignment->id }}" data-assignment-url="{{ $assignmentCreateAction }}" data-client-id="{{ $assignment->client_id }}" href="javascript:void(0)"><i class="fa-solid fa-clone"></i></a>
                                             </td>
                                         </tr>
                                         @empty
@@ -133,6 +133,8 @@
                         <label for="assignment-id">
                             Assignment ID
                         </label>
+                        <input type="hidden" name="source_assignment_id" class="form-control" id="sourceAssignmentId" placeholder="Enter assignment ID" readonly required>
+                        
                         <input type="text" name="assignment_id" class="form-control" id="assignmentId" placeholder="Enter assignment ID" readonly required>
                     </div>
                     <div class="form-group">

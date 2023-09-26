@@ -10,6 +10,7 @@ use App\Models\Assignment;
 use App\Models\AssignmentUser;
 use App\Models\Chat;
 use App\Models\ChatMessage;
+use App\Models\InvestigatorSearchHistory;
 use App\Models\Invitation;
 use App\Models\Language;
 use App\Models\Media;
@@ -27,7 +28,6 @@ class AssignmentsController extends Controller
 {
     public function index()
     {
-
         $assignments = Assignment::withCount('users')->where(['user_id' => auth()->id(), 'is_delete' => NULL])->orderBy('created_at','desc')->paginate(10);
 
         $html = view('company-admin.assignments-response', compact('assignments'))->render();
@@ -61,6 +61,22 @@ class AssignmentsController extends Controller
             'client_id'     => $request->client_id,
         ]);
 
+        if(isset($request->type) && $request->type == 'clone') {
+
+            $sourceAssignmentID = InvestigatorSearchHistory::where('assignment_id',$request->old_assignment_id)->pluck('id');
+
+            $sourceAssignmentData = InvestigatorSearchHistory::find($sourceAssignmentID[0]);
+
+            $newAssignmentData = $sourceAssignmentData->replicate();
+            $newAssignmentData->assignment_id = $storeAssignment->id;
+            $savedAssignment = $newAssignmentData->save();
+
+            session()->flash('success', 'Assignment Cloned successfully');
+
+            return route('company-admin.assignments.edit', ['assignment' => $storeAssignment->id]);
+            // exit;
+        }
+
         return response()->json([
             'success' => true,
             'message' => 'Assignment created successfully!',
@@ -81,13 +97,10 @@ class AssignmentsController extends Controller
     } */
 
 
-
-
     /** edit find investigator */
 
     public function edit(Assignment $assignment, Request $request)
     {
-        // dd($request->all());
         $states          = State::all();
         $languageOptions = Language::all();
         $filtered        = false;
@@ -141,10 +154,6 @@ class AssignmentsController extends Controller
             || $request->get('statements')
             || $request->get('misc');
     }
-
-
-
-
 
     public function update(Request $request, Assignment $assignment)
     {
