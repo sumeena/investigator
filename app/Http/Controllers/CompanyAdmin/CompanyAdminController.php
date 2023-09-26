@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\CompanyAdmin;
 
 use App\Http\Controllers\Controller;
+use App\Mail\JobUpdate;
 use App\Models\Assignment;
 use App\Models\InvestigatorSearchHistory;
 use App\Models\Language;
@@ -19,6 +20,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 
 
 class CompanyAdminController extends Controller
@@ -73,6 +75,7 @@ class CompanyAdminController extends Controller
 
     public function findInvestigator(Request $request)
     {
+
         // dd($request->all());
         $states          = State::all();
         $languageOptions = Language::all();
@@ -80,7 +83,8 @@ class CompanyAdminController extends Controller
         $investigators   = [];
         $assignments     = Assignment::where('user_id', auth()->id())->paginate(10);
         $assignmentCount = Assignment::where('user_id', auth()->id())->count();
-        $assignmentUsers = AssignmentUser::where('assignment_id', $request->assignment_id)->pluck('user_id')->toArray();
+        $assignmentID = Assignment::where('id', $request->assignment_id)->pluck('assignment_id');
+        $assignmentUsers = AssignmentUser::where('assignment_id', )->pluck('user_id')->toArray();
 
         if ($this->checkQueryAvailablity($request)) {
             $filtered      = true;
@@ -91,11 +95,27 @@ class CompanyAdminController extends Controller
         if ($request->ajax()) {
 
             $html = view('company-admin.find-investigator-response', compact('investigators', 'assignmentCount','assignmentUsers'))->render();
-
+            $login=route('login');
+            
+            $notificationData = [
+               'title'        => 'The assignment ID '.$assignmentID[0].' which you were invited for has been updated.',
+               'loginUrl'        => $login,
+               'login'        => ' to your account so view the details.',
+               'thanks'        => 'Ilogistics Team',
+             ];
+            $assignmentUsers = AssignmentUser::where(['assignment_id' => $request->assignment_id,'hired' => 1])->get();
+            if(count($assignmentUsers) == 0){
+              $assignmentUsers = AssignmentUser::where(['assignment_id' => $request->assignment_id,'hired' => 0])->get();
+                foreach ($assignmentUsers as $item) {
+                    $investigatorUser = User::find($item->user_id);
+                      Mail::to($investigatorUser->email)->send(new JobUpdate($notificationData));
+                }
+            }
             return response()->json([
                 'data' => $html,
             ]);
         }
+
 
         return view(
             'company-admin.find-investigator',
@@ -109,7 +129,7 @@ class CompanyAdminController extends Controller
             )
         );
     }
-    
+
 
     /**
      * @param Request $request
