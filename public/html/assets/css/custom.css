@@ -294,7 +294,7 @@ button.btn.btn-outline-light.btn-sm.btn-hire-now, button.btn.btn-light.btn-sm.bt
 		margin-top: 3.7em;
 	}
 	.assignmentMain .col-md-10 .card > .row:first-child {
-		margin-top: -5em;
+		/* margin-top: -5em; */
 		margin-bottom: 1.5em;
 	}
 	

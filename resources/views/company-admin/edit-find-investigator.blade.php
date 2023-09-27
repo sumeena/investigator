@@ -1,6 +1,7 @@
 @extends('layouts.dashboard')
 @section('title', 'Find Investigators')
 @section('content')
+
 <div class="container">
     <!-- <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
                 <li class="nav-item" role="presentation">
@@ -26,6 +27,12 @@
                     <h5 class="mb-0 invSearchTitle">Investigator Search</h5>
                 </div>
                 <div class="card-body">
+                    @if(session('success'))
+                        <div class="alert alert-success" role="alert">
+                            {{ session('success') }}
+                        </div>
+                    @endif
+
                     @php
                     $action = route('company-admin.find_investigator');
                     $assignmentsAction = route('company-admin.assignments');
@@ -79,30 +86,30 @@
                                                 <tbody>
                                                     <tr>
                                                         <td>
-                                                            <input type="text" class="form-control caseLocationField" placeholder="Street" name="address" id="autocomplete" value="{{$assignment->searchHistory->street}}">
+                                                            <input type="text" class="form-control caseLocationField" placeholder="Street" name="address" id="autocomplete" value="{{@$assignment->searchHistory->street}}">
                                                             <span role="alert" class="text-danger small d-none" id="address-error">
                                                                 Address is required!
                                                             </span>
                                                         </td>
                                                         <td>
                                                             <input type="hidden" id="street_number">
-                                                            <input type="text" id="locality" class="form-control caseLocationField" placeholder="City" name="city" value="{{$assignment->searchHistory->city}}">
+                                                            <input type="text" id="locality" class="form-control caseLocationField" placeholder="City" name="city" value="{{@$assignment->searchHistory->city}}">
                                                             <span role="alert" class="text-danger small d-none" id="city-error">
                                                                 City is required!
                                                             </span>
                                                         </td>
                                                         <td>
-                                                            <input type="text" class="form-control caseLocationField" name="state" placeholder="State" value="{{$assignment->searchHistory->state}}" id="administrative_area_level_1">
+                                                            <input type="text" class="form-control caseLocationField" name="state" placeholder="State" value="{{@$assignment->searchHistory->state}}" id="administrative_area_level_1">
                                                             <span role="alert" class="text-danger small d-none" id="state-error">
                                                                 State is required!
                                                             </span>
                                                         </td>
                                                         <input type="hidden" id="country" class="form-control" name="country">
 
-                                                        <input type="hidden" id="lat" name="lat" value="{{$assignment->searchHistory->lat}}">
-                                                        <input type="hidden" id="lng" name="lng" value="{{$assignment->searchHistory->lng}}">
+                                                        <input type="hidden" id="lat" name="lat" value="{{@$assignment->searchHistory->lat}}">
+                                                        <input type="hidden" id="lng" name="lng" value="{{@$assignment->searchHistory->lng}}">
                                                         <td>
-                                                            <input type="text" class="form-control caseLocationField" name="zipcode" placeholder="Zipcode" value="{{$assignment->searchHistory->zipcode}}" id="postal_code">
+                                                            <input type="text" class="form-control caseLocationField" name="zipcode" placeholder="Zipcode" value="{{@$assignment->searchHistory->zipcode}}" id="postal_code">
                                                             <span role="alert" class="text-danger small d-none" id="zipcode-error">
                                                                 Zipcode is required!
                                                             </span>
