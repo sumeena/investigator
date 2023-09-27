@@ -108,7 +108,7 @@ class CompanyAdminController extends Controller
               $assignmentUsers = AssignmentUser::where(['assignment_id' => $request->assignment_id,'hired' => 0])->get();
                 foreach ($assignmentUsers as $item) {
                     $investigatorUser = User::find($item->user_id);
-                    
+
                       Mail::to($investigatorUser->email)->send(new JobUpdate($notificationData));
                 }
             }
@@ -146,6 +146,7 @@ class CompanyAdminController extends Controller
             || $request->get('languages')
             || $request->get('surveillance')
             || $request->get('statements')
+            || $request->get('distance')
             || $request->get('misc');
     }
 
@@ -249,6 +250,7 @@ class CompanyAdminController extends Controller
             'statements'   => $request->statements,
             'misc'         => $request->misc,
             'license_id'   => $request->license,
+            'distance'     => $request->distance,
             'languages'    => $request->get('languages'),
             'availability' => $availability
         ]);
@@ -276,6 +278,7 @@ class CompanyAdminController extends Controller
             'statements'   => $request->statements,
             'misc'         => $request->misc,
             'license_id'   => $request->license,
+            'distance'     => $request->distance,
             'languages'    => $request->get('languages'),
             'availability' => $availability,
             'assignment_id'=> $request->assignment_id

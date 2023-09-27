@@ -139,6 +139,7 @@ class AssignmentsController extends Controller
             || $request->get('languages')
             || $request->get('surveillance')
             || $request->get('statements')
+            || $request->get('distance')
             || $request->get('misc');
     }
 
@@ -361,7 +362,7 @@ class AssignmentsController extends Controller
                    'title'        => 'You have been invited to an assignment by ' .$authUser->first_name . ' ' . $authUser->last_name,
                    'assigmentId'  => 'Assigment ID: ' . Str::upper($assignment->assignment_id),
                    'clientId'     => 'Client ID: ' . Str::upper($assignment->client_id),
-                   'companyName'  => 'Company Name: ' .$authUser->parentCompany->company->CompanyAdminProfile?->company_name,
+                   'companyName'  => 'Company Name: ' .$authUser->CompanyAdminProfile->company_name,
                    'login'        => ' to your account so view the details.',
                    'loginUrl'        => $login,
                    'type'         => Notification::INVITATION,

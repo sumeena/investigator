@@ -114,6 +114,9 @@
                                                                 Lat and Lng is getting from zipcode, please wait...
                                                             </span>
                                                         </td>
+                                                        <td>
+                                                            <input type="text" class="form-control caseDistanceField" name="distance" placeholder="Distance (IN MILES)" value="{{$assignment->searchHistory->distance}}" id="distance">
+                                                        </td>
                                                     </tr>
                                                 </tbody>
                                             </table>
@@ -750,6 +753,7 @@
         const timepickerend = $('#timepickerend');
         const assignmentID = $('#assignmentID');
         const searchHistoryID = $('#searchHistoryID');
+        const distance = $('#distance');
 
 
         // values
@@ -770,13 +774,15 @@
         const timepickerendValue = timepickerend.val();
         const assignmentIDValue = assignmentID.val();
         const searchHistoryIDValue = searchHistoryID.val();
+        const distanceValue = distance.val();
 
         const data = {
             country: countryValue,
             street: streetValue,
             city: cityValue,
             state: stateValue,
-            zipcode: zipValue
+            zipcode: zipValue,
+            distance: distanceValue
         };
 
         if (latValue && lngValue) {
@@ -876,6 +882,7 @@
             const timepickerstart = $('#timepickerstart');
             const timepickerend = $('#timepickerend');
             const assignmentID = $('#assignmentID');
+            const distance = $('#distance');
 
             // values
             const zipValue = zip.val();
@@ -890,6 +897,7 @@
             const timepickerstartValue = timepickerstart.val();
             const timepickerendValue = timepickerend.val();
             const assignmentIDValue = assignmentID.val();
+            const distanceValue = distance.val();
 
             const data = {
                 page: 1
@@ -977,6 +985,7 @@
             }
 
             data['assignment_id'] = assignmentIDValue;
+            data['distance'] = distanceValue;
 
             saveSearchHistoryData();
 

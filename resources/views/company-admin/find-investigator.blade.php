@@ -113,6 +113,9 @@
                                                                 Lat and Lng is getting from zipcode, please wait...
                                                             </span>
                                                         </td>
+                                                        <td>
+                                                            <input type="text" class="form-control caseDistanceField" name="distance" placeholder="Distance (IN MILES)" value="{{ old('distance', $request->get('distance')) }}" id="distance">
+                                                        </td>
                                                     </tr>
                                                 </tbody>
                                             </table>
@@ -632,6 +635,7 @@
         const timepickerstart = $('#timepickerstart');
         const timepickerend = $('#timepickerend');
         const assignmentID = $('#assignmentID');
+        const distance = $('#distance');
 
 
         // values
@@ -651,13 +655,15 @@
         const timepickerstartValue = timepickerstart.val();
         const timepickerendValue = timepickerend.val();
         const assignmentIDValue = assignmentID.val();
+        const distanceValue = distance.val();
 
         const data = {
             country: countryValue,
             street: streetValue,
             city: cityValue,
             state: stateValue,
-            zipcode: zipValue
+            zipcode: zipValue,
+            distance: distanceValue
         };
 
         if (latValue && lngValue) {
@@ -747,6 +753,7 @@
             const availability = $('#availability');
             const timepickerstart = $('#timepickerstart');
             const timepickerend = $('#timepickerend');
+            const distance = $('#distance');
 
             // values
             const zipValue = zip.val();
@@ -760,6 +767,7 @@
             const availabilityValue = availability.val();
             const timepickerstartValue = timepickerstart.val();
             const timepickerendValue = timepickerend.val();
+            const distanceValue = distance.val();
 
             const data = {
                 page: 1
@@ -845,6 +853,7 @@
             if (timepickerendValue) {
                 data['end_time'] = timepickerendValue;
             }
+            data['distance'] = distanceValue;
 
             fetchData(data);
         });
