@@ -152,6 +152,7 @@ class AssignmentsController extends Controller
             || $request->get('languages')
             || $request->get('surveillance')
             || $request->get('statements')
+            || $request->get('distance')
             || $request->get('misc');
     }
 

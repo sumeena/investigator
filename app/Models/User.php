@@ -226,7 +226,7 @@ class User extends Authenticatable
         }
 
         $investigatorsWithoutEvents = self::investigatorsWithoutEvents($request->all());
-
+        $distance=$request->distance;
         $query = self::query()
             ->with([
                 'investigatorServiceLines',
@@ -257,6 +257,11 @@ class User extends Authenticatable
             ->join('investigator_availabilities', 'investigator_availabilities.user_id', '=', 'users.id')
             // check investigators distance within calculated distance
             ->whereRaw( 'ST_Distance_Sphere(point(users.lng, users.lat), point(?, ?)) * .000621371192 <= investigator_availabilities.distance', [request('lng'), request('lat')]);
+      if (isset($request->distance) && !empty($request->distance)) {
+          $query->having('calculated_distance', '<=', ''.$distance.'');
+      }
+
+
 
         return app(Pipeline::class)
             ->send($query)
