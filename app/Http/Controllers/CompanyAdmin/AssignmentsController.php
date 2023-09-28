@@ -233,6 +233,8 @@ class AssignmentsController extends Controller
         $assignmentStatus = Assignment::where('id',$assignmentId)->pluck('status');
         // echo '<pre>';
 
+        // dd($chat);
+
         $html = view('company-admin.assignment.show-response', compact('messages', 'hiredStatus', 'authUserId', 'chat', 'hiredUser', 'assignmentStatus'))->render();
 
         return response()->json([
@@ -253,6 +255,7 @@ class AssignmentsController extends Controller
         $assignment = Assignment::find($assignmentId);
         $login=route('login');
         $assignmentUserInfo = AssignmentUser::where(['assignment_id'=>$assignmentId])->get();
+
         $notificationDataClosed = [
            'title'        => 'The assignment you were invited on has been closed.',
            'login'        => ' to your account so view the details.',
@@ -277,6 +280,8 @@ class AssignmentsController extends Controller
                 Mail::to($investigatorUser->email)->send(new CloseJob($notificationDataClosed));
              }
          }
+         session()->flash('success', 'Assignment assigned successfully');
+
     }
 
 
@@ -365,13 +370,25 @@ class AssignmentsController extends Controller
 
                 Assignment::where('id',$assignment->id)->update(['status' => 'INVITED']);
                 $login=route('login');
+
+                $company_name = '';
+
+                if($authUser->CompanyAdminProfile != null)
+                {
+                    $company_name = $authUser->CompanyAdminProfile->company_name;
+                }
+                if($authUser->parentCompany != null)
+                {
+                    $company_name = $authUser->parentCompany->company->CompanyAdminProfile?->company_name;
+                }
+
                 $notificationData = [
                    'user_id'      => $investigator->id,
                    'from_user_id' => $authUser->id,
                    'title'        => 'You have been invited to an assignment by ' .$authUser->first_name . ' ' . $authUser->last_name,
                    'assigmentId'  => 'Assigment ID: ' . Str::upper($assignment->assignment_id),
                    'clientId'     => 'Client ID: ' . Str::upper($assignment->client_id),
-                   'companyName'  => 'Company Name: ' .$authUser->CompanyAdminProfile->company_name,
+                   'companyName'  => 'Company Name: ' .$company_name,
                    'login'        => ' to your account so view the details.',
                    'loginUrl'        => $login,
                    'type'         => Notification::INVITATION,

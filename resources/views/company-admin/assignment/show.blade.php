@@ -203,11 +203,11 @@
 
     <!-- end row -->
 
-
-                <div class="row">
-                    <div class="card col-xs-12 assignmentMain p-0">
+    <div class="row">
+        <div class="card col-xs-12 assignmentMain p-0">
+                        @if($usersCount > 0)
                         <div class="row m-0">
-                            @if($usersCount > 0)
+                            
                             <div class="col-md-2 pad-a-0">
                                 <div class="card profileData">
                                     @foreach($assignment->users as $user)
@@ -220,7 +220,7 @@
                                     </ul>
                                 </div>
                             </div>
-                            @endif
+                            
 
                             <div class=" {{ $usersCount > 0 ? 'col-md-10' : 'col-md-12' }} py-3">
                                 @if(session('success'))
@@ -257,6 +257,7 @@
 
                             </div>
                         </div>
+                        @endif
                     </div>
                 </div>
 

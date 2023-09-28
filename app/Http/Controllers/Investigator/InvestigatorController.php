@@ -759,7 +759,7 @@ class InvestigatorController extends Controller
         $userId = Auth::user()->id;
         $userName = Auth::user()->first_name;
         $userEmail = Auth::user()->email;
-        $googleAuthUser = GoogleAuthUsers::where('user_id', $userId)->exists();
+        $googleAuthDeatils = GoogleAuthUsers::where('user_id', $userId)->exists();
 
         $nylasUser = NylasUsers::where(['user_id'=> $userId, 'provider' => 'gmail'])->exists();
 
@@ -767,7 +767,7 @@ class InvestigatorController extends Controller
 
         $profile = array();
 
-        if($googleAuthUser && (!$nylasUser || !$calendarEvents)) {
+        if($googleAuthDeatils && (!$nylasUser || !$calendarEvents)) {
 
         $userInfo = GoogleAuthUsers::where('user_id', $userId)->get();
 
@@ -871,7 +871,7 @@ class InvestigatorController extends Controller
 
         $userId = Auth::user()->id;
 
-        return view('investigator.calendar', compact('profile','nylasUser', 'googleAuthUser', 'calendarEvents'));
+        return view('investigator.calendar', compact('profile','nylasUser', 'googleAuthDeatils', 'calendarEvents'));
     }
 
     /** Check google access token expiry */

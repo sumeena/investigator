@@ -289,6 +289,8 @@
 
                                             <input type="hidden" id="assignmentID" value="">
 
+                                            <input type="hidden" id="fieldsUpdated" value="0">
+
                                             <button type="button" class="btn btn-primary hr_investigator_search" id="callCreateAssignmentModal">
                                                 Search
                                             </button>
@@ -727,6 +729,29 @@
 
     $(document).ready(function() {
 
+        $(document).on('keyup', '#autocomplete, #locality, #administrative_area_level_1, #postal_code', function() {
+            var assignmentID = $('#assignmentID').val();
+            if(assignmentID != '') {
+                $('#fieldsUpdated').val('1');
+                $('#callConfirmUpdateSearchModal').removeAttr('disabled');
+             }
+        });
+
+        $(document).on('change', 'input[type="checkbox"]', function() {
+            var assignmentID = $('#assignmentID').val();
+            if(assignmentID != '') {
+                $('#fieldsUpdated').val('1');
+                $('#callConfirmUpdateSearchModal').removeAttr('disabled');
+             }
+        });
+
+        $(document).on('change', 'select, input[type="text"]', 'input[type="checkbox"]', function() {
+            var assignmentID = $('#assignmentID').val();
+            if(assignmentID != '') {
+                $('#fieldsUpdated').val('1');
+                $('#callConfirmUpdateSearchModal').removeAttr('disabled');
+             }
+        });
 
         createAssignmentID();
 
@@ -740,7 +765,7 @@
         const form = $('#find-investigator-form');
         form.on('submit', function(e) {
             e.preventDefault();
-
+            $(this).find('button#form-submit-btn').html('Searching...').attr('disabled',true);
             // input selector
             const zip = $('#postal_code');
             const surv = $('#surveillance');
@@ -1128,6 +1153,11 @@
                     $('#form-submit-btn').click();
                     $('#callCreateAssignmentModal').addClass('d-none');
                     $('#callConfirmUpdateSearchModal').removeClass('d-none');
+                    if($('#fieldsUpdated').val() == '1')
+                    $('#callConfirmUpdateSearchModal').removeAttr('disabled');
+                    else
+                    $('#callConfirmUpdateSearchModal').attr('disabled',true);
+
                     saveSearchHistoryData();
                     setTimeout(() => {
                         $('#createModalCloseBtn').click();
@@ -1146,6 +1176,8 @@
         $(document).on('click', '#confirmUpdateSearchModalBtn', function(){
             $('#form-submit-btn').click();
             $('#confirmUpdateSearchModalCloseBtn').click();
+            $('#fieldsUpdated').val('0');
+            $('#callConfirmUpdateSearchModal').attr('disabled',true);
         });
 
         $('#assignmentEditModal').on('submit', function(e) {

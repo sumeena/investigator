@@ -309,10 +309,23 @@
                                             <!-- <button type="button" data-target="#assignmentCreateModal" data-toggle="modal" class="btn btn-primary hr_investigator_search" id="callCreateAssignmentModal">
                                                 Search
                                             </button> -->
-                                            <button type="submit" class="btn btn-primary hr_investigator_search" id="form-submit-btn">
+
+
+                                            <input type="hidden" id="fieldsUpdated" value="0">
+
+                                            <button type="button" data-target="#confirmUpdateSearchModal" data-toggle="modal" class="btn btn-primary hr_investigator_search" disabled id="callConfirmUpdateSearchModal"> Search </button>
+
+                                            <button type="submit" class="btn btn-primary hr_investigator_search d-none" id="form-submit-btn">
                                                 Search
                                             </button>
+
+                                            <!-- <button type="submit" class="btn btn-primary hr_investigator_search" id="form-submit-btn">
+                                                Search
+                                            </button> -->
+                                            
                                         </div>
+
+                                        
                                     </div>
                                 </div>
                             </div>
@@ -473,127 +486,30 @@
 </div>
 
 
-{{-- Create Assignment Modal --}}
-<div class="modal fade" id="assignmentCreateModal" tabindex="-1" aria-labelledby="assignmentCreateModalLabel" aria-hidden="true">
+{{-- Confirm Update Search Modal Alert Modal --}}
+<div class="modal fade" id="confirmUpdateSearchModal" tabindex="-1" aria-labelledby="confirmUpdateSearchModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="assignmentCreateModalLabel">Create Assignment</h5>
-                <button type="button" class="close btn btn-danger" data-dismiss="modal" aria-label="Close" id="createModalCloseIconBtn">
-                    <span aria-hidden="true">&times;</span>
+            <div class="modal-body pt-5">
+                <h4 class="h4 text-center">
+                    You have updated search criteria. You sure you want to proceed
+                </h4>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-primary" id="confirmUpdateSearchModalBtn">
+                    YES
+                </button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" id="confirmUpdateSearchModalCloseBtn">
+                    NO
                 </button>
             </div>
-            <form id="assignmentCreateForm">
-                <div class="modal-body">
-
-
-                    <div class="alert alert-success d-none" role="alert" id="assignment-flash"></div>
-
-                    <div class="form-group mb-3">
-                        <label for="assignment-id">
-                            Assignment ID
-                        </label>
-                        <input type="text" name="assignment_id" class="form-control assignment-id" id="assignment-id" placeholder="Enter assignment ID" readonly required>
-                    </div>
-                    <div class="form-group">
-                        <label for="client-id">
-                            Client ID
-                        </label>
-                        <input type="text" name="client_id" class="form-control" id="client-id" placeholder="Enter client ID" required>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal" id="createModalCloseBtn">
-                        Close
-                    </button>
-                    <button type="submit" class="btn btn-primary" id="createAssignmentButton">
-                        Save
-                    </button>
-                </div>
-            </form>
         </div>
     </div>
 </div>
 
-{{-- No Assignment Create Assignment Modal --}}
-<div class="modal fade" id="noAssignmentCreateModal" tabindex="-1" aria-labelledby="noAssignmentCreateModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="noAssignmentCreateModalLabel">Create Assignment</h5>
-                <button type="button" class="close btn btn-danger" data-dismiss="modal" aria-label="Close" id="noCreateModalCloseIconBtn">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <form id="noAssignmentCreateForm">
-                <div class="modal-body">
-                    <div class="form-group mb-3">
-                        <label for="no-assignment-id">
-                            Assignment ID
-                        </label>
-                        <input type="text" name="assignment_id" class="form-control" id="no-assignment-id" placeholder="Enter assignment ID" readonly required>
-                    </div>
-                    <div class="form-group">
-                        <label for="no-client-id">
-                            Client ID
-                        </label>
-                        <input type="text" name="client_id" class="form-control" id="no-client-id" placeholder="Enter client ID" required>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal" id="noCreateModalCloseBtn">
-                        Close
-                    </button>
-                    <button type="submit" class="btn btn-primary">
-                        Save
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-{{-- Edit Assignment Modal --}}
-<div class="modal fade" id="assignmentEditModal" tabindex="-1" aria-labelledby="assignmentEditModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="assignmentEditModalLabel">Edit Assignment</h5>
-                <button type="button" class="close btn btn-danger" data-dismiss="modal" aria-label="Close" id="editModalCloseIconBtn">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <form id="assignmentEditForm">
-                <div class="modal-body">
-                    <input type="hidden" name="id" id="assignment-edit-id">
-                    <div class="form-group mb-3">
-                        <label for="edit-assignment-id">
-                            Assignment ID
-                        </label>
-                        <input type="text" name="assignment_id" class="form-control" id="edit-assignment-id" placeholder="Enter assignment ID" readonly required>
-                    </div>
-                    <div class="form-group">
-                        <label for="edit-client-id">
-                            Client ID
-                        </label>
-                        <input type="text" name="client_id" class="form-control" id="edit-client-id" placeholder="Enter client ID" required>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal" id="editModalCloseBtn">
-                        Close
-                    </button>
-                    <button type="submit" class="btn btn-primary">
-                        Update
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
 
 {{-- Send Invitation Modal --}}
-<div class="modal fade" id="inviteModal" tabindex="-1" aria-labelledby="inviteModalLabel" aria-hidden="true">
+<!-- <div class="modal fade" id="inviteModal" tabindex="-1" aria-labelledby="inviteModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -625,28 +541,9 @@
             </form>
         </div>
     </div>
-</div>
+</div> -->
 
-{{-- No Assignment Alert Modal --}}
-<div class="modal fade" id="noAssignmentModal" tabindex="-1" aria-labelledby="noAssignmentModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-body pt-5">
-                <h4 class="h4 text-center">
-                    You need to create an assignment first!
-                </h4>
-            </div>
-            <div class="modal-footer justify-content-center">
-                <button type="button" class="btn btn-primary" id="createAssignmentModalBtn">
-                    Ok
-                </button>
-                <button type="button" class="btn btn-secondary" data-dismiss="modal" id="noAssignmentCloseBtn">
-                    Cancel
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
+
 @endsection
 @push('styles')
 <style type="text/css">
@@ -713,12 +610,17 @@
     }
 
     function fetchData(data) {
+        var fieldsUpdated = $('#fieldsUpdated').val();
+
+        data['fieldsUpdated'] = fieldsUpdated;
+
         $.ajax({
             url: '{{ $action }}',
             type: 'GET',
             data: data,
             success: function(response) {
                 $('#data-container').html(response.data);
+                $('button#form-submit-btn').html('Search').removeAttr('disabled');
             },
             error: function(xhr) {
                 console.log(xhr.responseText);
@@ -862,6 +764,40 @@
         }, 2000);
 
 
+        $(document).on('keyup', '#autocomplete, #locality, #administrative_area_level_1, #postal_code', function() {
+            var assignmentID = $('#assignmentID').val();
+            if(assignmentID != '') {
+                $('#fieldsUpdated').val('1');
+                $('#callConfirmUpdateSearchModal').removeAttr('disabled');
+             }
+        });
+
+        $(document).on('change', 'input[type="checkbox"]', function() {
+            var assignmentID = $('#assignmentID').val();
+            if(assignmentID != '') {
+                $('#fieldsUpdated').val('1');
+                $('#callConfirmUpdateSearchModal').removeAttr('disabled');
+             }
+        });
+
+        $(document).on('change', 'select, input[type="text"]', 'input[type="checkbox"]', function() {
+            var assignmentID = $('#assignmentID').val();
+            if(assignmentID != '') {
+                $('#fieldsUpdated').val('1');
+                $('#callConfirmUpdateSearchModal').removeAttr('disabled');
+             }
+        });
+
+        $(document).on('click', '#callConfirmUpdateSearchModal', function() {
+            $('#assignmentCreateModal').modal('show');
+        });
+
+        $(document).on('click', '#confirmUpdateSearchModalBtn', function(){
+            $('#form-submit-btn').click();
+            $('#confirmUpdateSearchModalCloseBtn').click();
+            $('#fieldsUpdated').val('0');
+            $('#callConfirmUpdateSearchModal').attr('disabled',true);
+        });
 
         createAssignmentID();
 
@@ -874,6 +810,7 @@
 
         const form = $('#find-investigator-form');
         form.on('submit', function(e) {
+            $(this).find('button#form-submit-btn').html('Searching...').attr('disabled',true);
             e.preventDefault();
 
             // input selector
