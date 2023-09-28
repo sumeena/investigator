@@ -82,7 +82,8 @@
                                                 @endphp
                                                 <a style="@php echo $pointer; @endphp" href="javascript:void(0)" class="deleteAssignmentBtn" data-id="{{ $assignment->id }}">
                                                     <i class="fas fa-trash"></i>
-                                                </a>
+                                                </a> | 
+                                                <a class="callCloneAssignmentModal" data-assignment-id="{{ $assignment->id }}" data-assignment-url="{{ $assignmentCreateAction }}" data-client-id="{{ $assignment->client_id }}" href="javascript:void(0)"><i class="fa-solid fa-clone"></i></a>
                                             </td>
                                         </tr>
                                         @empty
@@ -111,6 +112,47 @@
                 </div>
             </div>
 
+        </div>
+    </div>
+</div>
+
+
+{{-- Create Assignment Modal --}}
+<div class="modal fade" id="cloneAssignmentModal" tabindex="-1" aria-labelledby="cloneAssignmentModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="cloneAssignmentModalLabel">Create Assignment</h5>
+                <button type="button" class="close btn btn-danger btn-sm" data-dismiss="modal" aria-label="Close" id="cloneModalCloseIconBtn">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form action="{{ $assignmentStoreAction }}" method="post" id="assignmentCloneForm">
+                <div class="modal-body">
+                    <div class="form-group mb-3">
+                        <label for="assignment-id">
+                            Assignment ID
+                        </label>
+                        <input type="hidden" name="source_assignment_id" class="form-control" id="sourceAssignmentId" placeholder="Enter assignment ID" readonly required>
+                        
+                        <input type="text" name="assignment_id" class="form-control" id="assignmentId" placeholder="Enter assignment ID" readonly required>
+                    </div>
+                    <div class="form-group">
+                        <label for="client-id">
+                            Client ID
+                        </label>
+                        <input type="text" name="client_id" class="form-control" id="clientId" placeholder="Enter client ID" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal" id="cloneModalCloseBtn">
+                        Close
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        Save
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -153,6 +195,7 @@
         </div>
     </div>
 </div>
+
 
 {{-- No Assignment Create Assignment Modal --}}
 <div class="modal fade" id="noAssignmentCreateModal" tabindex="-1" aria-labelledby="noAssignmentCreateModalLabel" aria-hidden="true">
@@ -250,7 +293,7 @@
 <link href="//cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 @endpush
 @push('scripts')
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAB80hPTftX9xYXqy6_NcooDtW53kiIH3A&libraries=places&callback=initAutocomplete" async defer></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=<?php echo Config::get('constants.GOOGLE_MAPS_API_KEY'); ?>&libraries=places&callback=initAutocomplete" async defer></script>
 <script src="{{ asset('html/assets/js/address-auto-complete.js') }}"></script>
 <script src="//cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 

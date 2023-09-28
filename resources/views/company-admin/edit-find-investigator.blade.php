@@ -1,6 +1,7 @@
 @extends('layouts.dashboard')
 @section('title', 'Find Investigators')
 @section('content')
+
 <div class="container">
     <!-- <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
                 <li class="nav-item" role="presentation">
@@ -26,6 +27,12 @@
                     <h5 class="mb-0 invSearchTitle">Investigator Search</h5>
                 </div>
                 <div class="card-body">
+                    @if(session('success'))
+                        <div class="alert alert-success" role="alert">
+                            {{ session('success') }}
+                        </div>
+                    @endif
+
                     @php
                     $action = route('company-admin.find_investigator');
                     $assignmentsAction = route('company-admin.assignments');
@@ -79,30 +86,30 @@
                                                 <tbody>
                                                     <tr>
                                                         <td>
-                                                            <input type="text" class="form-control caseLocationField" placeholder="Street" name="address" id="autocomplete" value="{{$assignment->searchHistory->street}}">
+                                                            <input type="text" class="form-control caseLocationField" placeholder="Street" name="address" id="autocomplete" value="{{@$assignment->searchHistory->street}}">
                                                             <span role="alert" class="text-danger small d-none" id="address-error">
                                                                 Address is required!
                                                             </span>
                                                         </td>
                                                         <td>
                                                             <input type="hidden" id="street_number">
-                                                            <input type="text" id="locality" class="form-control caseLocationField" placeholder="City" name="city" value="{{$assignment->searchHistory->city}}">
+                                                            <input type="text" id="locality" class="form-control caseLocationField" placeholder="City" name="city" value="{{@$assignment->searchHistory->city}}">
                                                             <span role="alert" class="text-danger small d-none" id="city-error">
                                                                 City is required!
                                                             </span>
                                                         </td>
                                                         <td>
-                                                            <input type="text" class="form-control caseLocationField" name="state" placeholder="State" value="{{$assignment->searchHistory->state}}" id="administrative_area_level_1">
+                                                            <input type="text" class="form-control caseLocationField" name="state" placeholder="State" value="{{@$assignment->searchHistory->state}}" id="administrative_area_level_1">
                                                             <span role="alert" class="text-danger small d-none" id="state-error">
                                                                 State is required!
                                                             </span>
                                                         </td>
                                                         <input type="hidden" id="country" class="form-control" name="country">
 
-                                                        <input type="hidden" id="lat" name="lat" value="{{$assignment->searchHistory->lat}}">
-                                                        <input type="hidden" id="lng" name="lng" value="{{$assignment->searchHistory->lng}}">
+                                                        <input type="hidden" id="lat" name="lat" value="{{@$assignment->searchHistory->lat}}">
+                                                        <input type="hidden" id="lng" name="lng" value="{{@$assignment->searchHistory->lng}}">
                                                         <td>
-                                                            <input type="text" class="form-control caseLocationField" name="zipcode" placeholder="Zipcode" value="{{$assignment->searchHistory->zipcode}}" id="postal_code">
+                                                            <input type="text" class="form-control caseLocationField" name="zipcode" placeholder="Zipcode" value="{{@$assignment->searchHistory->zipcode}}" id="postal_code">
                                                             <span role="alert" class="text-danger small d-none" id="zipcode-error">
                                                                 Zipcode is required!
                                                             </span>
@@ -113,6 +120,9 @@
                                                                 <i class="fas fa-spinner fa-spin"></i>
                                                                 Lat and Lng is getting from zipcode, please wait...
                                                             </span>
+                                                        </td>
+                                                        <td>
+                                                            <input type="text" class="form-control caseDistanceField" name="distance" placeholder="Distance (IN MILES)" value="{{$assignment->searchHistory->distance}}" id="distance">
                                                         </td>
                                                     </tr>
                                                 </tbody>
@@ -215,13 +225,13 @@
                             </div>
 
                             @php
-                            
+
                             $availability = explode(',',$assignment->searchHistory->availability);
 
                             $minDate = explode('-', $availability[0]);
 
                             $timeAvailability = explode('-', $availability[1]);
-                            
+
                             @endphp
 
                             <div class="col-md-6">
@@ -299,10 +309,23 @@
                                             <!-- <button type="button" data-target="#assignmentCreateModal" data-toggle="modal" class="btn btn-primary hr_investigator_search" id="callCreateAssignmentModal">
                                                 Search
                                             </button> -->
-                                            <button type="submit" class="btn btn-primary hr_investigator_search" id="form-submit-btn">
+
+
+                                            <input type="hidden" id="fieldsUpdated" value="0">
+
+                                            <button type="button" data-target="#confirmUpdateSearchModal" data-toggle="modal" class="btn btn-primary hr_investigator_search" disabled id="callConfirmUpdateSearchModal"> Search </button>
+
+                                            <button type="submit" class="btn btn-primary hr_investigator_search d-none" id="form-submit-btn">
                                                 Search
                                             </button>
+
+                                            <!-- <button type="submit" class="btn btn-primary hr_investigator_search" id="form-submit-btn">
+                                                Search
+                                            </button> -->
+                                            
                                         </div>
+
+                                        
                                     </div>
                                 </div>
                             </div>
@@ -463,127 +486,30 @@
 </div>
 
 
-{{-- Create Assignment Modal --}}
-<div class="modal fade" id="assignmentCreateModal" tabindex="-1" aria-labelledby="assignmentCreateModalLabel" aria-hidden="true">
+{{-- Confirm Update Search Modal Alert Modal --}}
+<div class="modal fade" id="confirmUpdateSearchModal" tabindex="-1" aria-labelledby="confirmUpdateSearchModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="assignmentCreateModalLabel">Create Assignment</h5>
-                <button type="button" class="close btn btn-danger" data-dismiss="modal" aria-label="Close" id="createModalCloseIconBtn">
-                    <span aria-hidden="true">&times;</span>
+            <div class="modal-body pt-5">
+                <h4 class="h4 text-center">
+                    You have updated search criteria. You sure you want to proceed
+                </h4>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-primary" id="confirmUpdateSearchModalBtn">
+                    YES
+                </button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" id="confirmUpdateSearchModalCloseBtn">
+                    NO
                 </button>
             </div>
-            <form id="assignmentCreateForm">
-                <div class="modal-body">
-
-
-                    <div class="alert alert-success d-none" role="alert" id="assignment-flash"></div>
-
-                    <div class="form-group mb-3">
-                        <label for="assignment-id">
-                            Assignment ID
-                        </label>
-                        <input type="text" name="assignment_id" class="form-control assignment-id" id="assignment-id" placeholder="Enter assignment ID" readonly required>
-                    </div>
-                    <div class="form-group">
-                        <label for="client-id">
-                            Client ID
-                        </label>
-                        <input type="text" name="client_id" class="form-control" id="client-id" placeholder="Enter client ID" required>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal" id="createModalCloseBtn">
-                        Close
-                    </button>
-                    <button type="submit" class="btn btn-primary" id="createAssignmentButton">
-                        Save
-                    </button>
-                </div>
-            </form>
         </div>
     </div>
 </div>
 
-{{-- No Assignment Create Assignment Modal --}}
-<div class="modal fade" id="noAssignmentCreateModal" tabindex="-1" aria-labelledby="noAssignmentCreateModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="noAssignmentCreateModalLabel">Create Assignment</h5>
-                <button type="button" class="close btn btn-danger" data-dismiss="modal" aria-label="Close" id="noCreateModalCloseIconBtn">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <form id="noAssignmentCreateForm">
-                <div class="modal-body">
-                    <div class="form-group mb-3">
-                        <label for="no-assignment-id">
-                            Assignment ID
-                        </label>
-                        <input type="text" name="assignment_id" class="form-control" id="no-assignment-id" placeholder="Enter assignment ID" readonly required>
-                    </div>
-                    <div class="form-group">
-                        <label for="no-client-id">
-                            Client ID
-                        </label>
-                        <input type="text" name="client_id" class="form-control" id="no-client-id" placeholder="Enter client ID" required>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal" id="noCreateModalCloseBtn">
-                        Close
-                    </button>
-                    <button type="submit" class="btn btn-primary">
-                        Save
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-{{-- Edit Assignment Modal --}}
-<div class="modal fade" id="assignmentEditModal" tabindex="-1" aria-labelledby="assignmentEditModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="assignmentEditModalLabel">Edit Assignment</h5>
-                <button type="button" class="close btn btn-danger" data-dismiss="modal" aria-label="Close" id="editModalCloseIconBtn">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <form id="assignmentEditForm">
-                <div class="modal-body">
-                    <input type="hidden" name="id" id="assignment-edit-id">
-                    <div class="form-group mb-3">
-                        <label for="edit-assignment-id">
-                            Assignment ID
-                        </label>
-                        <input type="text" name="assignment_id" class="form-control" id="edit-assignment-id" placeholder="Enter assignment ID" readonly required>
-                    </div>
-                    <div class="form-group">
-                        <label for="edit-client-id">
-                            Client ID
-                        </label>
-                        <input type="text" name="client_id" class="form-control" id="edit-client-id" placeholder="Enter client ID" required>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal" id="editModalCloseBtn">
-                        Close
-                    </button>
-                    <button type="submit" class="btn btn-primary">
-                        Update
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
 
 {{-- Send Invitation Modal --}}
-<div class="modal fade" id="inviteModal" tabindex="-1" aria-labelledby="inviteModalLabel" aria-hidden="true">
+<!-- <div class="modal fade" id="inviteModal" tabindex="-1" aria-labelledby="inviteModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -615,28 +541,9 @@
             </form>
         </div>
     </div>
-</div>
+</div> -->
 
-{{-- No Assignment Alert Modal --}}
-<div class="modal fade" id="noAssignmentModal" tabindex="-1" aria-labelledby="noAssignmentModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-body pt-5">
-                <h4 class="h4 text-center">
-                    You need to create an assignment first!
-                </h4>
-            </div>
-            <div class="modal-footer justify-content-center">
-                <button type="button" class="btn btn-primary" id="createAssignmentModalBtn">
-                    Ok
-                </button>
-                <button type="button" class="btn btn-secondary" data-dismiss="modal" id="noAssignmentCloseBtn">
-                    Cancel
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
+
 @endsection
 @push('styles')
 <style type="text/css">
@@ -656,8 +563,7 @@
 <link href="//cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 @endpush
 @push('scripts')
-<script src="https://maps.googleapis.com/maps/api/js?key=<?php
- echo Config::get('constants.GOOGLE_MAPS_API_KEY'); ?>&libraries=places&callback=initAutocomplete" async defer></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=<?php echo Config::get('constants.GOOGLE_MAPS_API_KEY'); ?>&libraries=places&callback=initAutocomplete" async defer></script>
 <script src="{{ asset('html/assets/js/address-auto-complete.js') }}"></script>
 <script src="//cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
@@ -704,12 +610,17 @@
     }
 
     function fetchData(data) {
+        var fieldsUpdated = $('#fieldsUpdated').val();
+
+        data['fieldsUpdated'] = fieldsUpdated;
+
         $.ajax({
             url: '{{ $action }}',
             type: 'GET',
             data: data,
             success: function(response) {
                 $('#data-container').html(response.data);
+                $('button#form-submit-btn').html('Search').removeAttr('disabled');
             },
             error: function(xhr) {
                 console.log(xhr.responseText);
@@ -751,6 +662,7 @@
         const timepickerend = $('#timepickerend');
         const assignmentID = $('#assignmentID');
         const searchHistoryID = $('#searchHistoryID');
+        const distance = $('#distance');
 
 
         // values
@@ -771,13 +683,15 @@
         const timepickerendValue = timepickerend.val();
         const assignmentIDValue = assignmentID.val();
         const searchHistoryIDValue = searchHistoryID.val();
+        const distanceValue = distance.val();
 
         const data = {
             country: countryValue,
             street: streetValue,
             city: cityValue,
             state: stateValue,
-            zipcode: zipValue
+            zipcode: zipValue,
+            distance: distanceValue
         };
 
         if (latValue && lngValue) {
@@ -850,6 +764,40 @@
         }, 2000);
 
 
+        $(document).on('keyup', '#autocomplete, #locality, #administrative_area_level_1, #postal_code, #distance', function() {
+            var assignmentID = $('#assignmentID').val();
+            if(assignmentID != '') {
+                $('#fieldsUpdated').val('1');
+                $('#callConfirmUpdateSearchModal').removeAttr('disabled');
+             }
+        });
+
+        $(document).on('change', 'input[type="checkbox"]', function() {
+            var assignmentID = $('#assignmentID').val();
+            if(assignmentID != '') {
+                $('#fieldsUpdated').val('1');
+                $('#callConfirmUpdateSearchModal').removeAttr('disabled');
+             }
+        });
+
+        $(document).on('change', 'select, input[type="text"]', 'input[type="checkbox"]', function() {
+            var assignmentID = $('#assignmentID').val();
+            if(assignmentID != '') {
+                $('#fieldsUpdated').val('1');
+                $('#callConfirmUpdateSearchModal').removeAttr('disabled');
+             }
+        });
+
+        $(document).on('click', '#callConfirmUpdateSearchModal', function() {
+            $('#assignmentCreateModal').modal('show');
+        });
+
+        $(document).on('click', '#confirmUpdateSearchModalBtn', function(){
+            $('#form-submit-btn').click();
+            $('#confirmUpdateSearchModalCloseBtn').click();
+            $('#fieldsUpdated').val('0');
+            $('#callConfirmUpdateSearchModal').attr('disabled',true);
+        });
 
         createAssignmentID();
 
@@ -862,6 +810,7 @@
 
         const form = $('#find-investigator-form');
         form.on('submit', function(e) {
+            $(this).find('button#form-submit-btn').html('Searching...').attr('disabled',true);
             e.preventDefault();
 
             // input selector
@@ -877,6 +826,7 @@
             const timepickerstart = $('#timepickerstart');
             const timepickerend = $('#timepickerend');
             const assignmentID = $('#assignmentID');
+            const distance = $('#distance');
 
             // values
             const zipValue = zip.val();
@@ -891,6 +841,7 @@
             const timepickerstartValue = timepickerstart.val();
             const timepickerendValue = timepickerend.val();
             const assignmentIDValue = assignmentID.val();
+            const distanceValue = distance.val();
 
             const data = {
                 page: 1
@@ -978,6 +929,7 @@
             }
 
             data['assignment_id'] = assignmentIDValue;
+            data['distance'] = distanceValue;
 
             saveSearchHistoryData();
 
@@ -1102,7 +1054,7 @@
         /* $('#assignmentCreateModal').on('show.bs.modal', function(event) {
             const modal = $(this)
 
-            
+
         }); */
 
         // Create Assignment

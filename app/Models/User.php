@@ -62,7 +62,7 @@ class User extends Authenticatable
         'password',
         'remember_token',
     ];
-    
+
     /**
      * The accessors to append to the model's array form.
      *
@@ -220,13 +220,13 @@ class User extends Authenticatable
         if (($userRole === USER::COMPANYADMIN && $user->company_is_admin) || $userRole === USER::HR) {
         // if ((($userRole == 'company-admin' && !$user->company_is_admin) || $userRole == 'hiring-manager') && $user->companyAdmin) {
             $companyId = CompanyUser::where('user_id', $user->id)->orWhere('parent_id',$user->id)->select('parent_id')->first()->parent_id;
-            
+
             // if (($userRole === USER::COMPANYADMIN && !$user->company_is_admin) || $userRole === USER::HR) {
             // $companyId = CompanyUser::where('user_id', $user->id)->select('parent_id')->first()->parent_id;
         }
 
         $investigatorsWithoutEvents = self::investigatorsWithoutEvents($request->all());
-
+        $distance=$request->distance;
         $query = self::query()
             ->with([
                 'investigatorServiceLines',
@@ -248,7 +248,7 @@ class User extends Authenticatable
                 $q->where('company_admin_id', $companyId);
             })
             ->whereIn('users.id', $investigatorsWithoutEvents)
-          
+
             // Get calculated distance from lat lng
             ->selectRaw(
                 'users.*, ST_Distance_Sphere(point(users.lng, users.lat), point(?, ?)) * .000621371192 as calculated_distance',
@@ -257,6 +257,11 @@ class User extends Authenticatable
             ->join('investigator_availabilities', 'investigator_availabilities.user_id', '=', 'users.id')
             // check investigators distance within calculated distance
             ->whereRaw( 'ST_Distance_Sphere(point(users.lng, users.lat), point(?, ?)) * .000621371192 <= investigator_availabilities.distance', [request('lng'), request('lat')]);
+      if (isset($request->distance) && !empty($request->distance)) {
+          $query->having('calculated_distance', '<=', ''.$distance.'');
+      }
+
+
 
         return app(Pipeline::class)
             ->send($query)
@@ -272,7 +277,7 @@ class User extends Authenticatable
         // dd($data);
         $dateRange = $data['availability'];
         $dateRange = explode('-', $dateRange);
-        
+
         $searchStartDate = Carbon::parse(trim($dateRange[0]))->format('Y-m-d');
         $searchEndDate = Carbon::parse(trim($dateRange[1]))->format('Y-m-d');
 
@@ -298,7 +303,7 @@ class User extends Authenticatable
 
                 $start_of_range = strtotime(date("Y-m-d", $date) . " " . date("h:i A", $start_time));
                 $end_of_range = strtotime(date("Y-m-d", $date) . " " . date("h:i A", $end_time));
-        
+
                $usersWithEvents = self::hasOverlappingEvents($events, $start_of_range, $end_of_range, $user);
             }
             return !in_array($user, $usersWithEvents);
@@ -357,7 +362,7 @@ class User extends Authenticatable
     public function calendarEvents() {
         return $this->hasMany(CalendarEvents::class);
     }
-    
+
     public function assignments(): HasMany // Company Admin/HM assignments
     {
         return $this->hasMany(Assignment::class, 'user_id');

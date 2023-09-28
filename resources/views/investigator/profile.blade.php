@@ -7,7 +7,9 @@
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">Investigator's Profile</h5>
                     @if(!$googleAuthDeatils)
-                    <button type="button" data-toggle="modal" data-target="#sync-calendar" class="float-end btn btn-outline-primary btn-sm mt-n1 mr-10">Sync Calendar</button>
+                        @if($user->is_investigator_profile_submitted == '1')
+                            <button type="button" data-toggle="modal" data-target="#sync-calendar" class="float-end btn btn-outline-primary btn-sm mt-n1 mr-10">Sync Calendar</button>
+                        @endif
                     @else
                     <button type="button" data-toggle="modal" data-target="#disconnect-calendar" class="float-end btn btn-outline-primary btn-sm mt-n1 mr-10">Disconnect Calendar</button>
                     @endif
@@ -1263,7 +1265,7 @@
 @endpush
 
 @push('scripts')
- <script src="https://maps.googleapis.com/maps/api/js?key={{ config('services.google.api_key') }}&libraries=places&callback=initAutocomplete"
+ <script src="https://maps.googleapis.com/maps/api/js?key=<?php echo Config::get('constants.GOOGLE_MAPS_API_KEY'); ?>&libraries=places&callback=initAutocomplete"
             async defer></script>
     <script src="{{ asset('html/assets/js/address-auto-complete.js') }}"></script>
 

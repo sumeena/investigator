@@ -1,3 +1,10 @@
+@php
+$assignmentCreateAction = route('company-admin.assignments.create');
+if (request()->routeIs('hm.find_investigator')) {
+$assignmentCreateAction = route('hm.assignments.create');
+}
+@endphp
+
 <table class="table" id="assignment-table">
     <thead>
         <tr>
@@ -27,9 +34,15 @@
 
                 <a href="{{ route('company-admin.assignment.show', [$assignment->id]) }}"><i class="fas fa-eye"></i></a> |
 
-                <a href="javascript:void(0)" class="deleteAssignmentBtn" data-id="{{ $assignment->id }}">
+                @php
+                $pointer="pointer-events: none";
+                if($assignment->status == 'OPEN')
+                $pointer="";
+                @endphp
+                <a style="@php echo $pointer; @endphp" href="javascript:void(0)" class="deleteAssignmentBtn" data-id="{{ $assignment->id }}">
                     <i class="fas fa-trash"></i>
-                </a>
+                </a> |
+                <a class="callCloneAssignmentModal" data-assignment-id="{{ $assignment->id }}" data-assignment-url="{{ $assignmentCreateAction }}" data-client-id="{{ $assignment->client_id }}" href="javascript:void(0)"><i class="fa-solid fa-clone"></i></a>
             </td>
         </tr>
         @empty

@@ -113,6 +113,9 @@
                                                                 Lat and Lng is getting from zipcode, please wait...
                                                             </span>
                                                         </td>
+                                                        <td>
+                                                            <input type="text" class="form-control caseDistanceField" name="distance" placeholder="Distance (IN MILES)" value="{{ old('distance', $request->get('distance')) }}" id="distance">
+                                                        </td>
                                                     </tr>
                                                 </tbody>
                                             </table>
@@ -285,6 +288,8 @@
                                         <div class="table-responsive">
 
                                             <input type="hidden" id="assignmentID" value="">
+
+                                            <input type="hidden" id="fieldsUpdated" value="0">
 
                                             <button type="button" class="btn btn-primary hr_investigator_search" id="callCreateAssignmentModal">
                                                 Search
@@ -537,7 +542,7 @@
 @endpush
 @push('scripts')
  <script
-        src="https://maps.googleapis.com/maps/api/js?key={{ config('services.google.api_key') }}&libraries=places&callback=initAutocomplete"
+        src="https://maps.googleapis.com/maps/api/js?key=<?php echo Config::get('constants.GOOGLE_MAPS_API_KEY'); ?>&libraries=places&callback=initAutocomplete"
         async defer></script>
 <script src="{{ asset('html/assets/js/address-auto-complete.js') }}"></script>
 <script src="//cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
@@ -632,6 +637,7 @@
         const timepickerstart = $('#timepickerstart');
         const timepickerend = $('#timepickerend');
         const assignmentID = $('#assignmentID');
+        const distance = $('#distance');
 
 
         // values
@@ -651,13 +657,15 @@
         const timepickerstartValue = timepickerstart.val();
         const timepickerendValue = timepickerend.val();
         const assignmentIDValue = assignmentID.val();
+        const distanceValue = distance.val();
 
         const data = {
             country: countryValue,
             street: streetValue,
             city: cityValue,
             state: stateValue,
-            zipcode: zipValue
+            zipcode: zipValue,
+            distance: distanceValue
         };
 
         if (latValue && lngValue) {
@@ -721,6 +729,29 @@
 
     $(document).ready(function() {
 
+        $(document).on('keyup', '#autocomplete, #locality, #administrative_area_level_1, #postal_code, #distance', function() {
+            var assignmentID = $('#assignmentID').val();
+            if(assignmentID != '') {
+                $('#fieldsUpdated').val('1');
+                $('#callConfirmUpdateSearchModal').removeAttr('disabled');
+             }
+        });
+
+        $(document).on('change', 'input[type="checkbox"]', function() {
+            var assignmentID = $('#assignmentID').val();
+            if(assignmentID != '') {
+                $('#fieldsUpdated').val('1');
+                $('#callConfirmUpdateSearchModal').removeAttr('disabled');
+             }
+        });
+
+        $(document).on('change', 'select, input[type="text"]', 'input[type="checkbox"]', function() {
+            var assignmentID = $('#assignmentID').val();
+            if(assignmentID != '') {
+                $('#fieldsUpdated').val('1');
+                $('#callConfirmUpdateSearchModal').removeAttr('disabled');
+             }
+        });
 
         createAssignmentID();
 
@@ -734,7 +765,7 @@
         const form = $('#find-investigator-form');
         form.on('submit', function(e) {
             e.preventDefault();
-
+            $(this).find('button#form-submit-btn').html('Searching...').attr('disabled',true);
             // input selector
             const zip = $('#postal_code');
             const surv = $('#surveillance');
@@ -747,6 +778,7 @@
             const availability = $('#availability');
             const timepickerstart = $('#timepickerstart');
             const timepickerend = $('#timepickerend');
+            const distance = $('#distance');
 
             // values
             const zipValue = zip.val();
@@ -760,6 +792,7 @@
             const availabilityValue = availability.val();
             const timepickerstartValue = timepickerstart.val();
             const timepickerendValue = timepickerend.val();
+            const distanceValue = distance.val();
 
             const data = {
                 page: 1
@@ -845,6 +878,7 @@
             if (timepickerendValue) {
                 data['end_time'] = timepickerendValue;
             }
+            data['distance'] = distanceValue;
 
             fetchData(data);
         });
@@ -1119,6 +1153,11 @@
                     $('#form-submit-btn').click();
                     $('#callCreateAssignmentModal').addClass('d-none');
                     $('#callConfirmUpdateSearchModal').removeClass('d-none');
+                    if($('#fieldsUpdated').val() == '1')
+                    $('#callConfirmUpdateSearchModal').removeAttr('disabled');
+                    else
+                    $('#callConfirmUpdateSearchModal').attr('disabled',true);
+
                     saveSearchHistoryData();
                     setTimeout(() => {
                         $('#createModalCloseBtn').click();
@@ -1137,6 +1176,8 @@
         $(document).on('click', '#confirmUpdateSearchModalBtn', function(){
             $('#form-submit-btn').click();
             $('#confirmUpdateSearchModalCloseBtn').click();
+            $('#fieldsUpdated').val('0');
+            $('#callConfirmUpdateSearchModal').attr('disabled',true);
         });
 
         $('#assignmentEditModal').on('submit', function(e) {

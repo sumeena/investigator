@@ -4,10 +4,13 @@ namespace App\Http\Controllers\CompanyAdmin;
 
 use App\Http\Controllers\Controller;
 use App\Mail\JobInvitationMail;
+use App\Mail\HireJob;
+use App\Mail\CloseJob;
 use App\Models\Assignment;
 use App\Models\AssignmentUser;
 use App\Models\Chat;
 use App\Models\ChatMessage;
+use App\Models\InvestigatorSearchHistory;
 use App\Models\Invitation;
 use App\Models\Language;
 use App\Models\Media;
@@ -49,7 +52,7 @@ class AssignmentsController extends Controller
     {
         $request->validate([
             'assignment_id' => 'bail|required|string|max:255|unique:assignments',
-            'client_id'     => 'bail|required|string|max:255|unique:assignments',
+            'client_id'     => 'bail|required|string|max:255',
         ]);
 
         $storeAssignment = Assignment::create([
@@ -57,6 +60,22 @@ class AssignmentsController extends Controller
             'assignment_id' => $request->assignment_id,
             'client_id'     => $request->client_id,
         ]);
+
+        if(isset($request->type) && $request->type == 'clone') {
+
+            $sourceAssignmentID = InvestigatorSearchHistory::where('assignment_id',$request->old_assignment_id)->pluck('id');
+
+            $sourceAssignmentData = InvestigatorSearchHistory::find($sourceAssignmentID[0]);
+
+            $newAssignmentData = $sourceAssignmentData->replicate();
+            $newAssignmentData->assignment_id = $storeAssignment->id;
+            $savedAssignment = $newAssignmentData->save();
+
+            session()->flash('success', 'Assignment Cloned successfully');
+
+            return route('company-admin.assignments.edit', ['assignment' => $storeAssignment->id]);
+            // exit;
+        }
 
         return response()->json([
             'success' => true,
@@ -78,13 +97,10 @@ class AssignmentsController extends Controller
     } */
 
 
-
-
     /** edit find investigator */
 
     public function edit(Assignment $assignment, Request $request)
     {
-        // dd($request->all());
         $states          = State::all();
         $languageOptions = Language::all();
         $filtered        = false;
@@ -136,12 +152,9 @@ class AssignmentsController extends Controller
             || $request->get('languages')
             || $request->get('surveillance')
             || $request->get('statements')
+            || $request->get('distance')
             || $request->get('misc');
     }
-
-
-
-
 
     public function update(Request $request, Assignment $assignment)
     {
@@ -220,6 +233,8 @@ class AssignmentsController extends Controller
         $assignmentStatus = Assignment::where('id',$assignmentId)->pluck('status');
         // echo '<pre>';
 
+        // dd($chat);
+
         $html = view('company-admin.assignment.show-response', compact('messages', 'hiredStatus', 'authUserId', 'chat', 'hiredUser', 'assignmentStatus'))->render();
 
         return response()->json([
@@ -232,10 +247,53 @@ class AssignmentsController extends Controller
     /** hire investigator */
 
     public function hireInvestigator(Request $request) {
+        $authUser = auth()->user();
         $authUserId = $request->user_id;
         $assignmentId = $request->assignment_id;
         $assignmentUser = AssignmentUser::where(['assignment_id' => $assignmentId, 'user_id' => $authUserId])->update(['hired' => 1]);
-        $assignment = Assignment::where('id' , $assignmentId)->update(array('status' => 'ASSIGNED'));
+        Assignment::where('id' , $assignmentId)->update(array('status' => 'ASSIGNED'));
+        $assignment = Assignment::find($assignmentId);
+        $login=route('login');
+        $assignmentUserInfo = AssignmentUser::where(['assignment_id'=>$assignmentId])->get();
+
+        $notificationDataClosed = [
+           'title'        => 'The assignment you were invited on has been closed.',
+           'login'        => ' to your account so view the details.',
+           'loginUrl'        => $login,
+           'thanks'        => 'Ilogistics Team',
+
+        ];
+
+        $company_name = '';
+
+        if($authUser->CompanyAdminProfile != null)
+        {
+            $company_name = $authUser->CompanyAdminProfile->company_name;
+        }
+        if($authUser->parentCompany != null)
+        {
+            $company_name = $authUser->parentCompany->company->CompanyAdminProfile?->company_name;
+        }
+
+        $notificationDataHired = [
+           'title'        => 'Congratulations! You have been selected for a new assignment.',
+           'login'        => ' to your account so view the details.',
+           'assigmentId'  => 'Assigment ID: ' . Str::upper($assignment->assignment_id),
+           'clientId'     => 'Client ID: ' . Str::upper($assignment->client_id),
+           'loginUrl'        => $login,
+           'companyName'  => 'Company Name: ' .$company_name,
+           'thanks'        => 'Ilogistics Team',
+         ];
+         foreach ($assignmentUserInfo as $item) {
+             $investigatorUser = User::find($item->user_id);
+             if($item->hired == 1){
+                Mail::to($investigatorUser->email)->send(new HireJob($notificationDataHired));
+             }else{
+                Mail::to($investigatorUser->email)->send(new CloseJob($notificationDataClosed));
+             }
+         }
+         session()->flash('success', 'Assignment assigned successfully');
+
     }
 
 
@@ -251,7 +309,7 @@ class AssignmentsController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Message Sent',
-            ]); 
+            ]);
         }
     }
 
@@ -262,7 +320,7 @@ class AssignmentsController extends Controller
         $fileName = time().'_'.$attachment->getClientOriginalName();
         $fileExt = $attachment->getClientOriginalExtension();
         $filePath = $attachment->storeAs('uploads', $fileName, 'public');
-        
+
         $attachmentPath = '/storage/' . $filePath;
 
         $chatId = $request->chat_id;
@@ -276,7 +334,7 @@ class AssignmentsController extends Controller
                 'message' => 'Message Sent',
                 'attachment' => env('APP_URL').$attachmentPath,
                 'ext' => $fileExt
-            ]); 
+            ]);
         }
     }
 
@@ -323,15 +381,32 @@ class AssignmentsController extends Controller
                 $storeAssignmentUser = AssignmentUser::updateOrCreate(['assignment_id' => $assignment->id, 'user_id' => $investigator->id],['assignment_id' => $assignment->id, 'user_id' => $investigator->id]);
 
                 Assignment::where('id',$assignment->id)->update(['status' => 'INVITED']);
+                $login=route('login');
 
-            $notificationData = [
-                'user_id'      => $investigator->id,
-                'from_user_id' => $authUser->id,
-                'title'        => $authUser->first_name . ' ' . $authUser->last_name . ' has invited you to join the assignment',
-                'message'      => 'Assigment ID: ' . Str::upper($assignment->assignment_id) . ' - Client ID: ' . Str::upper($assignment->client_id),
-                'type'         => Notification::INVITATION,
-                'url'          => route('investigator.assignment.show', $storeAssignmentUser->id),
-            ];
+                $company_name = '';
+
+                if($authUser->CompanyAdminProfile != null)
+                {
+                    $company_name = $authUser->CompanyAdminProfile->company_name;
+                }
+                if($authUser->parentCompany != null)
+                {
+                    $company_name = $authUser->parentCompany->company->CompanyAdminProfile?->company_name;
+                }
+
+                $notificationData = [
+                   'user_id'      => $investigator->id,
+                   'from_user_id' => $authUser->id,
+                   'title'        => 'You have been invited to an assignment by ' .$authUser->first_name . ' ' . $authUser->last_name,
+                   'assigmentId'  => 'Assigment ID: ' . Str::upper($assignment->assignment_id),
+                   'clientId'     => 'Client ID: ' . Str::upper($assignment->client_id),
+                   'companyName'  => 'Company Name: ' .$company_name,
+                   'login'        => ' to your account so view the details.',
+                   'loginUrl'        => $login,
+                   'type'         => Notification::INVITATION,
+                   'thanks'        => 'Ilogistics Team',
+                   'url'          => route('investigator.assignment.show', $storeAssignmentUser->id),
+               ];
 
             // Invitation::create($invitationData);
             Notification::create($notificationData);
@@ -339,7 +414,7 @@ class AssignmentsController extends Controller
             $chat = Chat::create(array('assignment_id' => $assignment->id, 'company_admin_id' => $authUser->id, 'investigator_id' => $investigator->id, 'is_read' => '{"company-admin":1 , "investigator":0}'));
             ChatMessage::create(array('user_id' => $authUser->id, 'chat_id' => $chat->id, 'content' => 'We have invited you to join this assignment. If you are interested, please let us know at your earliest convenience. We can discuss further details and address any questions you may have. Thank you', 'type' => 'text', 'is_delete' => '{"company-admin" : 0 , "investigator" : 0}'));
 
-            // Mail::to($investigator->email)->send(new JobInvitationMail($notificationData));
+             Mail::to($investigator->email)->send(new JobInvitationMail($notificationData));
         // }
 
         return response()->json([
@@ -364,6 +439,7 @@ class AssignmentsController extends Controller
     public function saveAssignmentNotes(Request $request) {
         $notes = $request->notes;
         $assignmentId = $request->assignment_id;
+
         // $userId = $request->user_id;
         $notesUpdated = Assignment::where(['id'=>$assignmentId])->update(['notes' => $notes]);
         return response()->json([
