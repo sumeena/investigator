@@ -175,7 +175,6 @@ $(document).ready(function(){
 
                 $('#notesTextArea').val(response.notes);
                 $('#notesTextArea').data('userid',userId);
-                $('#notesTextArea').data('assignmentid',assignmentId);
 
                 /* $('.hire-user').html('<button data-user-id="'+userId+'" data-assignment-id="'+assignmentId+'" type="button" class="btn btn-outline-light btn-sm btn-hire-now">ASSIGN NOW</button>'); */
                 if(assignmentStatus == 'INVITED') {
@@ -219,7 +218,7 @@ $(document).ready(function(){
         var notesTextArea = $(this).parents('.confirm-div').prev('div.row').children('div').children('textarea#notesTextArea');
         var notes =notesTextArea.val();
         // var notes_user_id =notesTextArea.data('userid');
-        var notes_assignment_id =notesTextArea.data('assignmentid');
+        var notes_assignment_id = notesTextArea.data('assignmentid');
         $.ajax({
             url : '/company-admin/assignment/save-notes',
             method : 'POST',

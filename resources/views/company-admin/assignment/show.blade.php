@@ -186,7 +186,7 @@
                                 if(@$assignment->status == 'COMPLETED')
                                 $disabled = 'disabled';
                                 @endphp
-                                <textarea rows="5" {{$disabled}} class="form-control" id="notesTextArea" name="notes" placeholder="Type notes here.."></textarea>
+                                <textarea rows="5" data-assignmentid="{{ $assignment->id }}" {{$disabled}} class="form-control" id="notesTextArea" name="notes" placeholder="Type notes here..">{{$assignment->notes}}</textarea>
                             </div>
                         </div>
 
