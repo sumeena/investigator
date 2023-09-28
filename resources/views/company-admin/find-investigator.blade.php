@@ -729,7 +729,7 @@
 
     $(document).ready(function() {
 
-        $(document).on('keyup', '#autocomplete, #locality, #administrative_area_level_1, #postal_code', function() {
+        $(document).on('keyup', '#autocomplete, #locality, #administrative_area_level_1, #postal_code, #distance', function() {
             var assignmentID = $('#assignmentID').val();
             if(assignmentID != '') {
                 $('#fieldsUpdated').val('1');

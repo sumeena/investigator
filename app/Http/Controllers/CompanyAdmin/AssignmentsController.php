@@ -263,13 +263,25 @@ class AssignmentsController extends Controller
            'thanks'        => 'Ilogistics Team',
 
         ];
+
+        $company_name = '';
+
+        if($authUser->CompanyAdminProfile != null)
+        {
+            $company_name = $authUser->CompanyAdminProfile->company_name;
+        }
+        if($authUser->parentCompany != null)
+        {
+            $company_name = $authUser->parentCompany->company->CompanyAdminProfile?->company_name;
+        }
+
         $notificationDataHired = [
            'title'        => 'Congratulations! You have been selected for a new assignment.',
            'login'        => ' to your account so view the details.',
            'assigmentId'  => 'Assigment ID: ' . Str::upper($assignment->assignment_id),
            'clientId'     => 'Client ID: ' . Str::upper($assignment->client_id),
            'loginUrl'        => $login,
-           'companyName'  => 'Company Name: ' .$authUser->parentCompany->company->CompanyAdminProfile?->company_name,
+           'companyName'  => 'Company Name: ' .$company_name,
            'thanks'        => 'Ilogistics Team',
          ];
          foreach ($assignmentUserInfo as $item) {
@@ -427,6 +439,7 @@ class AssignmentsController extends Controller
     public function saveAssignmentNotes(Request $request) {
         $notes = $request->notes;
         $assignmentId = $request->assignment_id;
+
         // $userId = $request->user_id;
         $notesUpdated = Assignment::where(['id'=>$assignmentId])->update(['notes' => $notes]);
         return response()->json([
