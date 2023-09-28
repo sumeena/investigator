@@ -123,7 +123,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="cloneAssignmentModalLabel">Create Assignment</h5>
-                <button type="button" class="close btn btn-danger" data-dismiss="modal" aria-label="Close" id="createModalCloseIconBtn">
+                <button type="button" class="close btn btn-danger btn-sm" data-dismiss="modal" aria-label="Close" id="cloneModalCloseIconBtn">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
@@ -145,7 +145,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal" id="createModalCloseBtn">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal" id="cloneModalCloseBtn">
                         Close
                     </button>
                     <button type="submit" class="btn btn-primary">

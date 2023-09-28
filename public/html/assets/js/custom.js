@@ -235,6 +235,7 @@ $(document).ready(function(){
 
 
     $(document).on('click', '.btn-hire-now', function() {
+        $(this).html('Assigning...').css('pointer-events','none');
         var userId = $(this).data('user-id');
         var assignmentId = $(this).data('assignment-id');
 
@@ -316,9 +317,13 @@ $(document).ready(function(){
         });
     });
 
+
+    $(document).on('click', '#cloneModalCloseIconBtn, #cloneModalCloseBtn', function(){
+        $('#cloneAssignmentModal').modal('hide');
+        $('#assignmentCloneForm')[0].reset();
+    });
+
 });
-
-
 
 
 function checkGoogleAccessToken() {
@@ -333,10 +338,12 @@ function checkGoogleAccessToken() {
 document.addEventListener('DOMContentLoaded', function() {
 
     var calendarEl = document.getElementById('calendar');
-    var calendar = new FullCalendar.Calendar(calendarEl, {
-        initialView: 'dayGridMonth',
-    });
-    calendar.render();
+    if(calendarEl) {
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+        });
+        calendar.render();
+    }
 
 
     var currentURL = window.location.href;

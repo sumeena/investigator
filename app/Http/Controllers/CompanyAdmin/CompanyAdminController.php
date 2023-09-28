@@ -96,27 +96,28 @@ class CompanyAdminController extends Controller
 
             $html = view('company-admin.find-investigator-response', compact('investigators', 'assignmentCount','assignmentUsers'))->render();
             $login=route('login');
-
-            $notificationData = [
-               'title'        => 'The assignment ID '.$assignmentID[0].' which you were invited for has been updated.',
-               'loginUrl'        => $login,
-               'login'        => ' to your account so view the details.',
-               'thanks'        => 'Ilogistics Team',
-             ];
-            $assignmentUsers = AssignmentUser::where(['assignment_id' => $request->assignment_id,'hired' => 1])->get();
-            if(count($assignmentUsers) == 0){
-              $assignmentUsers = AssignmentUser::where(['assignment_id' => $request->assignment_id,'hired' => 0])->get();
-                foreach ($assignmentUsers as $item) {
-                    $investigatorUser = User::find($item->user_id);
-                    
-                      Mail::to($investigatorUser->email)->send(new JobUpdate($notificationData));
+            if(isset($request->assignment_id) && (isset($request->fieldsUpdated) && $request->fieldsUpdated == '1')){
+                
+                $notificationData = [
+                'title'        => 'The assignment ID '.$assignmentID[0].' which you were invited for has been updated.',
+                'loginUrl'        => $login,
+                'login'        => ' to your account so view the details.',
+                'thanks'        => 'Ilogistics Team',
+                ];
+                $assignmentUsers = AssignmentUser::where(['assignment_id' => $request->assignment_id,'hired' => 1])->get();
+                if(count($assignmentUsers) == 0){
+                $assignmentUsers = AssignmentUser::where(['assignment_id' => $request->assignment_id,'hired' => 0])->get();
+                    foreach ($assignmentUsers as $item) {
+                        $investigatorUser = User::find($item->user_id);
+                        
+                        Mail::to($investigatorUser->email)->send(new JobUpdate($notificationData));
+                    }
                 }
             }
             return response()->json([
                 'data' => $html,
             ]);
         }
-
 
         return view(
             'company-admin.find-investigator',
