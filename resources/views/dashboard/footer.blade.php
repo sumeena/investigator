@@ -6,7 +6,7 @@
         document.write(new Date().getFullYear());
       </script>
       , made with Bootstrap¸by
-      <a href="#" target="_blank" class="footer-link fw-bolder">OdzServices</a>
+      <a href="#" target="_blank" class="footer-link fw-bolder">Boostmediagroup</a>
     </div>
   </div>
 </footer>
