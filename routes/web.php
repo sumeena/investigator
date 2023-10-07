@@ -163,6 +163,8 @@ Route::group(['prefix' => 'hm', 'as' => 'hm.', 'middleware' => ['hm']], function
     Route::get('/find-investigators', [CompanyAdminController::class, 'findInvestigator'])->name('find_investigator');
     Route::post('/find-investigators-histories', [CompanyAdminController::class, 'saveInvestigatorSearchHistory'])
         ->name('save-investigator-search-history');
+
+    Route::get('/assignments-list', [HMAssignmentsController::class, 'assignments_list'])->name('assignments-list');
     Route::get('/assignments', [HMAssignmentsController::class, 'index'])->name('assignments');
     Route::get('/assignments/create', [HMAssignmentsController::class, 'create'])->name('assignments.create');
     Route::post('/assignments/invite', [HMAssignmentsController::class, 'invite'])->name('assignments.invite');

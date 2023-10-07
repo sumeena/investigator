@@ -46,7 +46,18 @@
                             <div class="col-md-6">
                                 <b><label>Company:</label></b>
                             </div>
-                            <div class="col-md-6">{{ @$assignmentUser->assignment->author->CompanyAdminProfile->company_name ?? null ?: 'N/A' }}</div>
+                            <div class="col-md-6">
+                            @php
+                                if($assignmentUser->assignment->author->parentCompany != null)
+                                {
+                                $company_name = $assignmentUser->assignment->author->parentCompany->company->CompanyAdminProfile->company_name;
+                                }
+                                else
+                                $company_name = $assignmentUser->assignment->author->CompanyAdminProfile->company_name;
+                            @endphp    
+
+
+                            {{ @$company_name ?? null ?: 'N/A' }}</div>
                         </div>
                     </div>
 
