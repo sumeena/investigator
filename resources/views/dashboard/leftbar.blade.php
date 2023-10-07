@@ -179,6 +179,13 @@
                 </a>
             </li>
 
+            <li class="menu-item {{ request()->routeIs('hm.assignments-list') ? 'active' : '' }}">
+                    <a href="{{ route('hm.assignments-list') }}" class="menu-link">
+                        <i class="bx bx-user me-2"></i>
+                        <div data-i18n="Analytics">Assignments</div>
+                    </a>
+            </li>
+
             <li class="menu-item {{ request()->routeIs('hm.company-users.index') ? 'active' : '' }}">
                 <a href="{{ route('hm.company-users.index') }}" class="menu-link">
                     <i class="bx bx-user me-2"></i>

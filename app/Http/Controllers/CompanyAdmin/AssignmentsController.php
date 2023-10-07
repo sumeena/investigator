@@ -10,6 +10,7 @@ use App\Models\Assignment;
 use App\Models\AssignmentUser;
 use App\Models\Chat;
 use App\Models\ChatMessage;
+use App\Models\CompanyUser;
 use App\Models\InvestigatorSearchHistory;
 use App\Models\Invitation;
 use App\Models\Language;
@@ -23,6 +24,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Illuminate\Testing\Assert;
+use Illuminate\Validation\Rules\Exists;
 
 class AssignmentsController extends Controller
 {
@@ -302,8 +304,10 @@ class AssignmentsController extends Controller
     public function sendMessage(Request $request) {
         $msg = $request->message;
         $chatId = $request->chat_id;
-        $authUserId = Auth::user()->id;
-        $msgSent = ChatMessage::create(array('user_id' => $authUserId, 'chat_id' => $chatId, 'content' => $msg, 'type' => 'text', 'is_delete' => '{"investigator": 0, "company-admin": 0}'));
+
+        $chatDetails = Chat::find($chatId);      
+
+        $msgSent = ChatMessage::create(array('user_id' => $chatDetails->assignment->user_id, 'chat_id' => $chatId, 'content' => $msg, 'type' => 'text', 'is_delete' => '{"investigator": 0, "company-admin": 0}'));
 
         if($msgSent) {
             return response()->json([
@@ -317,15 +321,28 @@ class AssignmentsController extends Controller
     public function sendAttachmentMessage(Request $request) {
         $attachment = $request->file;
 
-        $fileName = time().'_'.$attachment->getClientOriginalName();
+        $attachment_file_name = preg_replace('/[^a-zA-Z0-9_ %\[\]\.\(\)%&-]/s', '', $attachment->getClientOriginalName());
+
+        $fileName = time().'_'. $attachment_file_name;
         $fileExt = $attachment->getClientOriginalExtension();
         $filePath = $attachment->storeAs('uploads', $fileName, 'public');
 
         $attachmentPath = '/storage/' . $filePath;
 
         $chatId = $request->chat_id;
-        $authUserId = Auth::user()->id;
-        $media = Media::create(array( 'file_name' => $attachment->getClientOriginalName(), 'file_ext' => $fileExt));
+
+        $chatDetails = Chat::find($chatId);
+
+        // $authUserId = Auth::user()->id;
+        $authUserId = auth()->id();
+
+        $companyUser = CompanyUser::where('user_id', auth()->id())->exists();
+        if($companyUser) {
+            $parent = CompanyUser::where('user_id', auth()->id())->pluck('parent_id');
+            $authUserId = $parent[0];
+        }
+
+        $media = Media::create(array( 'file_name' => $attachment_file_name, 'file_ext' => $fileExt));
         $msgSent = ChatMessage::create(array('user_id' => $authUserId, 'chat_id' => $chatId, 'content' => $attachmentPath, 'media_id' => $media->id, 'type' => 'media', 'is_read' => '{"company-admin : 0 , "investigator" : 1}'));
 
         if($msgSent) {
@@ -411,8 +428,14 @@ class AssignmentsController extends Controller
             // Invitation::create($invitationData);
             Notification::create($notificationData);
 
-            $chat = Chat::create(array('assignment_id' => $assignment->id, 'company_admin_id' => $authUser->id, 'investigator_id' => $investigator->id, 'is_read' => '{"company-admin":1 , "investigator":0}'));
-            ChatMessage::create(array('user_id' => $authUser->id, 'chat_id' => $chat->id, 'content' => 'We have invited you to join this assignment. If you are interested, please let us know at your earliest convenience. We can discuss further details and address any questions you may have. Thank you', 'type' => 'text', 'is_delete' => '{"company-admin" : 0 , "investigator" : 0}'));
+            $companyUser = CompanyUser::where('user_id', auth()->id())->exists();
+            if($companyUser) {
+                $parent = CompanyUser::where('user_id', auth()->id())->pluck('parent_id');
+                $authUser->id = $parent[0];
+            }
+
+            $chat = Chat::create(array('assignment_id' => $assignment->id, 'company_admin_id' => $assignment->user_id, 'investigator_id' => $investigator->id, 'is_read' => '{"company-admin":1 , "investigator":0}'));
+            ChatMessage::create(array('user_id' => $assignment->user_id, 'chat_id' => $chat->id, 'content' => 'We have invited you to join this assignment. If you are interested, please let us know at your earliest convenience. We can discuss further details and address any questions you may have. Thank you', 'type' => 'text', 'is_delete' => '{"company-admin" : 0 , "investigator" : 0}'));
 
              Mail::to($investigator->email)->send(new JobInvitationMail($notificationData));
         // }
@@ -428,7 +451,34 @@ class AssignmentsController extends Controller
     public function assignments_list()
     {
         // $assignments = Assignment::where('user_id', auth()->id())->withCount('invitations')->paginate(10);
-        $assignments = Assignment::withCount('users')->where(['user_id' => auth()->id(), 'is_delete' => NULL])->orderBy('created_at','desc')->paginate(10);
+        $userId = auth()->id();
+        $parentId = '';
+
+        $companyUser = CompanyUser::where('user_id', auth()->id())->exists();
+
+        if($companyUser) {
+            $parent = CompanyUser::where('user_id', auth()->id())->pluck('parent_id');
+            $parentId = $parent[0];
+        }
+
+        /* $user = auth()->user();
+
+        $user->load([
+            'companyAdmin',
+            'companyAdmin.company',
+            'companyAdmin.company.CompanyAdminProfile',
+        ]);
+
+        $companyUsers = User::whereHas('companyAdmin', function ($q) {
+            $q->where('parent_id', auth()->user()->companyAdmin->parent_id);
+        })->whereHas('userRole', function ($q) {
+            $q->where('role', ['company-admin', 'hiring-manager']);
+        })->latest()->paginate(20);
+        return view('hm.company-users', compact(
+            'companyUsers'
+        )); */
+
+        $assignments = Assignment::withCount('users')->where(['user_id' => $userId, 'is_delete' => NULL])->orWhere(['user_id' => $parentId, 'is_delete' => NULL])->orderBy('created_at','desc')->paginate(10);
 
         // dd($assignments);
 
