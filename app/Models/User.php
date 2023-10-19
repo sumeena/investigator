@@ -50,7 +50,8 @@ class User extends Authenticatable
         'is_investigator_profile_submitted',
         'lat',
         'lng',
-        'bio'
+        'bio',
+        'make_assignments_private'
     ];
 
     /**

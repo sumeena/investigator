@@ -165,9 +165,10 @@ $(document).ready(function(){
         var userId = $(this).data('user-id');
         var assignmentId = $(this).data('assignment-id');
         var assignmentStatus = $('.job-status').html();
-        $('.view-investigator-profile').attr('href','/company-admin/investigators/'+userId+'/view')
+        var role = $('.view-investigator-profile').data('role');
+        $('.view-investigator-profile').attr('href', role+'investigators/'+userId+'/view')
         $.ajax({
-            url: '/company-admin/assignment/fetchAssignmentUser',
+            url: role+'assignment/fetchAssignmentUser',
             data : { user_id : userId, assignment_id: assignmentId },
             success : function(response) {
                 $('.message-heading').removeClass('d-none');

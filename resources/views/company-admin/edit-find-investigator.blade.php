@@ -43,7 +43,7 @@
                     $assignmentSelect2Action = route('company-admin.select2-assignments');
                     $searchStoreAction = route('company-admin.save-investigator-search-history');
                     $searchEditAction = route('company-admin.update-investigator-search-history');
-                    if (request()->routeIs('hm.find_investigator')) {
+                    if (request()->routeIs('hm.assignments.edit')) {
                     $action = route('hm.find_investigator');
                     $assignmentsAction = route('hm.assignments');
                     $assignmentCreateAction = route('hm.assignments.create');
@@ -52,6 +52,8 @@
                     $assignmentInviteAction = route('hm.assignments.invite');
                     $assignmentSelect2Action = route('hm.select2-assignments');
                     $searchStoreAction = route('hm.save-investigator-search-history');
+                    $searchEditAction = route('hm.update-investigator-search-history');
+
                     }
                     @endphp
                     <form method="get" action="{{ $action }}" id="find-investigator-form">
