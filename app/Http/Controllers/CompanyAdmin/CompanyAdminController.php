@@ -46,6 +46,9 @@ class CompanyAdminController extends Controller
 
     public function store(CompanyAdminProfileRequest $request)
     {
+        if($request->make_assignments_private == NULL)
+            $request->make_assignments_private = 0;
+        // dd($request->make_assignments_private);
         //echo "<pre>"; print_r($request->all()); die;
         try {
             $user = Auth::user();
@@ -61,6 +64,7 @@ class CompanyAdminController extends Controller
                 'country'       => $request->country,
                 'zipcode'       => $request->zipcode,
                 'timezone_id'   => $request->timezone,
+                'make_assignments_private' => $request->make_assignments_private
             ]);
 
             $user->CompanyAdminProfile()->update(['is_company_profile_submitted' => true]);

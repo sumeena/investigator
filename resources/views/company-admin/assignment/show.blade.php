@@ -6,6 +6,20 @@
         <div class="card col-xs-12 assignmentMain p-0">
             <div class="row m-0">
                 @php
+                $viewProfile = '/company-admin/';
+                if (request()->routeIs('hm.assignment.show')) {
+                $action = route('hm.find_investigator');
+                $assignmentsAction = route('hm.assignments');
+                $assignmentCreateAction = route('hm.assignments.create');
+                $assignmentEditAction = 'hm.assignments.edit';
+                $assignmentShowAction = 'hm.assignment.show';
+                $assignmentStoreAction = route('hm.assignments.store');
+                $assignmentInviteAction = route('hm.assignments.invite');
+                $assignmentSelect2Action = route('hm.select2-assignments');
+                $searchStoreAction = route('hm.save-investigator-search-history');
+                $viewProfile = '/hm/';
+                }
+            
                 $usersCount = count($assignment->users);
                 @endphp
 
@@ -235,7 +249,7 @@
                                         <div class="col col-md-12">
                                             <h5 class="">
                                                 Messages
-                                                <a href="" target="_blank" class="btn btn-outline-light btn-md m-l-20 view-investigator-profile">View Profile</a>
+                                                <a href="" data-role="{{$viewProfile}}" target="_blank" class="btn btn-outline-light btn-md m-l-20 view-investigator-profile">View Profile</a>
 
                                                 <a href="javascript:void(0)" class="btn btn-outline-light btn-md m-l-20 hire-user btn-hire-now"></a>
 

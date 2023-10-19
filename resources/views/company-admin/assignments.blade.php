@@ -12,16 +12,18 @@
             $assignmentsAction = route('company-admin.assignments');
             $assignmentCreateAction = route('company-admin.assignments.create');
             $assignmentStoreAction = route('company-admin.assignments.store');
-            $assignmentEditAction = '/company-admin/assignments/';
+            $assignmentEditAction = 'company-admin.assignments.edit';
+            $assignmentShowAction = 'company-admin.assignment.show';
             $assignmentInviteAction = route('company-admin.assignments.invite');
             $assignmentSelect2Action = route('company-admin.select2-assignments');
             $searchStoreAction = route('company-admin.save-investigator-search-history');
-            if (request()->routeIs('hm.find_investigator')) {
+            if (request()->routeIs('hm.assignments-list')) {
             $action = route('hm.find_investigator');
             $assignmentsAction = route('hm.assignments');
             $assignmentCreateAction = route('hm.assignments.create');
+            $assignmentEditAction = 'hm.assignments.edit';
+            $assignmentShowAction = 'hm.assignment.show';
             $assignmentStoreAction = route('hm.assignments.store');
-            $assignmentEditAction = '/hm/assignments/';
             $assignmentInviteAction = route('hm.assignments.invite');
             $assignmentSelect2Action = route('hm.select2-assignments');
             $searchStoreAction = route('hm.save-investigator-search-history');
@@ -71,9 +73,14 @@
                                             </td>
 
                                             <td class="text-center">
-                                                <a href="{{ route('company-admin.assignments.edit', [$assignment->id]) }}"><i class="fas fa-pencil"></i></a> |
+                                                @php
+                                                $pointer="pointer-events: none";
+                                                if($assignment->status == 'OPEN' || $assignment->status == 'INVITED')
+                                                    $pointer="";
+                                                @endphp
+                                                <a style="@php echo $pointer; @endphp" href="{{ route($assignmentEditAction, [$assignment->id]) }}"><i class="fas fa-pencil"></i></a> |
 
-                                                <a href="{{ route('company-admin.assignment.show', [$assignment->id]) }}"><i class="fas fa-eye"></i></a> |
+                                                <a href="{{ route($assignmentShowAction, [$assignment->id]) }}"><i class="fas fa-eye"></i></a> |
 
                                                 @php
                                                 $pointer="pointer-events: none";

@@ -461,23 +461,6 @@ class AssignmentsController extends Controller
             $parentId = $parent[0];
         }
 
-        /* $user = auth()->user();
-
-        $user->load([
-            'companyAdmin',
-            'companyAdmin.company',
-            'companyAdmin.company.CompanyAdminProfile',
-        ]);
-
-        $companyUsers = User::whereHas('companyAdmin', function ($q) {
-            $q->where('parent_id', auth()->user()->companyAdmin->parent_id);
-        })->whereHas('userRole', function ($q) {
-            $q->where('role', ['company-admin', 'hiring-manager']);
-        })->latest()->paginate(20);
-        return view('hm.company-users', compact(
-            'companyUsers'
-        )); */
-
         $assignments = Assignment::withCount('users')->where(['user_id' => $userId, 'is_delete' => NULL])->orWhere(['user_id' => $parentId, 'is_delete' => NULL])->orderBy('created_at','desc')->paginate(10);
 
         // dd($assignments);
