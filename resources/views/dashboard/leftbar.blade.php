@@ -111,7 +111,14 @@
                         <div data-i18n="Analytics">Company Users</div>
                     </a>
                 </li>
-            
+
+                <li class="menu-item {{ request()->routeIs('company-admin.internal-investigators.index') ? 'active' : '' }}">
+                    <a href="{{ route('company-admin.internal-investigators.index') }}" class="menu-link">
+                        <i class="bx bxs-user me-2"></i>
+                        <div data-i18n="Analytics">Internal Investigators</div>
+                    </a>
+                </li>
+
             @else
                 <li class="menu-item {{ request()->routeIs('company-admin.profile') ? 'active' : '' }}">
                     <a href="{{ route('company-admin.profile') }}" class="menu-link">
@@ -180,10 +187,10 @@
             </li>
 
             <li class="menu-item {{ request()->routeIs('hm.assignments-list') ? 'active' : '' }}">
-                    <a href="{{ route('hm.assignments-list') }}" class="menu-link">
-                        <i class="bx bx-user me-2"></i>
-                        <div data-i18n="Analytics">Assignments</div>
-                    </a>
+                <a href="{{ route('hm.assignments-list') }}" class="menu-link">
+                    <i class="bx bx-user me-2"></i>
+                    <div data-i18n="Analytics">Assignments</div>
+                </a>
             </li>
 
             <li class="menu-item {{ request()->routeIs('hm.company-users.index') ? 'active' : '' }}">

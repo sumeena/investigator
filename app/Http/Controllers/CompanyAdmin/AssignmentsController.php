@@ -305,7 +305,7 @@ class AssignmentsController extends Controller
         $msg = $request->message;
         $chatId = $request->chat_id;
 
-        $chatDetails = Chat::find($chatId);      
+        $chatDetails = Chat::find($chatId);
 
         $msgSent = ChatMessage::create(array('user_id' => $chatDetails->assignment->user_id, 'chat_id' => $chatId, 'content' => $msg, 'type' => 'text', 'is_delete' => '{"investigator": 0, "company-admin": 0}'));
 

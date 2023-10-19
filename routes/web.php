@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\HmController as AdminHmController;
 use App\Http\Controllers\CompanyAdmin\AssignmentsController;
 use App\Http\Controllers\CompanyAdmin\CompanyUsersController;
+use App\Http\Controllers\CompanyAdmin\InternalInvestigatorsController;
 use App\Http\Controllers\Hm\AssignmentsController as HMAssignmentsController;
 use App\Http\Controllers\Hm\HmController;
 use App\Http\Controllers\Investigator\CompanyAdminsController;
@@ -89,7 +90,7 @@ Route::group(['prefix' => 'company-admin', 'as' => 'company-admin.', 'middleware
     Route::get('/', [CompanyAdminController::class, 'index'])->name('index');
     Route::get('/profile', [CompanyAdminController::class, 'viewProfile'])->name('profile');
     Route::get('/find-investigators', [CompanyAdminController::class, 'findInvestigator'])->name('find_investigator');
-    
+
     Route::post('/find-investigators-histories', [CompanyAdminController::class, 'saveInvestigatorSearchHistory'])->name('save-investigator-search-history');
 
     Route::post('/assignment/save-notes', [AssignmentsController::class, 'saveAssignmentNotes'])->name('assignment.save-notes');
@@ -98,7 +99,7 @@ Route::group(['prefix' => 'company-admin', 'as' => 'company-admin.', 'middleware
     Route::post('/find-investigators-histories', [CompanyAdminController::class, 'saveInvestigatorSearchHistory'])->name('save-investigator-search-history');
 
     Route::post('/search-investigators-histories', [CompanyAdminController::class, 'updateInvestigatorSearchHistory'])->name('update-investigator-search-history');
-    
+
     Route::get('/assignments', [AssignmentsController::class, 'index'])->name('assignments');
     Route::get('/assignments/create', [AssignmentsController::class, 'create'])->name('assignments.create');
     Route::post('/assignments/invite', [AssignmentsController::class, 'invite'])->name('assignments.invite');
@@ -109,7 +110,7 @@ Route::group(['prefix' => 'company-admin', 'as' => 'company-admin.', 'middleware
 
     Route::get('/assignments/{assignment}/edit', [AssignmentsController::class, 'edit'])->name('assignments.edit');
     Route::get('/assignments/{assignment}/mark-as-complete', [AssignmentsController::class, 'markComplete'])->name('assignments.mark-as-complete');
-    
+
     Route::put('/assignments/{assignment}/update', [AssignmentsController::class, 'update'])->name('assignments.update');
     Route::delete('/assignments/{assignment}/destroy', [AssignmentsController::class, 'destroy'])->name('assignments.destroy');
 
@@ -144,6 +145,18 @@ Route::group(['prefix' => 'company-admin', 'as' => 'company-admin.', 'middleware
         Route::get('/reset-password/{id}', [CompanyUsersController::class, 'resetPassword'])
             ->name('reset-password');
         Route::post('/update-password', [CompanyUsersController::class, 'passwordUpdate'])
+            ->name('update-password');
+    });
+
+    Route::group(['prefix' => 'internal-investigators', 'as' => 'internal-investigators.'], function () {
+        Route::get('/', [InternalInvestigatorsController::class, 'index'])->name('index');
+        Route::get('/add', [InternalInvestigatorsController::class, 'add'])->name('add');
+        Route::post('/submit', [InternalInvestigatorsController::class, 'store'])->name('submit');
+        Route::get('/delete/{id}', [InternalInvestigatorsController::class, 'delete'])->name('delete');
+        Route::get('/edit/{id}', [InternalInvestigatorsController::class, 'edit'])->name('edit');
+        Route::get('/reset-password/{id}', [InternalInvestigatorsController::class, 'resetPassword'])
+            ->name('reset-password');
+        Route::post('/update-password', [InternalInvestigatorsController::class, 'passwordUpdate'])
             ->name('update-password');
     });
 

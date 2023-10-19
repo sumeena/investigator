@@ -218,16 +218,16 @@ class User extends Authenticatable
         $userRole = $user->role;
         /* If logged in user's role is sub admin or HR. Then get the company id of the logged in user */
         if (($userRole === USER::COMPANYADMIN && $user->company_is_admin) || $userRole === USER::HR) {
-        // if ((($userRole == 'company-admin' && !$user->company_is_admin) || $userRole == 'hiring-manager') && $user->companyAdmin) {
-            $companyId = CompanyUser::where('user_id', $user->id)->orWhere('parent_id',$user->id)->select('parent_id')->first()->parent_id;
+            // if ((($userRole == 'company-admin' && !$user->company_is_admin) || $userRole == 'hiring-manager') && $user->companyAdmin) {
+            $companyId = CompanyUser::where('user_id', $user->id)->orWhere('parent_id', $user->id)->select('parent_id')->first()->parent_id;
 
             // if (($userRole === USER::COMPANYADMIN && !$user->company_is_admin) || $userRole === USER::HR) {
             // $companyId = CompanyUser::where('user_id', $user->id)->select('parent_id')->first()->parent_id;
         }
 
         $investigatorsWithoutEvents = self::investigatorsWithoutEvents($request->all());
-        $distance=$request->distance;
-        $query = self::query()
+        $distance                   = $request->distance;
+        $query                      = self::query()
             ->with([
                 'investigatorServiceLines',
                 'investigatorLicenses',
@@ -256,11 +256,17 @@ class User extends Authenticatable
             )
             ->join('investigator_availabilities', 'investigator_availabilities.user_id', '=', 'users.id')
             // check investigators distance within calculated distance
-            ->whereRaw( 'ST_Distance_Sphere(point(users.lng, users.lat), point(?, ?)) * .000621371192 <= investigator_availabilities.distance', [request('lng'), request('lat')]);
-      if (isset($request->distance) && !empty($request->distance)) {
-          $query->having('calculated_distance', '<=', ''.$distance.'');
-      }
-
+            ->whereRaw('ST_Distance_Sphere(point(users.lng, users.lat), point(?, ?)) * .000621371192 <= investigator_availabilities.distance', [request('lng'),
+                                                                                                                                                request('lat')])
+            ->when($request->has('with_my_investigators'), function ($query) {
+                $query->whereHas('companyAdmin', function ($q) {
+                    $q->where('parent_id', auth()->id())
+                        ->orWhere('parent_id', auth()->user()->parentCompany->parent_id);
+                });
+            });
+        if (isset($request->distance) && !empty($request->distance)) {
+            $query->having('calculated_distance', '<=', '' . $distance . '');
+        }
 
 
         return app(Pipeline::class)
@@ -273,38 +279,42 @@ class User extends Authenticatable
             ->thenReturn();
     }
 
-    public static function investigatorsWithoutEvents($data) {
+    public static function investigatorsWithoutEvents($data)
+    {
         // dd($data);
         $dateRange = $data['availability'];
         $dateRange = explode('-', $dateRange);
 
         $searchStartDate = Carbon::parse(trim($dateRange[0]))->format('Y-m-d');
-        $searchEndDate = Carbon::parse(trim($dateRange[1]))->format('Y-m-d');
+        $searchEndDate   = Carbon::parse(trim($dateRange[1]))->format('Y-m-d');
 
-        $eventDetails = CalendarEvents::whereBetween('start_date', [$searchStartDate, $searchEndDate])->select('user_id','id','start_date','end_date','start_time','end_time')->get()->toArray();
+        $eventDetails = CalendarEvents::whereBetween('start_date', [$searchStartDate,
+                                                                    $searchEndDate])->select('user_id', 'id', 'start_date', 'end_date', 'start_time', 'end_time')->get()->toArray();
 
         $events = [];
-        $users = User::where('role', User::INVESTIGATOR)->pluck('id')->toArray();
-        foreach($eventDetails as $eventDetail) {
-            $events[] = ['user_id' => $eventDetail['user_id'], 'start_date' => $eventDetail['start_date']. ' '.$eventDetail['start_time'], 'end_date' => $eventDetail['end_date'] . ' '. $eventDetail['end_time']];
+        $users  = User::where('role', User::INVESTIGATOR)->pluck('id')->toArray();
+        foreach ($eventDetails as $eventDetail) {
+            $events[] = ['user_id'    => $eventDetail['user_id'],
+                         'start_date' => $eventDetail['start_date'] . ' ' . $eventDetail['start_time'],
+                         'end_date'   => $eventDetail['end_date'] . ' ' . $eventDetail['end_time']];
         }
 
-        $start_date  = strtotime($searchStartDate);
-        $end_date  = strtotime($searchEndDate);
+        $start_date = strtotime($searchStartDate);
+        $end_date   = strtotime($searchEndDate);
 
-        $data['start_time'] = $searchStartDate.' '.str_replace(' ', '', $data['start_time']);
-        $data['end_time'] = $searchEndDate.' '.str_replace(' ', '', $data['end_time']);
-        $start_time   = strtotime(Carbon::parse($data['start_time']));
-        $end_time   = strtotime(Carbon::parse($data['end_time']));
+        $data['start_time'] = $searchStartDate . ' ' . str_replace(' ', '', $data['start_time']);
+        $data['end_time']   = $searchEndDate . ' ' . str_replace(' ', '', $data['end_time']);
+        $start_time         = strtotime(Carbon::parse($data['start_time']));
+        $end_time           = strtotime(Carbon::parse($data['end_time']));
 
-        $users_without_events = array_filter($users, function($user) use ($events, $start_date, $end_date, $start_time, $end_time) {
+        $users_without_events = array_filter($users, function ($user) use ($events, $start_date, $end_date, $start_time, $end_time) {
             $usersWithEvents = array();
             for ($date = $start_date; $date <= $end_date; $date = strtotime("+1 day", $date)) {
 
                 $start_of_range = strtotime(date("Y-m-d", $date) . " " . date("h:i A", $start_time));
-                $end_of_range = strtotime(date("Y-m-d", $date) . " " . date("h:i A", $end_time));
+                $end_of_range   = strtotime(date("Y-m-d", $date) . " " . date("h:i A", $end_time));
 
-               $usersWithEvents = self::hasOverlappingEvents($events, $start_of_range, $end_of_range, $user);
+                $usersWithEvents = self::hasOverlappingEvents($events, $start_of_range, $end_of_range, $user);
             }
             return !in_array($user, $usersWithEvents);
         });
@@ -313,15 +323,16 @@ class User extends Authenticatable
         return array_values($users_without_events);
     }
 
-    public static function hasOverlappingEvents($events, $start_date_time, $end_date_time, $user) {
+    public static function hasOverlappingEvents($events, $start_date_time, $end_date_time, $user)
+    {
         $userIds = array();
         foreach ($events as $event) {
             $event_start = strtotime($event["start_date"]);
-            $event_end = strtotime($event["end_date"]);
+            $event_end   = strtotime($event["end_date"]);
             if ($event_start <= $end_date_time && $event_end >= $start_date_time) {
-                    $userIds[] = $event['user_id'];
-                    // return true;
-                }
+                $userIds[] = $event['user_id'];
+                // return true;
+            }
         }
         return $userIds;
     }
@@ -359,7 +370,8 @@ class User extends Authenticatable
         return $this->belongsTo(CompanyUser::class, 'id', 'user_id');
     }
 
-    public function calendarEvents() {
+    public function calendarEvents()
+    {
         return $this->hasMany(CalendarEvents::class);
     }
 
