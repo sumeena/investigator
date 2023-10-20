@@ -579,9 +579,9 @@
                                     <table class="table licensing">
                                         <thead>
                                         <tr class="text-nowrap">
-                                            <th>State <span class="starrequired">*</span></th>
-                                            <th>License Number <span class="starrequired">*</span></th>
-                                            <th>Expiration date <span class="starrequired">*</span></th>
+                                            <th>State </th>
+                                            <th>License Number </th>
+                                            <th>Expiration date </th>
                                             <th>Insurance</th>
                                             <th class="td-upload-insurance-file">Upload Insurance File</th>
                                             <th>Bonded</th>
