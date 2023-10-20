@@ -67,7 +67,7 @@
                                             <td>{{ $assignments->firstItem() + $loop->index }}</td>
                                             <td>{{ Str::upper($assignment->assignment_id) }}</td>
                                             <td>{{ Str::upper($assignment->client_id) }}</td>
-                                            <td>{{ $assignment->author->first_name }} {{ $assignment->author->last_name }}</td>
+                                            <td>{{ @$assignment->author->first_name }} {{ @$assignment->author->last_name }}</td>
                                             <td>{{ Str::upper($assignment->users_count) }}</td>
                                             <td>{{ Str::upper($assignment->status) }}</td>
                                             <td>
