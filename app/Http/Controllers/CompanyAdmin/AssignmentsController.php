@@ -30,13 +30,35 @@ class AssignmentsController extends Controller
 {
     public function index()
     {
-        $assignments = Assignment::withCount('users')->where(['user_id' => auth()->id(), 'is_delete' => NULL])->orderBy('created_at','desc')->paginate(10);
+        /* $assignments = Assignment::withCount('users')->where(['user_id' => auth()->id(), 'is_delete' => NULL])->orderBy('created_at','desc')->paginate(10);
+
+        $html = view('company-admin.assignments-response', compact('assignments'))->render();
+
+        return response()->json([
+            'data' => $html,
+        ]); */
+
+        // $assignments = Assignment::where('user_id', auth()->id())->withCount('invitations')->paginate(10);
+        $userId = auth()->id();
+        $parentId = '';
+
+        $companyUser = CompanyUser::where('user_id', auth()->id())->exists();
+
+        if($companyUser) {
+            $parent = CompanyUser::where('user_id', auth()->id())->pluck('parent_id');
+            $parentId = $parent[0];
+        }
+
+        $assignments = Assignment::withCount('users')->where(['user_id' => $userId, 'is_delete' => NULL])->orWhere(['user_id' => $parentId, 'is_delete' => NULL])->orderBy('created_at','desc')->paginate(10);
+
+        // return view('company-admin.assignments', compact('assignments'));
 
         $html = view('company-admin.assignments-response', compact('assignments'))->render();
 
         return response()->json([
             'data' => $html,
         ]);
+
     }
 
     public function create()
@@ -461,9 +483,7 @@ class AssignmentsController extends Controller
             $parentId = $parent[0];
         }
 
-        $assignments = Assignment::withCount('users')->where(['user_id' => $userId, 'is_delete' => NULL])->orWhere(['user_id' => $parentId, 'is_delete' => NULL])->orderBy('created_at','desc')->paginate(10);
-
-        // dd($assignments);
+        $assignments = Assignment::withCount('users')->with('author')->where(['user_id' => $userId, 'is_delete' => NULL])->orWhere(['user_id' => $parentId, 'is_delete' => NULL])->orderBy('created_at','desc')->paginate(10);
 
         return view('company-admin.assignments', compact('assignments'));
     }
