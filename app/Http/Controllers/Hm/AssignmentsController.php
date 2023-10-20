@@ -28,8 +28,61 @@ class AssignmentsController extends Controller
 {
     public function index()
     {
-        $assignments = Assignment::where('user_id', auth()->id())
-            ->orWhere('user_id', auth()->user()->companyAdmin->parent_id)->paginate(10);
+        $user = auth()->user();
+        $userId = auth()->id();
+        $parentId = NULL;
+
+        $companyUser = CompanyUser::where('user_id', auth()->id())->exists();
+
+        if($companyUser) {
+
+            if (
+                (!$user->companyAdmin
+                    || !$user->companyAdmin->company
+                    || !$user->companyAdmin->company->CompanyAdminProfile)
+                &&
+                (!$user?->companyAdmin?->company?->companyAdmin
+                    || !$user?->companyAdmin?->company?->companyAdmin?->company
+                    || !$user?->companyAdmin?->company?->companyAdmin?->company?->CompanyAdminProfile
+                    || !$user?->companyAdmin?->company?->companyAdmin?->company?->CompanyAdminProfile?->is_company_profile_submitted)
+            ) {
+                session()->flash('error', 'Please tell your company admin to complete company profile first!');
+                return redirect()->route('hm.index');
+            }
+
+            $user->load([
+                'companyAdmin',
+                'companyAdmin.company',
+                'companyAdmin.company.CompanyAdminProfile',
+            ]);
+    
+            $CompanyAdminProfile = $user->companyAdmin->company->CompanyAdminProfile;
+            $parentProfile = $user->companyAdmin?->company?->companyAdmin?->company?->CompanyAdminProfile;
+            $companyAdmin = $user->companyAdmin?->company;
+
+            // DD($parentProfile);
+
+            /* $parent = CompanyUser::where('user_id', auth()->id())->pluck('parent_id');
+            $parentId = $parent[0];
+            $isAssignmentPrivate = CompanyAdminProfile::where('user_id',$parentId)->pluck('make_assignments_private'); */
+
+            if($parentProfile->make_assignments_private == 1)
+            $parentId = NULL;
+            else
+            $parentId = $parentProfile->id;
+
+        }
+
+        $assignments = Assignment::withCount('users')
+        ->where(['user_id' => $userId, 'is_delete' => NULL])
+        ->when($parentId != '', function ($query) use ($parentId) {
+            $query->orWhere(['user_id' => $parentId, 'is_delete' => NULL]);
+        })
+        ->orderBy('created_at','desc')->paginate(10);
+
+        // dd($assignments);
+
+        // return view('company-admin.assignments', compact('assignments'));
 
         $html = view('company-admin.assignments-response', compact('assignments'))->render();
 
@@ -43,18 +96,48 @@ class AssignmentsController extends Controller
     public function assignments_list()
     {
         // $assignments = Assignment::where('user_id', auth()->id())->withCount('invitations')->paginate(10);
+        $user = auth()->user();
         $userId = auth()->id();
         $parentId = NULL;
 
         $companyUser = CompanyUser::where('user_id', auth()->id())->exists();
 
         if($companyUser) {
-            $parent = CompanyUser::where('user_id', auth()->id())->pluck('parent_id');
-            $parentId = $parent[0];
-            $isAssignmentPrivate = CompanyAdminProfile::where('user_id',$parentId)->pluck('make_assignments_private');
 
-            if($isAssignmentPrivate[0] == 1)
+            if (
+                (!$user->companyAdmin
+                    || !$user->companyAdmin->company
+                    || !$user->companyAdmin->company->CompanyAdminProfile)
+                &&
+                (!$user?->companyAdmin?->company?->companyAdmin
+                    || !$user?->companyAdmin?->company?->companyAdmin?->company
+                    || !$user?->companyAdmin?->company?->companyAdmin?->company?->CompanyAdminProfile
+                    || !$user?->companyAdmin?->company?->companyAdmin?->company?->CompanyAdminProfile?->is_company_profile_submitted)
+            ) {
+                session()->flash('error', 'Please tell your company admin to complete company profile first!');
+                return redirect()->route('hm.index');
+            }
+
+            $user->load([
+                'companyAdmin',
+                'companyAdmin.company',
+                'companyAdmin.company.CompanyAdminProfile',
+            ]);
+    
+            $CompanyAdminProfile = $user->companyAdmin->company->CompanyAdminProfile;
+            $parentProfile = $user->companyAdmin?->company?->companyAdmin?->company?->CompanyAdminProfile;
+            $companyAdmin = $user->companyAdmin?->company;
+
+            // DD($parentProfile);
+
+            /* $parent = CompanyUser::where('user_id', auth()->id())->pluck('parent_id');
+            $parentId = $parent[0];
+            $isAssignmentPrivate = CompanyAdminProfile::where('user_id',$parentId)->pluck('make_assignments_private'); */
+
+            if($parentProfile->make_assignments_private == 1)
             $parentId = NULL;
+            else
+            $parentId = $parentProfile->id;
 
         }
 

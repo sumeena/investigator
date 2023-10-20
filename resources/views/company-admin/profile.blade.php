@@ -193,7 +193,7 @@
 
                             <div class="col-md-12">
                                 <div class="form-check">
-                                    <input name="make_assignments_private" class="form-check-input" type="checkbox" value="1" {{ (@$profile->make_assignments_private == 1 ? 'checked' : '') }} id="makeAssignmentsPrivate">
+                                    <input name="make_assignments_private" class="form-check-input" type="checkbox" value="1" {{ (@$parentCompany->make_assignments_private == 1 ? 'checked' : '') }} id="makeAssignmentsPrivate">
                                     <label class="form-check-label" for="makeAssignmentsPrivate">
                                         Make Assignments Private
                                     </label>
