@@ -15,6 +15,8 @@ return new class extends Migration
     {
       Schema::create('investigator_search_histories', function (Blueprint $table) {
           $table->string('distance')->nullable();
+          $table->string('withInternalInvestigator')->nullable();
+          $table->string('withExternalInvestigator')->nullable();
 
       });
     }

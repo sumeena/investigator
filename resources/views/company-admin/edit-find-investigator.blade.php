@@ -324,11 +324,46 @@
                                             <!-- <button type="submit" class="btn btn-primary hr_investigator_search" id="form-submit-btn">
                                                 Search
                                             </button> -->
-                                            
+
                                         </div>
 
-                                        
+
                                     </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-1 mt-2">
+                                  <div class="card">
+                                          <h5 class="card-header pt-2 pb-0">Search Investigators</h5>
+                                          <div class="table-responsive text-nowrap">
+                                              <table class="table hr_contact">
+                                                  <tbody>
+                                                      <tr>
+                                                          <td>
+                                                            <input class="form-check-input" type="checkbox"
+                                                                   id="withInternalInvestigator" value="internal"
+                                                                   name="withInternalInvestigator" @checked($assignment->searchHistory->withInternalInvestigator == 'internal')>
+                                                              <label>Internal</label>
+                                                          </td>
+                                                          <td>
+                                                            <input class="form-check-input" type="checkbox"
+                                                                   id="withExternalInvestigator" value="external"
+                                                                   name="withExternalInvestigator" @checked($assignment->searchHistory->withInternalInvestigator == 'external')>
+                                                              <label>External</label>
+                                                          </td>
+
+                                                      </tr>
+                                                      <tr>
+                                                          <td colspan="100%">
+                                                              <span role="alert" class="text-danger small d-none" id="searchInvestigatorsTypeError">
+                                                                  Search Investigators is required, please select at least one!
+                                                              </span>
+                                                          </td>
+                                                      </tr>
+                                                  </tbody>
+                                              </table>
+                                          </div>
+                                      </div>
                                 </div>
                             </div>
                         </div>
@@ -665,6 +700,8 @@
         const assignmentID = $('#assignmentID');
         const searchHistoryID = $('#searchHistoryID');
         const distance = $('#distance');
+        const withInternalInvestigator = $('#withInternalInvestigator');
+        const withExternalInvestigator = $('#withExternalInvestigator');
 
 
         // values
@@ -686,6 +723,8 @@
         const assignmentIDValue = assignmentID.val();
         const searchHistoryIDValue = searchHistoryID.val();
         const distanceValue = distance.val();
+        const withInternalInvestigatorValue = withInternalInvestigator.is(':checked');
+        const withExternalInvestigatorValue = withExternalInvestigator.is(':checked');
 
         const data = {
             country: countryValue,
@@ -703,6 +742,12 @@
 
         if (statValue) {
             data['statements'] = 'statements';
+        }
+        if (withInternalInvestigatorValue) {
+            data['withInternalInvestigator'] = 'internal';
+        }
+        if (withExternalInvestigatorValue) {
+            data['withExternalInvestigator'] = 'external';
         }
 
         if (miscValue) {
@@ -812,6 +857,7 @@
 
         const form = $('#find-investigator-form');
         form.on('submit', function(e) {
+            console.log("fff@@####")
             $(this).find('button#form-submit-btn').html('Searching...').attr('disabled',true);
             e.preventDefault();
 
@@ -829,6 +875,8 @@
             const timepickerend = $('#timepickerend');
             const assignmentID = $('#assignmentID');
             const distance = $('#distance');
+            const withInternalInvestigator = $('#withInternalInvestigator');
+            const withExternalInvestigator = $('#withExternalInvestigator');
 
             // values
             const zipValue = zip.val();
@@ -844,6 +892,8 @@
             const timepickerendValue = timepickerend.val();
             const assignmentIDValue = assignmentID.val();
             const distanceValue = distance.val();
+            const withInternalInvestigatorValue = withInternalInvestigator.is(':checked');
+            const withExternalInvestigatorValue = withExternalInvestigator.is(':checked');
 
             const data = {
                 page: 1
@@ -852,11 +902,14 @@
             // error selector
             const zipError = $('#zipcode-error');
             const serviceTypeError = $('#service-type-error');
+            const searchInvestigatorsError = $('#searchInvestigatorsTypeError');
+
             let hasError = false;
 
             // Hide error
             zipError.addClass('d-none');
             serviceTypeError.addClass('d-none');
+            searchInvestigatorsError.addClass('d-none');
 
             // Remove error class
             zip.removeClass('is-invalid');
@@ -877,6 +930,11 @@
                 serviceTypeError.removeClass('d-none');
                 hasError = true;
             }
+            if (!withInternalInvestigator.is(':checked') && !withExternalInvestigator.is(':checked')) {
+                // Show error
+                searchInvestigatorsError.removeClass('d-none');
+                hasError = true;
+            }
 
             if (hasError) {
                 return false;
@@ -885,6 +943,7 @@
             // Hide error
             zipError.addClass('d-none');
             serviceTypeError.addClass('d-none');
+            searchInvestigatorsError.addClass('d-none');
 
             // Remove error class
             zip.removeClass('is-invalid');
@@ -900,6 +959,12 @@
 
             if (statValue) {
                 data['statements'] = 'statements';
+            }
+            if (withExternalInvestigatorValue) {
+                data['withExternalInvestigator'] = 'external';
+            }
+            if (withInternalInvestigatorValue) {
+                data['withInternalInvestigator'] = 'internal';
             }
 
             if (miscValue) {

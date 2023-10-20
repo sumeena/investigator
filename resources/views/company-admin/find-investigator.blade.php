@@ -363,17 +363,30 @@
 
                                 <div class="col-md-6">
                                     <div class="mb-1 mt-2">
-                                        <div class="card">
-                                            <div class="form-group">
-                                                <label for="with-my-investigators">
-                                                    With Internal Investigators
-                                                </label>
-                                                <input class="form-check-input" type="checkbox"
-                                                       id="with-my-investigators" value="1"
-                                                       name="with_my_investigators" @checked(old('with_my_investigators', $request->get('with_my_investigators')))>
+                                      <div class="card">
+                                              <h5 class="card-header pt-2 pb-0">Search Investigators</h5>
+                                              <div class="table-responsive text-nowrap">
+                                                  <table class="table hr_contact">
+                                                      <tbody>
+                                                          <tr>
+                                                              <td>
+                                                                <input class="form-check-input" type="checkbox"
+                                                                       id="withInternalInvestigator" value="internal"
+                                                                       name="withInternalInvestigator" @checked(old('withInternalInvestigator', $request->get('withInternalInvestigator')))>
+                                                                  <label>Internal</label>
+                                                              </td>
+                                                              <td>
+                                                                <input class="form-check-input" type="checkbox"
+                                                                       id="withExternalInvestigator" value="external"
+                                                                       name="withExternalInvestigator" @checked(old('withExternalInvestigator', $request->get('withExternalInvestigator')))>
+                                                                  <label>External</label>
+                                                              </td>
 
-                                            </div>
-                                        </div>
+                                                          </tr>
+                                                      </tbody>
+                                                  </table>
+                                              </div>
+                                          </div>
                                     </div>
                                 </div>
                             </div>
@@ -736,6 +749,8 @@
             const timepickerend = $('#timepickerend');
             const assignmentID = $('#assignmentID');
             const distance = $('#distance');
+            const withInternalInvestigator = $('#withInternalInvestigator');
+            const withExternalInvestigator = $('#withExternalInvestigator');
 
 
             // values
@@ -756,6 +771,8 @@
             const timepickerendValue = timepickerend.val();
             const assignmentIDValue = assignmentID.val();
             const distanceValue = distance.val();
+            const withInternalInvestigatorValue = withInternalInvestigator.is(':checked');
+            const withExternalInvestigatorValue = withExternalInvestigator.is(':checked');
 
             const data = {
                 country : countryValue,
@@ -774,7 +791,12 @@
             if (statValue) {
                 data['statements'] = 'statements';
             }
-
+            if (withInternalInvestigatorValue) {
+                data['withInternalInvestigator'] = 'internal';
+            }
+            if (withExternalInvestigatorValue) {
+                data['withExternalInvestigator'] = 'external';
+            }
             if (miscValue) {
                 data['misc'] = 'misc';
             }
@@ -877,7 +899,8 @@
                 const timepickerstart = $('#timepickerstart');
                 const timepickerend = $('#timepickerend');
                 const distance = $('#distance');
-                const withMyInvestigator = $('#with-my-investigators');
+                const withInternalInvestigator = $('#withInternalInvestigator');
+                const withExternalInvestigator = $('#withExternalInvestigator');
 
                 // values
                 const zipValue = zip.val();
@@ -892,7 +915,8 @@
                 const timepickerstartValue = timepickerstart.val();
                 const timepickerendValue = timepickerend.val();
                 const distanceValue = distance.val();
-                const withMyInvValue = withMyInvestigator.is(':checked');
+                const withInternalInvestigatorValue = withInternalInvestigator.is(':checked');
+                const withExternalInvestigatorValue = withExternalInvestigator.is(':checked');
 
                 const data = {
                     page: 1
@@ -950,7 +974,12 @@
                 if (statValue) {
                     data['statements'] = 'statements';
                 }
-
+                if (withExternalInvestigatorValue) {
+                    data['withExternalInvestigator'] = 'external';
+                }
+                if (withInternalInvestigatorValue) {
+                    data['withInternalInvestigator'] = 'internal';
+                }
                 if (miscValue) {
                     data['misc'] = 'misc';
                 }

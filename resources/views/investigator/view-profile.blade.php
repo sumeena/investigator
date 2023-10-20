@@ -137,7 +137,7 @@
                     <!-- Service lines start -->
                     <div class="row pt-3">
                         <div class="col">
-                            <h5 class="">Service Lines</h5>
+                        <h5 class="">Service Lines</h5>
                         </div>
                     </div>
                     @forelse($serviceLines as $serviceLine)
@@ -171,7 +171,7 @@
                             <div class="col-md-6">
                                 <div class="row">
                                     <div class="col-md-6">
-                                        <b><label>Contractor Hourly Rate :</label></b>
+                                        <b><label>{{App\Http\Controllers\Investigator\InvestigatorController::checkInvestigatorType()}} Hourly Rate :</label></b>
                                     </div>
                                     <div class="col-md-6"><b>$</b>{{ $serviceLine->hourly_rate }}</div>
                                 </div>
@@ -181,7 +181,7 @@
                             <div class="col-md-6">
                                 <div class="row">
                                     <div class="col-md-6">
-                                        <b><label>Contractor Travel Rate:</label></b>
+                                        <b><label>{{App\Http\Controllers\Investigator\InvestigatorController::checkInvestigatorType()}} Travel Rate:</label></b>
                                     </div>
                                     <div class="col-md-6"><b>$</b>{{ $serviceLine->travel_rate }}</div>
                                 </div>
@@ -189,7 +189,7 @@
                             <div class="col-md-6">
                                 <div class="row">
                                     <div class="col-md-6">
-                                        <b><label>Contractor Milage Rate :</label></b>
+                                        <b><label>{{App\Http\Controllers\Investigator\InvestigatorController::checkInvestigatorType()}} Milage Rate :</label></b>
                                     </div>
                                     <div class="col-md-6"><b>$</b>{{ $serviceLine->milage_rate }}</div>
                                 </div>

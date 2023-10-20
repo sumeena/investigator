@@ -145,13 +145,17 @@
                         <div data-i18n="Analytics">Assignments</div>
                     </a>
                 </li>
+                @if(auth()->user()->investigatorType != 'internal')
 
-                <li class="menu-item {{ request()->routeIs('investigator.company-admins.index') ? 'active' : '' }}">
-                    <a href="{{ route('investigator.company-admins.index') }}" class="menu-link">
-                        <i class="bx bx-user me-2"></i>
-                        <div data-i18n="Analytics">Companies</div>
-                    </a>
-                </li>
+                    <li class="menu-item {{ request()->routeIs('investigator.company-admins.index') ? 'active' : '' }}">
+                        <a href="{{ route('investigator.company-admins.index') }}" class="menu-link">
+                            <i class="bx bx-user me-2"></i>
+                            <div data-i18n="Analytics">Companies</div>
+                        </a>
+                    </li>
+
+                @endif
+
 
                 <li class="menu-item {{ request()->routeIs('calendar') ? 'active' : '' }}">
                     <a href="/investigator/calendar" class="menu-link">

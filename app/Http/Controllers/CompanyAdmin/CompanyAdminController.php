@@ -238,6 +238,7 @@ class CompanyAdminController extends Controller
 
     public function saveInvestigatorSearchHistory(Request $request)
     {
+
         $availability = $request->availability.','.$request->start_time.' - '.$request->end_time;
         InvestigatorSearchHistory::updateOrCreate([
             'user_id'      => auth()->id(),
@@ -254,6 +255,8 @@ class CompanyAdminController extends Controller
             'misc'         => $request->misc,
             'license_id'   => $request->license,
             'distance'     => $request->distance,
+            'withInternalInvestigator'     => $request->withInternalInvestigator,
+            'withExternalInvestigator'     => $request->withExternalInvestigator,
             'languages'    => $request->get('languages'),
             'availability' => $availability
         ]);
@@ -282,6 +285,8 @@ class CompanyAdminController extends Controller
             'misc'         => $request->misc,
             'license_id'   => $request->license,
             'distance'     => $request->distance,
+            'withInternalInvestigator'     => $request->withInternalInvestigator,
+            'withExternalInvestigator'     => $request->withExternalInvestigator,
             'languages'    => $request->get('languages'),
             'availability' => $availability,
             'assignment_id'=> $request->assignment_id

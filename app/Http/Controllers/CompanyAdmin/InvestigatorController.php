@@ -60,4 +60,11 @@ class InvestigatorController extends Controller
             'languageOptions'
         ));
     }
+    public function checkInvestigatorType()
+    {
+        if(auth()->user()->investigatorType != 'internal'){
+          return "Contractor";
+        }
+    }
+
 }

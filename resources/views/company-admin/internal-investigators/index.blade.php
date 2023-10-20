@@ -44,6 +44,7 @@
                                 | <a
                                     onclick="return confirm('Are you sure want to delete?')"
                                     href="{{route('company-admin.internal-investigators.delete', $investigator->id)}}">Delete</a>
+                                    | <a href="/company-admin/investigators/{{$investigator->id}}/view">View</a>
                             </td>
                         </tr>
                     @endforeach

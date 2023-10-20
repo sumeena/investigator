@@ -4,7 +4,7 @@ namespace App\Http\Controllers\CompanyAdmin;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CompanyAdmin\InternalInvestigatorRequest;
-use App\Mail\UserCredentialMail;
+use App\Notifications\WelcomeMailNotification;
 use App\Models\Role;
 use App\Models\User;
 use App\Models\CompanyUser;
@@ -40,6 +40,7 @@ class InternalInvestigatorsController extends Controller
             'first_name' => $request->first_name,
             'last_name'  => $request->last_name,
             'email'      => $request->email,
+            'investigatorType'      => "internal",
             'role'       => $role->id ?? 3,
         ];
 
@@ -60,13 +61,15 @@ class InternalInvestigatorsController extends Controller
         if ($request->id) {
             session()->flash('success', 'Internal Investigator Record Updated Successfully!');
         } else {
-            Mail::to($user)->send(new UserCredentialMail([
-                'role'       => $user->userRole->role,
-                'first_name' => $user->first_name,
-                'last_name'  => $user->last_name,
-                'email'      => $user->email,
-                'password'   => $request->password
-            ]));
+          
+          $user->notify(new WelcomeMailNotification($user,$request->password));
+            // Mail::to($user)->send(new UserCredentialMail([
+            //     'role'       => $user->userRole->role,
+            //     'first_name' => $user->first_name,
+            //     'last_name'  => $user->last_name,
+            //     'email'      => $user->email,
+            //     'password'   => $request->password
+            // ]));
             session()->flash('success', 'Internal Investigator Record Added Successfully!');
         }
 

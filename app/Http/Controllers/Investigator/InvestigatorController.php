@@ -1125,4 +1125,11 @@ die; */
 
                 return $calEvents; */
     }
+    public static function checkInvestigatorType()
+    {
+        if(auth()->user()->investigatorType != 'internal'){
+          return "Contractor";
+        }
+    }
+    
 }

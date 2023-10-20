@@ -47,6 +47,7 @@ class User extends Authenticatable
         'country',
         'zipcode',
         'password',
+        'investigatorType',
         'is_investigator_profile_submitted',
         'lat',
         'lng',
@@ -212,6 +213,8 @@ class User extends Authenticatable
     // Filter method through pipeline
     public static function investigatorFiltered($request)
     {
+
+
         $user = Auth::user();
         /* Assuming logged in user as Company Admin */
         $companyId = $user->id;
@@ -228,6 +231,10 @@ class User extends Authenticatable
 
         $investigatorsWithoutEvents = self::investigatorsWithoutEvents($request->all());
         $distance                   = $request->distance;
+        $withInternalInvestigator = $request->withInternalInvestigator;
+        $withExternalInvestigator = $request->withExternalInvestigator;
+
+
         $query                      = self::query()
             ->with([
                 'investigatorServiceLines',
@@ -258,16 +265,26 @@ class User extends Authenticatable
             ->join('investigator_availabilities', 'investigator_availabilities.user_id', '=', 'users.id')
             // check investigators distance within calculated distance
             ->whereRaw('ST_Distance_Sphere(point(users.lng, users.lat), point(?, ?)) * .000621371192 <= investigator_availabilities.distance', [request('lng'),
-                                                                                                                                                request('lat')])
-            ->when($request->has('with_my_investigators'), function ($query) {
-                $query->whereHas('companyAdmin', function ($q) {
-                    $q->where('parent_id', auth()->id())
-                        ->orWhere('parent_id', auth()->user()->parentCompany->parent_id);
-                });
-            });
+                                                                                                                                                request('lat')]);
+
+            // ->when($request->has('withExternalInvestigator'), function ($q) use ($withExternalInvestigator) {
+            //     $q->where('users.investigatorType', ''.$withExternalInvestigator.'')
+            //         ->orWhere('users.investigatorType', "");
+            // });
         if (isset($request->distance) && !empty($request->distance)) {
             $query->having('calculated_distance', '<=', '' . $distance . '');
         }
+        if (isset($request->withInternalInvestigator) && !empty($request->withInternalInvestigator) && isset($request->withExternalInvestigator) && !empty($request->withExternalInvestigator)) {
+          $query->whereIn('users.investigatorType', array($withInternalInvestigator,$withExternalInvestigator));
+        }else{
+          if (isset($request->withInternalInvestigator) && !empty($request->withInternalInvestigator)) {
+              $query->where('users.investigatorType', ''.$withInternalInvestigator.'');
+          }
+          if (isset($request->withExternalInvestigator) && !empty($request->withExternalInvestigator)) {
+              $query->where('users.investigatorType', ''.$withExternalInvestigator.'');
+          }
+        }
+
 
 
         return app(Pipeline::class)

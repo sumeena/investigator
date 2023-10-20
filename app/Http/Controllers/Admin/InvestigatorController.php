@@ -60,7 +60,7 @@ class InvestigatorController extends Controller
                     'password'   => $password
                 ];
 
-                $abc = new UserCredentialMail($mailData);
+                //$abc = new UserCredentialMail($mailData);
                 /* echo '<pre>';
                 print_r($abc); */
 
@@ -153,5 +153,10 @@ class InvestigatorController extends Controller
             'languageOptions'
         ));
     }
-
+    public function checkInvestigatorType()
+    {
+        if(auth()->user()->investigatorType != 'internal'){
+          return "Contractor";
+        }
+    }
 }

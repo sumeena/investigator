@@ -10,6 +10,7 @@
             @php
             $action = route('company-admin.find_investigator');
             $assignmentsAction = route('company-admin.assignments');
+            $assignmentsListAction = route('company-admin.assignments-list');
             $assignmentCreateAction = route('company-admin.assignments.create');
             $assignmentStoreAction = route('company-admin.assignments.store');
             $assignmentEditAction = 'company-admin.assignments.edit';
@@ -48,6 +49,45 @@
                         </div>
                         <div class="card-body">
                             <div class="table-responsive text-nowrap" id="assignment-container">
+                              <form method="get" action="{{ $assignmentsListAction }}" id="findAssignmentForm">
+
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="mb-1">
+                                            <div class="card">
+                                                <h5 class="card-header pt-2 pb-0">Search</h5>
+                                                <div class="table-responsive text-nowrap">
+                                                    <table class="table hr_contact">
+                                                        <tbody>
+                                                        <tr>
+                                                            <td>
+                                                                <input type="text" class="form-control"
+                                                                       name="searchby" placeholder="Search by Assignment ID OR CLIENT ID OR CREATED BY"
+                                                                       value="<?php if(isset($_GET['searchby'])){ echo $_GET['searchby'];};?>"
+                                                                       id="searchby">
+                                                            </td>
+                                                            <td>
+                                                                <select class="form-select" name="status-select"
+                                                                        id="status-select">
+                                                                    <option value="">Select Status</option>
+                                                                        <option value="OPEN" <?php  if(isset($_GET['status-select']) && $_GET['status-select'] =="OPEN"){ echo "selected"; };?> >OPEN </option>
+                                                                        <option value="INVITED" <?php  if(isset($_GET['status-select']) && $_GET['status-select'] =="INVITED"){ echo "selected"; };?> >INVITED </option>
+                                                                        <option value="ASSIGNED" <?php  if(isset($_GET['status-select']) && $_GET['status-select'] =="ASSIGNED"){ echo "selected"; };?> >ASSIGNED </option>
+                                                                </select>
+                                                              </td>
+                                                              <td>
+                                                                  <input type="submit" value="Search" class="btn btn-primary"/>
+                                                                </td>
+                                                          </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                </form>
                                 <table class="table" id="assignment-table">
                                     <thead>
                                         <tr>
@@ -91,7 +131,7 @@
                                                 @endphp
                                                 <a style="@php echo $pointer; @endphp" href="javascript:void(0)" class="deleteAssignmentBtn" data-id="{{ $assignment->id }}">
                                                     <i class="fas fa-trash"></i>
-                                                </a> | 
+                                                </a> |
                                                 <a class="callCloneAssignmentModal" data-assignment-id="{{ $assignment->id }}" data-assignment-url="{{ $assignmentCreateAction }}" data-client-id="{{ $assignment->client_id }}" href="javascript:void(0)"><i class="fa-solid fa-clone"></i></a>
                                             </td>
                                         </tr>
@@ -143,7 +183,7 @@
                             Assignment ID
                         </label>
                         <input type="hidden" name="source_assignment_id" class="form-control" id="sourceAssignmentId" placeholder="Enter assignment ID" readonly required>
-                        
+
                         <input type="text" name="assignment_id" class="form-control" id="assignmentId" placeholder="Enter assignment ID" readonly required>
                     </div>
                     <div class="form-group">
@@ -933,7 +973,7 @@
 
             modal.modal('show');
         });
-
+        //$('#findAssignmentForm').on('submit', function(e) {});
         $('#inviteForm').on('submit', function(e) {
             e.preventDefault();
 

@@ -574,7 +574,7 @@
                         <hr>
                         <div class="mb-3">
                             <div class="card">
-                                <h5 class="card-header">Licensing <span class="starrequired">*</span></h5>
+                                <h5 class="card-header">Licensing</h5>
                                 <div class="table-responsive text-nowrap">
                                     <table class="table licensing">
                                         <thead>
