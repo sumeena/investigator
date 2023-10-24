@@ -55,16 +55,10 @@ class AssignmentsController extends Controller
                 'companyAdmin.company',
                 'companyAdmin.company.CompanyAdminProfile',
             ]);
-    
+
             $CompanyAdminProfile = $user->companyAdmin->company->CompanyAdminProfile;
             $parentProfile = $user->companyAdmin?->company?->companyAdmin?->company?->CompanyAdminProfile;
             $companyAdmin = $user->companyAdmin?->company;
-
-            // DD($parentProfile);
-
-            /* $parent = CompanyUser::where('user_id', auth()->id())->pluck('parent_id');
-            $parentId = $parent[0];
-            $isAssignmentPrivate = CompanyAdminProfile::where('user_id',$parentId)->pluck('make_assignments_private'); */
 
             if($parentProfile->make_assignments_private == 1)
             $parentId = NULL;
@@ -80,10 +74,6 @@ class AssignmentsController extends Controller
         })
         ->orderBy('created_at','desc')->paginate(10);
 
-        // dd($assignments);
-
-        // return view('company-admin.assignments', compact('assignments'));
-
         $html = view('company-admin.assignments-response', compact('assignments'))->render();
 
         return response()->json([
@@ -95,7 +85,7 @@ class AssignmentsController extends Controller
     /** get list of assignments */
     public function assignments_list()
     {
-        // $assignments = Assignment::where('user_id', auth()->id())->withCount('invitations')->paginate(10);
+
         $user = auth()->user();
         $userId = auth()->id();
         $parentId = NULL;
@@ -123,16 +113,10 @@ class AssignmentsController extends Controller
                 'companyAdmin.company',
                 'companyAdmin.company.CompanyAdminProfile',
             ]);
-    
+
             $CompanyAdminProfile = $user->companyAdmin->company->CompanyAdminProfile;
             $parentProfile = $user->companyAdmin?->company?->companyAdmin?->company?->CompanyAdminProfile;
             $companyAdmin = $user->companyAdmin?->company;
-
-            // DD($parentProfile);
-
-            /* $parent = CompanyUser::where('user_id', auth()->id())->pluck('parent_id');
-            $parentId = $parent[0];
-            $isAssignmentPrivate = CompanyAdminProfile::where('user_id',$parentId)->pluck('make_assignments_private'); */
 
             if($parentProfile->make_assignments_private == 1)
             $parentId = NULL;
@@ -140,15 +124,42 @@ class AssignmentsController extends Controller
             $parentId = $parentProfile->id;
 
         }
+        if(isset($_GET['searchby']) && !empty($_GET['searchby']) && isset($_GET['status-select']) && !empty($_GET['status-select']) ){
+          $searchBy=$_GET['searchby'];
+            $assignments = Assignment::withCount('users')->with('author')->where(function ($query) use ($searchBy) {
+                $query->where('assignment_id', 'like', '%' . $searchBy . '%')
+                    ->orWhere('client_id', 'like', '%' . $searchBy . '%');
+            })
 
-        $assignments = Assignment::withCount('users')
-        ->where(['user_id' => $userId, 'is_delete' => NULL])
-        ->when($parentId != '', function ($query) use ($parentId) {
-            $query->orWhere(['user_id' => $parentId, 'is_delete' => NULL]);
-        })
-        ->orderBy('created_at','desc')->paginate(10);
+              ->Where(['status' => $_GET['status-select']])
+              ->orderBy('created_at','desc')->paginate(10);
+        }
+        elseif (isset($_GET['searchby']) && !empty($_GET['searchby'])) {
+          $searchBy=$_GET['searchby'];
+          $assignments = Assignment::withCount('users')
+            ->with('author')
+            ->where(function ($query) use ($searchBy) {
+                $query->where('assignment_id', 'like', '%' . $searchBy . '%')
+                    ->orWhere('client_id', 'like', '%' . $searchBy . '%');
+            })
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
 
-        // dd($assignments);
+
+        }
+        elseif (isset($_GET['status-select']) && !empty($_GET['status-select'])) {
+          $assignments = Assignment::withCount('users')->with('author')->where(
+            [
+              'status' => "".$_GET['status-select']."",
+            ]
+            )
+            ->where(['status' => "".$_GET['status-select'].""])
+            ->orderBy('created_at','desc')->paginate(10);
+        }
+        else{
+            $assignments = Assignment::withCount('users')->where(['user_id' => $userId, 'is_delete' => NULL])->when($parentId != '', function ($query) use ($parentId) { $query->orWhere(['user_id' => $parentId, 'is_delete' => NULL]); })->orderBy('created_at','desc')->paginate(10);
+        }
+
 
         return view('company-admin.assignments', compact('assignments'));
     }
@@ -192,7 +203,7 @@ class AssignmentsController extends Controller
             session()->flash('success', 'Assignment Cloned successfully');
 
             return route('hm.assignments.edit', ['assignment' => $storeAssignment->id]);
-            // exit;
+
         }
 
         return response()->json([
@@ -335,10 +346,6 @@ class AssignmentsController extends Controller
         $notes = Assignment::where(['id' => $assignmentId])->pluck('notes');
 
         $assignmentStatus = Assignment::where('id',$assignmentId)->pluck('status');
-        // echo '<pre>';
-
-        // dd($chat);
-
         $html = view('company-admin.assignment.show-response', compact('messages', 'hiredStatus', 'authUserId', 'chat', 'hiredUser', 'assignmentStatus'))->render();
 
         return response()->json([
@@ -407,7 +414,7 @@ class AssignmentsController extends Controller
         $msg = $request->message;
         $chatId = $request->chat_id;
 
-        $chatDetails = Chat::find($chatId);      
+        $chatDetails = Chat::find($chatId);
 
         $msgSent = ChatMessage::create(array('user_id' => $chatDetails->assignment->user_id, 'chat_id' => $chatId, 'content' => $msg, 'type' => 'text', 'is_delete' => '{"investigator": 0, "company-admin": 0}'));
 
@@ -435,7 +442,6 @@ class AssignmentsController extends Controller
 
         $chatDetails = Chat::find($chatId);
 
-        // $authUserId = Auth::user()->id;
         $authUserId = auth()->id();
 
         $companyUser = CompanyUser::where('user_id', auth()->id())->exists();
@@ -491,12 +497,10 @@ class AssignmentsController extends Controller
         ]);
 
         $investigator = User::find($request->investigator_id);
-        // $investigator->assignedAssignments()->sync($request->assignment);
+
         $authUser = auth()->user();
-        // foreach ($request->assignments as $item) {
+
             $assignment = Assignment::find($request->assignment);
-            /* $assignmentUser = AssignmentUser::where('assignment_id', $assignment->id)
-                ->where('user_id', $investigator->id)->first(); */
                 $storeAssignmentUser = AssignmentUser::updateOrCreate(['assignment_id' => $assignment->id, 'user_id' => $investigator->id],['assignment_id' => $assignment->id, 'user_id' => $investigator->id]);
 
                 Assignment::where('id',$assignment->id)->update(['status' => 'INVITED']);
@@ -527,7 +531,6 @@ class AssignmentsController extends Controller
                    'url'          => route('investigator.assignment.show', $storeAssignmentUser->id),
                ];
 
-            // Invitation::create($invitationData);
             Notification::create($notificationData);
 
             $companyUser = CompanyUser::where('user_id', auth()->id())->exists();
@@ -540,7 +543,7 @@ class AssignmentsController extends Controller
             ChatMessage::create(array('user_id' => $assignment->user_id, 'chat_id' => $chat->id, 'content' => 'We have invited you to join this assignment. If you are interested, please let us know at your earliest convenience. We can discuss further details and address any questions you may have. Thank you', 'type' => 'text', 'is_delete' => '{"company-admin" : 0 , "investigator" : 0}'));
 
              Mail::to($investigator->email)->send(new JobInvitationMail($notificationData));
-        // }
+
 
         return response()->json([
             'success' => true,
@@ -554,7 +557,6 @@ class AssignmentsController extends Controller
         $notes = $request->notes;
         $assignmentId = $request->assignment_id;
 
-        // $userId = $request->user_id;
         $notesUpdated = Assignment::where(['id'=>$assignmentId])->update(['notes' => $notes]);
         return response()->json([
             'success' => true,
@@ -564,7 +566,6 @@ class AssignmentsController extends Controller
 
     public function getAssignmentNotes(Request $request) {
         $assignmentId = $request->assignment_id;
-        // $userId = $request->user_id;
         $assignmentNotes = Assignment::where(['assignment_id'=>$assignmentId])->pluck('notes');
         return response([
             'notes' => $assignmentNotes

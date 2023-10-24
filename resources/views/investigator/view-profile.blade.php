@@ -27,9 +27,7 @@
                                 @endif
                             </h5>
 
-                            <!-- <a href="/investigator/profile" class="investigator-view-profile-link">
-                                <button type="button">Edit Investigator Profile</button>
-                            </a> -->
+                          
                         </div>
                     </div>
                     <div class="row mx-0 py-1 px-3">

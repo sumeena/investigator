@@ -1,5 +1,6 @@
 $(document).ready(function(){
-
+  resetPassword("#password");
+  resetPassword("#new-password");
     if($('.users-list').length > 0) {
         setTimeout(() => {
             $('.btn-users:first-child').click();
@@ -14,7 +15,7 @@ $(document).ready(function(){
 
         var allowedExtensions = /(\.jpg|\.jpeg|\.png|\.gif|\.doc|\.docx|\.pdf|\.xls|\.xlsx|\.csv)$/i;
         var filePath = $(this).val();
-             
+
             if (!allowedExtensions.exec(filePath)) {
                 alert('Invalid file type');
                 $(this).val('');
@@ -22,7 +23,7 @@ $(document).ready(function(){
             }
 
         for (var i = 0; i < e.originalEvent.srcElement.files.length; i++) {
-            
+
             var file = e.originalEvent.srcElement.files[i];
 
             var renderedFile = '';
@@ -80,7 +81,7 @@ $(document).ready(function(){
         });
     });
 
-      
+
 
       var eMinDate = $('input[name="e_datetimes"]').data('min-date');
       var etimeStart = $('.e-timepickerstart').data('start-time');
@@ -101,7 +102,7 @@ $(document).ready(function(){
         minDate:moment().format('MM/DD/YYYY'),
         opens: 'left'
       });
-      
+
 
     $(document).on('click', '.close-calendars-list-modal',function() {
         $('#calendars-list').modal('hide');
@@ -122,14 +123,14 @@ $(document).ready(function(){
     });
 
 
-    $(document).on('keypress','#messageTextArea', function() { 
+    $(document).on('keypress','#messageTextArea', function() {
         $(this).removeClass('empty-error');
      })
 
     /** Send msg from assignment */
 
     $(document).on('click', '.sendMessageFromAssignment', function() {
-        
+
         var msgContent = $('#messageTextArea').val();
         var chatId = $('#messageTextArea').data('chat-id');
         var action = $(this).data('no-attachment-action');
@@ -144,7 +145,7 @@ $(document).ready(function(){
             method : 'POST',
             data : { message : msgContent, chat_id : chatId },
             success : function(data) {
-                $('#messageTextArea').val('');  
+                $('#messageTextArea').val('');
             },
             complete : function(){
                 $('.send-msg-box').before(`<div class="d-flex flex-row justify-content-end mb-4">
@@ -190,10 +191,10 @@ $(document).ready(function(){
                     else
                     $('.hire-user').addClass('d-none');
                 }
-                
+
             }
         })
-  
+
     });
 
     $(document).on('keyup', '#notesTextArea', function(){
@@ -269,7 +270,7 @@ $(document).ready(function(){
                 console.log(xhr.responseText);
             }
         });
-        
+
         $('#clientId').val(clientId);
         $('#sourceAssignmentId').val(assignmentId);
         $('#cloneAssignmentModal').modal('show');
@@ -379,7 +380,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
                 calendar.render();
 
-                
+
             }
         });
 
@@ -394,9 +395,75 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         })
     });
-  
+
 });
 
+
+function resetPassword(selected) {
+  $(""+selected+"").on("input", function () {
+      let password = $(this).val();
+      // Validate minimum length
+      let minLengthValid = password.length >= 10;
+
+      // Validate presence of at least 1 capital letter, 1 number, 1 lowercase letter, and 1 special character
+      let capitalLetterValid    = /[A-Z]/.test(password);
+      let numberValid           = /[0-9]/.test(password);
+      let lowercaseLetterValid  = /[a-z]/.test(password);
+      let specialCharacterValid = /[@$!%*?&]/.test(password);
+      let allConditionsValid    = capitalLetterValid && numberValid && lowercaseLetterValid && specialCharacterValid;
+      let errorBagsEle = $(document).find(".password-error-bags");
+      let errorBagTypes = [];
+      // for min length
+      if (minLengthValid)
+          errorBagTypes.push("length");
+      else
+          removeErrorSuccess("length");
+          //removeItem(errorBagTypes, 'length');
+
+      // for atleast single number
+      if (numberValid)
+          errorBagTypes.push("number");
+      else
+          removeErrorSuccess("number");
+
+
+      // for lower case
+      if (lowercaseLetterValid)
+          errorBagTypes.push("lowercase");
+      else
+          removeErrorSuccess("lowercase");
+
+      // for upper case
+      if (capitalLetterValid)
+          errorBagTypes.push("uppercase");
+      else
+          removeErrorSuccess("uppercase");
+
+      // for special symbols
+      if (specialCharacterValid)
+          errorBagTypes.push("special_character");
+      else
+          removeErrorSuccess("special_character");
+
+      if (errorBagTypes.length > 0){
+          $.each(errorBagTypes, function(key,errType) {
+              errorBagsEle.find('li[type="'+errType+'"]').removeClass('text-danger').addClass('text-success');
+          })
+      }
+
+      // Display error messages
+      if (!minLengthValid || !allConditionsValid) {
+          $("#password-error").html(`<strong>Password is invalid, please follow the instructions below!</strong>`);
+          $("#password-error").removeClass("hide");
+          $(this).addClass("is-invalid");
+
+      } else {
+          $("#password-error").text("");
+          $("#password-error").addClass("hide");
+          $(this).removeClass("is-invalid");
+      }
+  });
+}
 function fetchEvents() {
     $.ajax({
         url: '/investigator/calendar/fetch-events-onload',

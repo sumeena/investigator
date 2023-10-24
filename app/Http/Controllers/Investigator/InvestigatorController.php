@@ -31,8 +31,6 @@ class InvestigatorController extends Controller
     {
         $this->base_url = URL::to('/');
 
-        // $this->base_url = preg_replace("/^http:/i", "https:", $this->base_url);
-
     }
 
     public function index()
@@ -96,8 +94,6 @@ class InvestigatorController extends Controller
     {
         try {
             $user_id = Auth::user()->id;
-            //  echo "<pre>"; print_r($request->all()); die;
-
             $user = User::find($user_id);
             $user->update([
                 'first_name' => $request->first_name,
@@ -124,36 +120,6 @@ class InvestigatorController extends Controller
             }
 
             // loop through licenses and check insurance is checked or not, if check then check file is uploaded or not, if not then throw multiple validation error for specific index of license
-            /*$licenseValidationErrors = [];
-            foreach ($request->licenses as $licenseKey => $license) {
-                if ((array_key_exists("is_insurance", $license) && $license["is_insurance"]) && (!array_key_exists("insurance_previous", $license) || !$license["insurance_previous"])) {
-                    if (!isset($license["insurance_file"])) {
-                        $licenseValidationErrors["licenses.$licenseKey.insurance_file"] = 'Insurance file is required.';
-                    } else {
-                        // check file is jpeg, jpg, png
-                        $fileExtension = $license["insurance_file"]->getClientOriginalExtension();
-                        if (!in_array($fileExtension, ['jpeg', 'jpg', 'png'])) {
-                            $licenseValidationErrors["licenses.$licenseKey.insurance_file"] = 'Insurance file must be jpeg, jpg, png.';
-                        }
-                    }
-                }
-
-                if ((array_key_exists("is_bonded", $license) && $license["is_bonded"]) && (!array_key_exists("bonded_previous", $license) || !$license["bonded_previous"])) {
-                    if (!isset($license["bonded_file"])) {
-                        $licenseValidationErrors["licenses.$licenseKey.bonded_file"] = 'Bonded file is required.';
-                    } else {
-                        // check file is jpeg, jpg, png
-                        $fileExtension = $license["bonded_file"]->getClientOriginalExtension();
-                        if (!in_array($fileExtension, ['jpeg', 'jpg', 'png'])) {
-                            $licenseValidationErrors["licenses.$licenseKey.bonded_file"] = 'Bonded file must be jpeg, jpg, png.';
-                        }
-                    }
-                }
-            }
-
-            if (count($licenseValidationErrors)) {
-                return throw ValidationException::withMessages($licenseValidationErrors);
-            }*/
 
             // Save service lines data
             if (count($request->investigation_type)) {
@@ -633,19 +599,11 @@ class InvestigatorController extends Controller
      * @param array $data
      * @return \Illuminate\Contracts\Validation\Validator
      */
-    /* protected function validator(array $data)
-    {
-        return Validator::make($data, [
-            'password'   => ['required', 'string', 'min:10', 'confirmed', 'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{10,}$/'],
-        ], [
-            'password.regex' => 'Password is invalid, please follow the instructions below!',
-        ]);
-    } */
 
     public function investigatorPasswordUpdate(PasswordRequest $request)
     { //update password for investigator
 
-        // dd('here');
+
         $user_id = Auth::user()->id;
         $user    = User::find($user_id);
         $user->update([
@@ -660,7 +618,6 @@ class InvestigatorController extends Controller
 
     public function investigatorSyncCalendar(Request $request)
     {
-        // $user    = User::find($user_id);
 
         if (isset($request->google)) {
             $this->googleOauth2Callback();
@@ -676,7 +633,7 @@ class InvestigatorController extends Controller
         // Generate new Access Token and Refresh Token if token.json doesn't exist
 
         if (!GoogleAuthUsers::where('user_id', $userId)->exists()) {
-            // $redirectUri = Config::get('constants.REDIRECT_URI');
+
             $redirectUri   = $this->base_url . '/investigator/sync-calendar/google-oauth2callback';
             $googleConfigs = [
                 'response_type'          => 'code',
@@ -690,7 +647,6 @@ class InvestigatorController extends Controller
             ];
 
             $authUrl = Config::get('constants.GOOGLE_OAUTH_AUTH_URL') . '?' . http_build_query($googleConfigs);
-            // echo '<a href = "'.$authUrl.'">Authorize</a></br>';
 
             if (!isset($_GET['code'])) {
                 header('Location:' . $authUrl);
@@ -793,8 +749,6 @@ class InvestigatorController extends Controller
 
             $userProfile = json_decode($result);
 
-            // dd($userProfile);
-
             $google_settings = [
                 'google_client_id'     => Config::get('constants.GOOGLE_CLIENT_ID'),
                 'google_client_secret' => Config::get('constants.GOOGLE_CLIENT_SECRET'),
@@ -828,7 +782,6 @@ class InvestigatorController extends Controller
             $response = curl_exec($curl);
             $array    = json_decode($response);
             curl_close($curl);
-            // var_dump($array);
 
             $curl = curl_init();
             curl_setopt_array($curl, array(
@@ -901,7 +854,6 @@ class InvestigatorController extends Controller
 
         $userId   = Auth::user()->id;
         $userInfo = GoogleAuthUsers::where('user_id', $userId)->get();
-        // dd($userInfo);
         if (GoogleAuthUsers::where('user_id', $userId)->exists() && strtotime($userInfo[0]->expires_in) < strtotime(date('Y-m-d H:i:s'))) {
             $access_token  = $userInfo[0]->access_token;
             $refresh_token = $userInfo[0]->refresh_token;
@@ -931,7 +883,6 @@ class InvestigatorController extends Controller
                 curl_close($ch);
 
                 $responseArray = json_decode($response);
-                // dd($responseArray);
                 $updateGoogleAccessToken = GoogleAuthUsers::updateOrCreate(['user_id' => $userId], ['access_token' => $responseArray->access_token,
                                                                                                     'expires_in'   => date("Y-m-d H:i:s", strtotime("+$responseArray->expires_in seconds")),
                                                                                                     'id_token'     => $responseArray->id_token]);
@@ -964,28 +915,6 @@ class InvestigatorController extends Controller
         $response = curl_exec($curl);
         curl_close($curl);
 
-        /* $curl = curl_init();
-        curl_setopt_array($curl, array(
-            CURLOPT_URL => Config::get('constants.NYLAS_API_URL') . 'a/'.Config::get('constants.NYLAS_CLIENT_ID').'/accounts/'.$nylasUser[0]->account_id.'/token-info',
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING => '',
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 0,
-            CURLOPT_USERPWD => "cg7lkuuvftx7yffwmz3xorqdk:",
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => 'POST',
-            CURLOPT_POSTFIELDS, http_build_query([
-                'access_token' => $nylasUser[0]->access_token,
-            ]),
-            CURLOPT_HTTPHEADER => array(
-                'Content-Type: application/json',
-                'Accept: application/json'
-            ),
-        ));
-        echo $response = curl_exec($curl);
-        curl_close($curl);
-die; */
         $events = json_decode($response);
 
         if (isset($events->message)) {
@@ -1013,20 +942,8 @@ die; */
             $response = curl_exec($curl);
 
             curl_close($curl);
-            // echo $response;
-
             $nylasResponseArray = json_decode($response);
-
-            // dd($nylasResponseArray);
-
-            //NylasUsers::updateOrCreate(['user_id' => $userId, 'provider' => 'gmail'], ['nylas_id' => $nylasResponseArray->id, 'access_token' => $nylasResponseArray->access_token, 'account_id' => $nylasResponseArray->account_id, 'billing_state' => $nylasResponseArray->billing_state, 'email_address' => $nylasResponseArray->email_address, 'linked_at' => $nylasResponseArray->linked_at, 'name' => $nylasResponseArray->name, 'object' => $nylasResponseArray->object, 'organization_unit' => $nylasResponseArray->organization_unit, 'provider' => $nylasResponseArray->provider, 'sync_state' => $nylasResponseArray->sync_state ]);
-
-// die;
-
         }
-
-        // dd($events);
-
         $calEventsArray = '';
         $calendarEvents = '[';
 
@@ -1051,21 +968,10 @@ die; */
                                         'end_date' => $event->when->date);
 
             }
-
-            /* echo '<pre>';
-            print_r($calEventsArray);  */
-            // die;
-
             CalendarEvents::updateOrCreate(['event_id' => $event->id], $calEventsArray);
             $calEventsArray = '';
         }
         $calEvents = trim($calendarEvents, ',') . ']';
-
-        // dd($calEventsArray);
-
-        // die;
-
-        // CalendarEvents::insert($calEventsArray);
 
         return $calEvents;
     }
@@ -1082,8 +988,6 @@ die; */
     public function removeEvents(Request $request)
     {
         $userId = Auth::user()->id;
-        // $user = GoogleAuthUsers::where('user_id',$userId)->delete();
-        // $nylasUser = NylasUsers::where(['user_id'=> $userId, 'provider' => 'gmail'])->delete();
         $calEvents = CalendarEvents::where('user_id', $userId)->delete();
         return $calEvents;
     }
@@ -1096,34 +1000,13 @@ die; */
 
         if (count($events) > 0) {
 
-            // dd($events[0]->calendar_id);
             $content = new Request([
                 'calendar_id' => $events[0]->calendar_id
             ]);
-
-            // print_r($content);
             $events = $this->investigatorCalendarEvents($content);
 
             return $events;
         }
-        // dd($content);
-
-        /* die;
-                $calendarEvents = '[';
-
-                foreach($events as $event) {
-
-                    if(isset($event->start_time) && isset($event->end_time )) {
-                    $calendarEvents .= json_encode(['title' => $event->title, 'start' => (int)$event->start_time , 'end' => (int)$event->end_time]).',';
-                    }
-                    else {
-                        $calendarEvents .= json_encode(['title' => $event->title, 'start' => $event->start_time]).',';
-                    }
-                }
-
-                $calEvents = trim($calendarEvents,',').']';
-
-                return $calEvents; */
     }
     public static function checkInvestigatorType()
     {
@@ -1131,5 +1014,5 @@ die; */
           return "Contractor";
         }
     }
-    
+
 }

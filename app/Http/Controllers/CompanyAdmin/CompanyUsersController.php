@@ -5,6 +5,7 @@ namespace App\Http\Controllers\CompanyAdmin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CompanyAdmin\CompanyUserRequest;
 use App\Mail\UserCredentialMail;
+use App\Notifications\WelcomeMailNotification;
 use App\Models\Role;
 use App\Models\User;
 use App\Models\CompanyUser;
@@ -60,13 +61,8 @@ class CompanyUsersController extends Controller
         if ($request->id) {
             session()->flash('success', 'Company User Record Updated Successfully!');
         } else {
-            Mail::to($user)->send(new UserCredentialMail([
-                'role'       => $user->userRole->role,
-                'first_name' => $user->first_name,
-                'last_name'  => $user->last_name,
-                'email'      => $user->email,
-                'password'   => $password
-            ]));
+
+            $user->notify(new WelcomeMailNotification($user,$password));
             session()->flash('success', 'Company User Record Added Successfully!');
         }
 

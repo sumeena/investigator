@@ -2,23 +2,7 @@
 @section('title', 'Find Investigators')
 @section('content')
     <div class="container">
-        <!-- <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="pills-search-tab" data-toggle="pill" data-target="#pills-search" type="button" role="tab" aria-controls="pills-search" aria-selected="true">
-                            Search
-                        </button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="pills-assignment-tab" data-toggle="pill" data-target="#pills-assignment" type="button" role="tab" aria-controls="pills-assignment" aria-selected="false">
-                            Assignments
-                        </button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="createAssignmentBtn" type="button">
-                            Create Assignment
-                        </button>
-                    </li>
-                </ul> -->
+
         <div class="row mt-4 mb-4 mx-0">
             <div class="col-md-12">
                 <div class="card mb-4">
@@ -481,86 +465,7 @@
             </div>
         </div>
 
-        <!-- <div class="tab-pane fade" id="pills-assignment" role="tabpanel" aria-labelledby="pills-assignment-tab">
-                    <div class="row">
-                        <div class="col-md-12">
-                            <div class="card">
-                                <div class="card-body">
-                                    <div class="table-responsive text-nowrap" id="assignment-container">
-                                        <table class="table" id="assignment-table">
-                                            <thead>
-                                                <tr>
-                                                    <th>#</th>
-                                                    <th>Assignment ID</th>
-                                                    <th>Client ID</th>
-                                                    <th>Date Saved</th>
-                                                    <th class="text-center">Action</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                @forelse($assignments as $assignment)
-            <tr>
-                <td>{{ $assignments->firstItem() + $loop->index }}</td>
-                                                    <td>{{ Str::upper($assignment->assignment_id) }}</td>
-                                                    <td>{{ Str::upper($assignment->client_id) }}</td>
-                                                    <td>
-                                                        {{ $assignment->created_at->format('m/d/Y') }}
-            </td>
 
-            <td class="text-center">
-                <button type="button" class="btn btn-info btn-sm editAssignmentBtn" data-id="{{ $assignment->id }}">
-                                                            <i class="fas fa-pencil"></i>
-                                                        </button>
-
-                                                        <button type="button" class="btn btn-danger btn-sm deleteAssignmentBtn" data-id="{{ $assignment->id }}">
-                                                            <i class="fas fa-trash"></i>
-                                                        </button>
-                                                    </td>
-                                                </tr>
-
-
-
-
-
-
-        @empty
-            <tr>
-                <td colspan="100%" class="text-center">
-                    No assignments found!
-                </td>
-            </tr>
-
-
-
-
-
-
-        @endforelse
-        </tbody>
-@if(count($assignments))
-            <tfoot>
-                <tr>
-                    <td colspan="100%">
-                        <div class="float-end" id="assignment-pagination-links">
-{{ $assignments->withQueryString()->links() }}
-            </div>
-        </td>
-    </tr>
-</tfoot>
-
-
-
-
-
-
-        @endif
-        </table>
-    </div>
-</div>
-</div>
-</div>
-</div>
-</div> -->
 
 
     </div>
@@ -706,7 +611,9 @@
                 type   : 'GET',
                 data   : data,
                 success: function (response) {
+
                     saveSearchHistoryData();
+                    $(".custom-loader-overlay").hide();
                     $('#data-container').html(response.data);
                 },
                 error  : function (xhr) {
@@ -882,10 +789,10 @@
                 width        : '100%',
             });
 
-            const form = $('#find-investigator-form');
-            form.on('submit', function (e) {
-                e.preventDefault();
+            $('#find-investigator-form').on('submit', function (e) {
+
                 $(this).find('button#form-submit-btn').html('Searching...').attr('disabled', true);
+                e.preventDefault();
                 // input selector
                 const zip = $('#postal_code');
                 const surv = $('#surveillance');
@@ -954,7 +861,7 @@
                 if (hasError) {
                     return false;
                 }
-
+                $(".custom-loader-overlay").attr("style","display: flex !important;")
                 // Hide error
                 zipError.addClass('d-none');
                 serviceTypeError.addClass('d-none');
@@ -1006,10 +913,6 @@
 
                 if (timepickerendValue) {
                     data['end_time'] = timepickerendValue;
-                }
-
-                if (withMyInvValue) {
-                    data['with_my_investigators'] = 1;
                 }
 
 
@@ -1315,60 +1218,7 @@
                 $('#callConfirmUpdateSearchModal').attr('disabled', true);
             });
 
-            $('#assignmentEditModal').on('submit', function (e) {
-                e.preventDefault();
-
-                const assignmentId = $('#assignment-edit-id');
-                const clientId = $('#edit-client-id');
-
-                const assignmentIdVal = assignmentId.val();
-                const clientIdVal = clientId.val();
-
-                const data = {
-                    client_id: clientIdVal
-                };
-
-                $.ajax({
-                    url    : '{{ $assignmentEditAction }}' + assignmentIdVal + '/update',
-                    type   : 'PUT',
-                    data   : data,
-                    success: function (response) {
-                        $('#assignment-flash').text(response.message);
-                        $('#assignment-flash').show();
-                        fetchAssignmentData({
-                            page: 1
-                        });
-                        $('#assignmentEditModal').modal('hide');
-                    },
-                    error  : function (xhr) {
-                        console.log(xhr.responseText);
-                    }
-                });
-            });
-
-            // Delete Assignment
-            $(document).on('click', '.deleteAssignmentBtn', function () {
-                const deleteBtn = $(this);
-
-                // confirm prompt
-                if (confirm('Are you sure you want to delete this assignment?')) {
-                    $.ajax({
-                        url    : '{{ $assignmentEditAction }}' + deleteBtn.data('id') + '/destroy',
-                        type   : 'DELETE',
-                        success: function (response) {
-                            $('#assignment-flash').text(response.message);
-                            $('#assignment-flash').show();
-                            fetchAssignmentData({
-                                page: 1
-                            });
-                        },
-                        error  : function (xhr) {
-                            console.log(xhr.responseText);
-                        }
-                    });
-                }
-            });
-
+          
 
             // Send Invitation
             $('#inviteModalCloseBtn').on('click', function () {

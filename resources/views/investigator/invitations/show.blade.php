@@ -28,7 +28,7 @@
                             <a href="javascript:history.back()" class="investigator-view-profile-link">
                                 <button type="button" class="btn btn-outline-light btn-sm">Back</button>
                             </a>
-                        </h5>                        
+                        </h5>
                     </div>
                 </div>
                 <div class="row mx-0 py-1 px-3">
@@ -54,7 +54,7 @@
                                 }
                                 else
                                 $company_name = $assignmentUser->assignment->author->CompanyAdminProfile->company_name;
-                            @endphp    
+                            @endphp
 
 
                             {{ @$company_name ?? null ?: 'N/A' }}</div>
@@ -183,7 +183,7 @@
                         </div>
                     </div>
 
-                    
+
                 </div>
 
                 <div class="row pt-3">
@@ -306,15 +306,11 @@
                 <h5 class="modal-title w-100 text-center" id="exampleModalLabel">
                     Attachment
                 </h5>
-                <!-- <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">
-                            ×
-                        </span>
-                    </button> -->
+
             </div>
             <!--Modal body with image-->
             <div class="modal-body text-center attachment-src">
-                <!-- <img class="attachment-src" src="gfg.png" /> -->
+                
             </div>
             <div class="modal-footer" style="margin: 0 auto;">
                 <button type="button" class="btn btn-primary send-attachment"> <i class="fa-solid fa-paper-plane"></i> </button>

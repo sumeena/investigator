@@ -53,8 +53,16 @@
 </head>
 
 <body>
+  <div class="custom-loader-overlay">
+      <div class="loader"></div>
+  </div>
     <!-- Layout wrapper -->
     <div class="layout-wrapper layout-content-navbar">
+      <!-- Loader Overlay -->
+
+
+
+
         <div class="layout-container">
             <!-- Menu -->
             @include('dashboard.leftbar')

@@ -99,19 +99,7 @@
                                         <input type="text" id="administrative_area_level_1"
                                                class="form-control @error('state') is-invalid @enderror" name="state"
                                                value="{{ old('state', $profile->state ?? $parentCompany->state ?? '') }}">
-                                        <!-- <select class="form-select @error('state') is-invalid @enderror" name="state">
-                                                                                                                                                        @if (isset($states))
-                                            @foreach ($states as $state)
-                                                <option
-                                                                                                                                                                                                            value="{{ $state->id }}" {{ isset($user->state_id) && ($user->state_id == $state->id || old('state') == $state->id) ? 'selected' : '' }}>{{ $state->code }}</option>
 
-
-
-
-
-                                            @endforeach
-                                        @endif
-                                        </select> -->
                                     </div>
                                 </div>
                                 @error('state')
@@ -130,11 +118,6 @@
                                                class="form-control @error('country') is-invalid @enderror"
                                                name="country"
                                                value="{{ old('country', $profile->country ?? $parentCompany->country ?? '') }}">
-                                        <!-- <select id="defaultSelect"
-                                                                                                                                                            class="form-control @error('country') is-invalid @enderror"
-                                                                                                                                                            name="country">
-                                                                                                                                                        <option selected="selected" value="1">USA</option>
-                                                                                                                                                    </select> -->
                                     </div>
                                 </div>
                                 @error('country')

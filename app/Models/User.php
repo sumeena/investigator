@@ -92,7 +92,7 @@ class User extends Authenticatable
     public function getCompanyIsAdminAttribute(): bool
     {
         /* If logged in user role is admin or investigator. Then return false as user can't be company admin. */
-        // if (Auth::user()->userRole == 'admin' || Auth::user()->role == 'investigator') {
+
         if (Auth::user()->role === USER::ADMIN || Auth::user()->role === USER::INVESTIGATOR) {
             return false;
         }
@@ -218,15 +218,12 @@ class User extends Authenticatable
         $user = Auth::user();
         /* Assuming logged in user as Company Admin */
         $companyId = $user->id;
-        // $userRole = $user->userRole;
+
         $userRole = $user->role;
         /* If logged in user's role is sub admin or HR. Then get the company id of the logged in user */
         if (($userRole === USER::COMPANYADMIN && $user->company_is_admin) || $userRole === USER::HR) {
-            // if ((($userRole == 'company-admin' && !$user->company_is_admin) || $userRole == 'hiring-manager') && $user->companyAdmin) {
-            $companyId = CompanyUser::where('user_id', $user->id)->orWhere('parent_id', $user->id)->select('parent_id')->first()->parent_id;
 
-            // if (($userRole === USER::COMPANYADMIN && !$user->company_is_admin) || $userRole === USER::HR) {
-            // $companyId = CompanyUser::where('user_id', $user->id)->select('parent_id')->first()->parent_id;
+            $companyId = CompanyUser::where('user_id', $user->id)->orWhere('parent_id', $user->id)->select('parent_id')->first()->parent_id;
         }
 
         $investigatorsWithoutEvents = self::investigatorsWithoutEvents($request->all());
@@ -267,10 +264,7 @@ class User extends Authenticatable
             ->whereRaw('ST_Distance_Sphere(point(users.lng, users.lat), point(?, ?)) * .000621371192 <= investigator_availabilities.distance', [request('lng'),
                                                                                                                                                 request('lat')]);
 
-            // ->when($request->has('withExternalInvestigator'), function ($q) use ($withExternalInvestigator) {
-            //     $q->where('users.investigatorType', ''.$withExternalInvestigator.'')
-            //         ->orWhere('users.investigatorType', "");
-            // });
+
         if (isset($request->distance) && !empty($request->distance)) {
             $query->having('calculated_distance', '<=', '' . $distance . '');
         }
@@ -299,7 +293,7 @@ class User extends Authenticatable
 
     public static function investigatorsWithoutEvents($data)
     {
-        // dd($data);
+
         $dateRange = $data['availability'];
         $dateRange = explode('-', $dateRange);
 
@@ -337,7 +331,7 @@ class User extends Authenticatable
             return !in_array($user, $usersWithEvents);
         });
 
-        // dd( array_values($users_without_events));
+
         return array_values($users_without_events);
     }
 
@@ -349,7 +343,7 @@ class User extends Authenticatable
             $event_end   = strtotime($event["end_date"]);
             if ($event_start <= $end_date_time && $event_end >= $start_date_time) {
                 $userIds[] = $event['user_id'];
-                // return true;
+
             }
         }
         return $userIds;

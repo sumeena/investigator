@@ -61,15 +61,8 @@ class InternalInvestigatorsController extends Controller
         if ($request->id) {
             session()->flash('success', 'Internal Investigator Record Updated Successfully!');
         } else {
-          
+
           $user->notify(new WelcomeMailNotification($user,$request->password));
-            // Mail::to($user)->send(new UserCredentialMail([
-            //     'role'       => $user->userRole->role,
-            //     'first_name' => $user->first_name,
-            //     'last_name'  => $user->last_name,
-            //     'email'      => $user->email,
-            //     'password'   => $request->password
-            // ]));
             session()->flash('success', 'Internal Investigator Record Added Successfully!');
         }
 

@@ -30,15 +30,7 @@ class AssignmentsController extends Controller
 {
     public function index()
     {
-        /* $assignments = Assignment::withCount('users')->where(['user_id' => auth()->id(), 'is_delete' => NULL])->orderBy('created_at','desc')->paginate(10);
 
-        $html = view('company-admin.assignments-response', compact('assignments'))->render();
-
-        return response()->json([
-            'data' => $html,
-        ]); */
-
-        // $assignments = Assignment::where('user_id', auth()->id())->withCount('invitations')->paginate(10);
         $userId = auth()->id();
         $parentId = '';
 
@@ -51,7 +43,6 @@ class AssignmentsController extends Controller
 
         $assignments = Assignment::withCount('users')->where(['user_id' => $userId, 'is_delete' => NULL])->orWhere(['user_id' => $parentId, 'is_delete' => NULL])->orderBy('created_at','desc')->paginate(10);
 
-        // return view('company-admin.assignments', compact('assignments'));
 
         $html = view('company-admin.assignments-response', compact('assignments'))->render();
 
@@ -108,23 +99,14 @@ class AssignmentsController extends Controller
         ]);
     }
 
-    /* public function edit(Assignment $assignment)
-    {
-        $assignment->load(['users', 'searchHistory', 'chats', 'chats.chatUsers', 'chats.chatUsers.media']);
 
-        dd($assignment);
-        return response()->json([
-            'success' => true,
-            'message' => 'Data fetched successfully!',
-            'data'    => $assignment,
-        ]);
-    } */
 
 
     /** edit find investigator */
 
     public function edit(Assignment $assignment, Request $request)
     {
+
         $states          = State::all();
         $languageOptions = Language::all();
         $filtered        = false;
@@ -198,6 +180,7 @@ class AssignmentsController extends Controller
 
     public function destroy(Assignment $assignment)
     {
+
         $assignment->delete();
 
         return response()->json([
@@ -255,9 +238,6 @@ class AssignmentsController extends Controller
         $notes = Assignment::where(['id' => $assignmentId])->pluck('notes');
 
         $assignmentStatus = Assignment::where('id',$assignmentId)->pluck('status');
-        // echo '<pre>';
-
-        // dd($chat);
 
         $html = view('company-admin.assignment.show-response', compact('messages', 'hiredStatus', 'authUserId', 'chat', 'hiredUser', 'assignmentStatus'))->render();
 
@@ -411,12 +391,11 @@ class AssignmentsController extends Controller
         ]);
 
         $investigator = User::find($request->investigator_id);
-        // $investigator->assignedAssignments()->sync($request->assignment);
+
         $authUser = auth()->user();
-        // foreach ($request->assignments as $item) {
+
             $assignment = Assignment::find($request->assignment);
-            /* $assignmentUser = AssignmentUser::where('assignment_id', $assignment->id)
-                ->where('user_id', $investigator->id)->first(); */
+
                 $storeAssignmentUser = AssignmentUser::updateOrCreate(['assignment_id' => $assignment->id, 'user_id' => $investigator->id],['assignment_id' => $assignment->id, 'user_id' => $investigator->id]);
 
                 Assignment::where('id',$assignment->id)->update(['status' => 'INVITED']);
@@ -447,7 +426,7 @@ class AssignmentsController extends Controller
                    'url'          => route('investigator.assignment.show', $storeAssignmentUser->id),
                ];
 
-            // Invitation::create($invitationData);
+
             Notification::create($notificationData);
 
             $companyUser = CompanyUser::where('user_id', auth()->id())->exists();
@@ -460,7 +439,7 @@ class AssignmentsController extends Controller
             ChatMessage::create(array('user_id' => $assignment->user_id, 'chat_id' => $chat->id, 'content' => 'We have invited you to join this assignment. If you are interested, please let us know at your earliest convenience. We can discuss further details and address any questions you may have. Thank you', 'type' => 'text', 'is_delete' => '{"company-admin" : 0 , "investigator" : 0}'));
 
              Mail::to($investigator->email)->send(new JobInvitationMail($notificationData));
-        // }
+
 
         return response()->json([
             'success' => true,
@@ -472,9 +451,7 @@ class AssignmentsController extends Controller
     /** get list of assignments */
     public function assignments_list()
     {
-
-DB::enableQueryLog();
-        // $assignments = Assignment::where('user_id', auth()->id())->withCount('invitations')->paginate(10);
+      
         $userId = auth()->id();
         $parentId = '';
 
@@ -506,7 +483,7 @@ DB::enableQueryLog();
             })
             ->orderBy('created_at', 'desc')
             ->paginate(10);
-            // Get the executed SQL query
+
 
         }
         elseif (isset($_GET['status-select']) && !empty($_GET['status-select'])) {
@@ -529,7 +506,7 @@ DB::enableQueryLog();
         $notes = $request->notes;
         $assignmentId = $request->assignment_id;
 
-        // $userId = $request->user_id;
+
         $notesUpdated = Assignment::where(['id'=>$assignmentId])->update(['notes' => $notes]);
         return response()->json([
             'success' => true,
@@ -539,7 +516,7 @@ DB::enableQueryLog();
 
     public function getAssignmentNotes(Request $request) {
         $assignmentId = $request->assignment_id;
-        // $userId = $request->user_id;
+
         $assignmentNotes = Assignment::where(['assignment_id'=>$assignmentId])->pluck('notes');
         return response([
             'notes' => $assignmentNotes

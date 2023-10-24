@@ -48,8 +48,7 @@ class CompanyAdminController extends Controller
     {
         if($request->make_assignments_private == NULL)
             $request->make_assignments_private = 0;
-        // dd($request->make_assignments_private);
-        //echo "<pre>"; print_r($request->all()); die;
+
         try {
             $user = Auth::user();
             $user->CompanyAdminProfile()->updateOrCreate([
@@ -86,8 +85,7 @@ class CompanyAdminController extends Controller
         $assignments     = Assignment::where('user_id', auth()->id())->paginate(10);
         $assignmentCount = Assignment::where('user_id', auth()->id())->count();
         $assignmentID = Assignment::where('id', $request->assignment_id)->pluck('assignment_id');
-        $assignmentUsers = AssignmentUser::where('assignment_id', )->pluck('user_id')->toArray();
-
+        $assignmentUsers = AssignmentUser::where('assignment_id',$request->assignment_id )->pluck('user_id')->toArray();
         if ($this->checkQueryAvailablity($request)) {
             $filtered      = true;
             $investigators = User::investigatorFiltered($request)
@@ -174,7 +172,8 @@ class CompanyAdminController extends Controller
     }
 
     public function companyResetPassword()
-    { //show reset password form for company
+    {
+      /** show reset password form for company **/
         return view('company-admin.reset-password');
     }
 
@@ -185,14 +184,7 @@ class CompanyAdminController extends Controller
      * @param array $data
      * @return \Illuminate\Contracts\Validation\Validator
      */
-    /* protected function validator(array $data)
-    {
-        return Validator::make($data, [
-            'password'   => ['required', 'string', 'min:10', 'confirmed', 'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{10,}$/'],
-        ], [
-            'password.regex' => 'Password is invalid, please follow the instructions below!',
-        ]);
-    } */
+
 
 
     public function companyPasswordUpdate(PasswordRequest $request)
