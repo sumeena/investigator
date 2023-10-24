@@ -91,7 +91,7 @@ class CompanyAdminController extends Controller
             $investigators = User::investigatorFiltered($request)
                 ->paginate(20);
         }
-
+        
         if ($request->ajax()) {
 
             $html = view('company-admin.find-investigator-response', compact('investigators', 'assignmentCount','assignmentUsers'))->render();
