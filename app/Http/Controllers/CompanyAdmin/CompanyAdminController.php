@@ -34,7 +34,7 @@ class CompanyAdminController extends Controller
         $internalCount = User::where('investigatorType', "internal")->where('company_profile_id', $user->company_profile_id)->count();
         $companyAdminCount = User::where('role', 3)->where('company_profile_id', $user->company_profile_id)->count();
         $companyHmCount = User::where('role', 4)->where('company_profile_id', $user->company_profile_id)->count();
-
+        $parentId=NULL;
         if($companyUser) {
             $parent = CompanyUser::where('user_id', auth()->id())->pluck('parent_id');
             $parentId = $parent[0];
