@@ -22,13 +22,25 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use App\Models\CompanyUser;
 
 
 class CompanyAdminController extends Controller
 {
     public function index()
     {
-        return view('company-admin.index');
+        $user = auth()->user();
+        $companyUser = CompanyUser::where('user_id', auth()->id())->exists();
+        $internalCount = User::where('investigatorType', "internal")->where('company_profile_id', $user->company_profile_id)->count();
+        $companyAdminCount = User::where('role', 3)->where('company_profile_id', $user->company_profile_id)->count();
+        $companyHmCount = User::where('role', 4)->where('company_profile_id', $user->company_profile_id)->count();
+
+        if($companyUser) {
+            $parent = CompanyUser::where('user_id', auth()->id())->pluck('parent_id');
+            $parentId = $parent[0];
+        }
+        $assignmentCount = Assignment::withCount('users')->with('author')->where(['user_id' => $user->id, 'is_delete' => NULL])->orWhere(['user_id' => $parentId, 'is_delete' => NULL])->orderBy('created_at','desc')->count();
+        return view('company-admin.index',compact('user','assignmentCount','internalCount','companyAdminCount','companyHmCount'));
     }
 
     public function viewProfile()

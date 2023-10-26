@@ -75,7 +75,7 @@ class InvitationsController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Message Sent',
-            ]); 
+            ]);
         }
     }
 
@@ -86,7 +86,7 @@ class InvitationsController extends Controller
         $fileName = time().'_'.$attachment->getClientOriginalName();
         $fileExt = $attachment->getClientOriginalExtension();
         $filePath = $attachment->storeAs('uploads', $fileName, 'public');
-        
+
         $attachmentPath = '/storage/' . $filePath;
 
         $chatId = $request->chat_id;
@@ -100,7 +100,7 @@ class InvitationsController extends Controller
                 'message' => 'Message Sent',
                 'attachment' => env('APP_URL').$attachmentPath,
                 'ext' => $fileExt
-            ]); 
+            ]);
         }
     }
 

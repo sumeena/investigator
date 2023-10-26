@@ -14,12 +14,32 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Models\CompanyAdminProfile;
 use Auth;
+use App\Models\Assignment;
 
 class HmController extends Controller
 {
     public function index()
     {
-        return view('hm.index');
+      $user = auth()->user();
+      $companyUser = CompanyUser::where('user_id', auth()->id())->exists();
+      $internalCount = User::where('investigatorType', "internal")->where('company_profile_id', $user->company_profile_id)->count();
+      $companyAdminCount = User::where('role', 3)->where('company_profile_id', $user->company_profile_id)->count();
+      $companyHmCount = User::where('role', 4)->where('company_profile_id', $user->company_profile_id)->count();
+
+      if($companyUser) {
+          $parent = CompanyUser::where('user_id', auth()->id())->pluck('parent_id');
+          $parentId = $parent[0];
+      }
+      $parentId = NULL;
+      $assignmentCount = Assignment::withCount('users')
+      ->where(['user_id' => $user->id, 'is_delete' => NULL])
+      ->when($parentId != '', function ($query) use ($parentId) {
+          $query->orWhere(['user_id' => $parentId, 'is_delete' => NULL]);
+      })
+      ->orderBy('created_at','desc')->count();
+
+      return view('hm.index',compact('user','assignmentCount','internalCount','companyAdminCount','companyHmCount'));
+
     }
 
     public function myProfile()

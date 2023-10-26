@@ -10,8 +10,18 @@
             <div class="card-body">
               <h5 class="card-title text-primary">Dashboard</h5>
               <p class="mb-4">
-                <span class="fw-bold">Investigator</span> Dashboard <span class="fw-bold">Features</span> Coming Soon!
+                <span class="fw-bold">Investigator</span> Dashboard
               </p>
+              <table class="table" id="assignment-table">
+               <tbody>
+                  <tr>
+                     <td>Invitations</td>
+                     <td>{{$invitationsCount}}</td>
+                  </tr>
+
+            </tbody>
+
+            </table>
             </div>
           </div>
           <div class="col-sm-5 text-center text-sm-left">

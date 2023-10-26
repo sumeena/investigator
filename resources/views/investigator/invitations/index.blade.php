@@ -50,7 +50,7 @@
                                             }
                                             else
                                             $company_name = $invitation->assignment->author->CompanyAdminProfile->company_name;
-                                        @endphp                
+                                        @endphp
                                         <td>{{ @$company_name ?? null ?: 'N/A' }}</td>
                                         <td>{{ @$invitation->assignment->author->email ?? 'N/A' }}</td>
                                         <td>{{ @$invitation->assignment->author->CompanyAdminProfile->company_phone ?? 'N/A' }}</td>
@@ -67,7 +67,7 @@
                                         else
                                             $status = $invitation->assignment->status;
                                         @endphp
-                                        
+
                                         {{ @Str::upper($status) }}</td>
                                         <!-- <td>{{ $invitation->created_at->diffForHumans() }}</td> -->
                                         <td>{{ $invitation->created_at->format('d-m-Y') }}</td>

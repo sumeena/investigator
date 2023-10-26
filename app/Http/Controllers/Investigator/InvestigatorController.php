@@ -22,6 +22,8 @@ use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\URL;
+use App\Models\Assignment;
+use App\Models\AssignmentUser;
 
 class InvestigatorController extends Controller
 {
@@ -35,7 +37,11 @@ class InvestigatorController extends Controller
 
     public function index()
     {
-        return view('investigator.index');
+      $user = auth()->user();
+
+      $invitationsCount = AssignmentUser::where('user_id', auth()->id())->with(['assignment', 'user', 'assignment.author.CompanyAdminProfile'])->orderBy('created_at','desc')->count();
+
+        return view('investigator.index',compact('invitationsCount'));
     }
 
     public function viewProfile()
