@@ -212,7 +212,7 @@
                                 @enderror
                                 <div class="table-responsive text-nowrap">
                                     <table class="table">
-                                      <?php $rate = $disabled = ""; $contractorLabel="Contractor"; if($user->investigatorType =="internal"){  $contractorLabel=""; $rate = 25; $disabled ="disabled"; } ?>
+                                      <?php $rate = $disabled = ""; $contractorLabel="Contractor"; if($user->investigatorType =="internal"){  $contractorLabel=""; $rate = 25; $disabled ="readonly"; } ?>
                                         <thead>
                                         <tr class="text-nowrap">
                                             <th>Investigation Types</th>
