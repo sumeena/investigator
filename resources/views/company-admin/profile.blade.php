@@ -146,7 +146,7 @@
                                 <div class="mb-3">
                                     <label class="form-label" for="basic-default-email">Website</label>
                                     <div class="input-group input-group-merge">
-                                        <input type="text" class="form-control"
+                                        <input type="text"  class="form-control"
                                                value="{{ $user?->website ?? $user?->companyAdmin?->company?->website ?? '' }}"
                                                disabled>
                                     </div>
@@ -173,10 +173,15 @@
                                     @enderror
                                 </div>
                             </div>
-
+                            <input type="hidden" name="companyProfileId" class="form-control"
+                                   value="{{ isset($user->company_profile_id) && !empty($user->company_profile_id) ? $user->company_profile_id : '' }}"
+                                   >
                             <div class="col-md-12">
-                                <div class="form-check">
-                                    <input name="make_assignments_private" class="form-check-input" type="checkbox" value="1" {{ (@$parentCompany->make_assignments_private == 1 ? 'checked' : '') }} id="makeAssignmentsPrivate">
+                                <div class="form-check ">
+                                    <input name="make_assignments_private" class="form-check-input" type="checkbox"
+                                    value="1" @checked(old('make_assignments_private', $profile->make_assignments_private ?? $parentCompany->make_assignments_private ?? '') == 1)
+                                     id="makeAssignmentsPrivate">
+
                                     <label class="form-check-label" for="makeAssignmentsPrivate">
                                         Make Assignments Private
                                     </label>
@@ -185,6 +190,7 @@
                         </div>
 
                         <hr>
+
                         <button type="submit"
                                 class="btn btn-primary">{{ isset($profile) && !empty($profile->id) ? 'Update' : 'Submit' }}</button>
                     </form>

@@ -12,6 +12,7 @@ use App\Models\User;
 use App\Models\CompanyUser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use App\Models\CompanyAdminProfile;
 use Auth;
 
 class HmController extends Controller
@@ -66,16 +67,9 @@ class HmController extends Controller
         $user = auth()->user();
 
 
-        if (
-            (!$user->companyAdmin
-                || !$user->companyAdmin->company
-                || !$user->companyAdmin->company->CompanyAdminProfile)
-            &&
-            (!$user?->companyAdmin?->company?->companyAdmin
-                || !$user?->companyAdmin?->company?->companyAdmin?->company
-                || !$user?->companyAdmin?->company?->companyAdmin?->company?->CompanyAdminProfile
-                || !$user?->companyAdmin?->company?->companyAdmin?->company?->CompanyAdminProfile?->is_company_profile_submitted)
-        ) {
+        if (isset($user->company_profile_id) && $user->company_profile_id !== null) {
+
+        }else {
             session()->flash('error', 'Please tell your company admin to complete company profile first!');
             return redirect()->route('hm.index');
         }
@@ -88,7 +82,7 @@ class HmController extends Controller
         ]);
 
         $CompanyAdminProfile = $user->companyAdmin->company->CompanyAdminProfile;
-        $parentProfile = $user->companyAdmin?->company?->companyAdmin?->company?->CompanyAdminProfile;
+        $parentProfile = CompanyAdminProfile::find($user->company_profile_id);
         $companyAdmin = $user->companyAdmin?->company;
 
         return view('hm.company-profile', compact(
@@ -108,11 +102,9 @@ class HmController extends Controller
             'companyAdmin.company.CompanyAdminProfile',
         ]);
 
-        if (
-            !$user->companyAdmin
-            || !$user->companyAdmin->company
-            || !$user->companyAdmin->company->CompanyAdminProfile
-        ) {
+        if (isset($user->company_profile_id) && $user->company_profile_id !== null) {
+
+        }else {
             session()->flash('error', 'Please tell your company admin to complete company profile first!');
             return redirect()->route('hm.index');
         }

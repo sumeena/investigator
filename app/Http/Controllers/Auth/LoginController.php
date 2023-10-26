@@ -37,12 +37,7 @@ class LoginController extends Controller
                 break;
             case 'company-admin':
                 $this->redirectTo = 'company-admin/profile';
-                if (
-                    ($user->CompanyAdminProfile && $user->CompanyAdminProfile->is_company_profile_submitted)
-                    || ($user->companyAdmin
-                        && $user->companyAdmin->company
-                        && $user->companyAdmin->company->CompanyAdminProfile->is_company_profile_submitted)
-                ) {
+                if ($user->company_profile_id !== null) {
                     $this->redirectTo = 'company-admin'; //'company';
                 }
                 break;

@@ -36,16 +36,9 @@ class AssignmentsController extends Controller
 
         if($companyUser) {
 
-            if (
-                (!$user->companyAdmin
-                    || !$user->companyAdmin->company
-                    || !$user->companyAdmin->company->CompanyAdminProfile)
-                &&
-                (!$user?->companyAdmin?->company?->companyAdmin
-                    || !$user?->companyAdmin?->company?->companyAdmin?->company
-                    || !$user?->companyAdmin?->company?->companyAdmin?->company?->CompanyAdminProfile
-                    || !$user?->companyAdmin?->company?->companyAdmin?->company?->CompanyAdminProfile?->is_company_profile_submitted)
-            ) {
+          if (isset($user->company_profile_id) && $user->company_profile_id !== null) {
+
+          }else {
                 session()->flash('error', 'Please tell your company admin to complete company profile first!');
                 return redirect()->route('hm.index');
             }
@@ -57,7 +50,7 @@ class AssignmentsController extends Controller
             ]);
 
             $CompanyAdminProfile = $user->companyAdmin->company->CompanyAdminProfile;
-            $parentProfile = $user->companyAdmin?->company?->companyAdmin?->company?->CompanyAdminProfile;
+            $parentProfile = CompanyAdminProfile::find($user->company_profile_id);
             $companyAdmin = $user->companyAdmin?->company;
 
             if($parentProfile->make_assignments_private == 1)
@@ -94,16 +87,9 @@ class AssignmentsController extends Controller
 
         if($companyUser) {
 
-            if (
-                (!$user->companyAdmin
-                    || !$user->companyAdmin->company
-                    || !$user->companyAdmin->company->CompanyAdminProfile)
-                &&
-                (!$user?->companyAdmin?->company?->companyAdmin
-                    || !$user?->companyAdmin?->company?->companyAdmin?->company
-                    || !$user?->companyAdmin?->company?->companyAdmin?->company?->CompanyAdminProfile
-                    || !$user?->companyAdmin?->company?->companyAdmin?->company?->CompanyAdminProfile?->is_company_profile_submitted)
-            ) {
+          if (isset($user->company_profile_id) && $user->company_profile_id !== null) {
+
+          }else {
                 session()->flash('error', 'Please tell your company admin to complete company profile first!');
                 return redirect()->route('hm.index');
             }
@@ -115,7 +101,7 @@ class AssignmentsController extends Controller
             ]);
 
             $CompanyAdminProfile = $user->companyAdmin->company->CompanyAdminProfile;
-            $parentProfile = $user->companyAdmin?->company?->companyAdmin?->company?->CompanyAdminProfile;
+            $parentProfile = CompanyAdminProfile::find($user->company_profile_id);
             $companyAdmin = $user->companyAdmin?->company;
 
             if($parentProfile->make_assignments_private == 1)
@@ -126,38 +112,78 @@ class AssignmentsController extends Controller
         }
         if(isset($_GET['searchby']) && !empty($_GET['searchby']) && isset($_GET['status-select']) && !empty($_GET['status-select']) ){
           $searchBy=$_GET['searchby'];
-            $assignments = Assignment::withCount('users')->with('author')->where(function ($query) use ($searchBy) {
-                $query->where('assignment_id', 'like', '%' . $searchBy . '%')
-                    ->orWhere('client_id', 'like', '%' . $searchBy . '%');
-            })
+            if($parentId == NULL){
+              $assignments = Assignment::withCount('users')->with('author')->where(function ($query) use ($searchBy) {
+                  $query->where('assignment_id', 'like', '%' . $searchBy . '%')
+                      ->orWhere('client_id', 'like', '%' . $searchBy . '%');
+              })
 
-              ->Where(['status' => $_GET['status-select']])
-              ->orderBy('created_at','desc')->paginate(10);
+                ->Where(['status' => $_GET['status-select']])
+                ->where(['user_id' => $userId])
+                ->orderBy('created_at','desc')->paginate(10);
+            }else{
+              $assignments = Assignment::withCount('users')->with('author')->where(function ($query) use ($searchBy) {
+                  $query->where('assignment_id', 'like', '%' . $searchBy . '%')
+                      ->orWhere('client_id', 'like', '%' . $searchBy . '%');
+              })
+
+                ->Where(['status' => $_GET['status-select']])
+                ->orderBy('created_at','desc')->paginate(10);
+            }
         }
         elseif (isset($_GET['searchby']) && !empty($_GET['searchby'])) {
-          $searchBy=$_GET['searchby'];
-          $assignments = Assignment::withCount('users')
-            ->with('author')
-            ->where(function ($query) use ($searchBy) {
-                $query->where('assignment_id', 'like', '%' . $searchBy . '%')
-                    ->orWhere('client_id', 'like', '%' . $searchBy . '%');
-            })
-            ->orderBy('created_at', 'desc')
-            ->paginate(10);
-
+            if($parentId == NULL){
+              $searchBy=$_GET['searchby'];
+              $assignments = Assignment::withCount('users')
+                ->with('author')
+                ->where(function ($query) use ($searchBy) {
+                    $query->where('assignment_id', 'like', '%' . $searchBy . '%')
+                        ->orWhere('client_id', 'like', '%' . $searchBy . '%');
+                })
+                ->orderBy('created_at', 'desc')
+                ->paginate(10);
+            }else{
+              $searchBy=$_GET['searchby'];
+              $assignments = Assignment::withCount('users')
+                ->with('author')
+                ->where(function ($query) use ($searchBy) {
+                    $query->where('assignment_id', 'like', '%' . $searchBy . '%')
+                        ->orWhere('client_id', 'like', '%' . $searchBy . '%');
+                })
+                ->orderBy('created_at', 'desc')
+                ->where(['user_id' => $userId])
+                ->paginate(10);
+            }
 
         }
         elseif (isset($_GET['status-select']) && !empty($_GET['status-select'])) {
-          $assignments = Assignment::withCount('users')->with('author')->where(
-            [
-              'status' => "".$_GET['status-select']."",
-            ]
-            )
-            ->where(['status' => "".$_GET['status-select'].""])
-            ->orderBy('created_at','desc')->paginate(10);
+          if($parentId == NULL){
+            $assignments = Assignment::withCount('users')->with('author')->where(
+              [
+                'status' => "".$_GET['status-select']."",
+              ]
+              )
+              ->where(['status' => "".$_GET['status-select'].""])
+              ->where(['user_id' => $userId])
+              ->orderBy('created_at','desc')->paginate(10);
+          }else{
+            $assignments = Assignment::withCount('users')->with('author')->where(
+              [
+                'status' => "".$_GET['status-select']."",
+              ]
+              )
+              ->where(['status' => "".$_GET['status-select'].""])
+              ->orderBy('created_at','desc')->paginate(10);
+          }
+
         }
         else{
-            $assignments = Assignment::withCount('users')->where(['user_id' => $userId, 'is_delete' => NULL])->when($parentId != '', function ($query) use ($parentId) { $query->orWhere(['user_id' => $parentId, 'is_delete' => NULL]); })->orderBy('created_at','desc')->paginate(10);
+            $assignments = Assignment::withCount('users')
+            ->where(['user_id' => $userId, 'is_delete' => NULL])
+            ->when($parentId != '', function ($query) use ($parentId)
+             {
+                $query->orWhere(['user_id' => $parentId, 'is_delete' => NULL]);
+               })->orderBy('created_at','desc')->paginate(10);
         }
 
 

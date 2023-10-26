@@ -48,6 +48,7 @@ class User extends Authenticatable
         'zipcode',
         'password',
         'investigatorType',
+        'company_profile_id',
         'is_investigator_profile_submitted',
         'lat',
         'lng',

@@ -206,20 +206,21 @@
                         <hr>
                         <div class="mb-3">
                             <div class="card">
-                                <h5 class="card-header">Service Lines <span class="starrequired">*</span></h5>
+                                <h5 class="card-header">Service Lines</h5>
                                 @error('investigation_type')
                                 <p class="ms-4 text-danger">{{ $message }}</p>
                                 @enderror
                                 <div class="table-responsive text-nowrap">
                                     <table class="table">
+                                      <?php $rate = $disabled = ""; $contractorLabel="Contractor"; if($user->investigatorType =="internal"){  $contractorLabel=""; $rate = 25; $disabled ="disabled"; } ?>
                                         <thead>
                                         <tr class="text-nowrap">
                                             <th>Investigation Types</th>
                                             <th>Case Experience</th>
                                             <th>Years Experience</th>
-                                            <th>Contractor Hourly Rate</th>
-                                            <th>Contractor Travel Rate</th>
-                                            <th>Contractor Milage Rate</th>
+                                            <th> {{$contractorLabel}} Hourly Rate</th>
+                                            <th>{{$contractorLabel}} Travel Rate</th>
+                                            <th>{{$contractorLabel}} Milage Rate</th>
                                         </tr>
                                         </thead>
                                         <tbody>
@@ -260,6 +261,7 @@
                                                 <input type="text"
                                                        class="form-control @error('investigation_type.0.years_experience') is-invalid @enderror"
                                                        name="investigation_type[0][years_experience]"
+
                                                        value="{{ old('investigation_type.0.years_experience', $survServiceLine->years_experience ?? '') }}">
                                                 @error('investigation_type.0.years_experience')
                                                 <span role="alert" class="text-danger small">
@@ -271,7 +273,7 @@
                                                 <span class="investigation_span">$</span>
                                                 <input type="text"
                                                        class="form-control @error('investigation_type.0.hourly_rate') is-invalid @enderror investigation_input_dollar_sign"
-                                                       name="investigation_type[0][hourly_rate]"
+                                                       name="investigation_type[0][hourly_rate]" {{$disabled}}
                                                        value="{{ old('investigation_type.0.hourly_rate', $survServiceLine->hourly_rate ?? '') }}">
                                                 @error('investigation_type.0.hourly_rate')
                                                 <span role="alert" class="text-danger small">
@@ -284,6 +286,7 @@
                                                 <input type="text"
                                                        class="form-control @error('investigation_type.0.travel_rate') is-invalid @enderror investigation_input_dollar_sign"
                                                        name="investigation_type[0][travel_rate]"
+                                                       {{$disabled}}
                                                        value="{{ old('investigation_type.0.travel_rate', $survServiceLine->travel_rate ?? '') }}">
                                                 @error('investigation_type.0.travel_rate')
                                                 <span role="alert" class="text-danger small">
@@ -296,6 +299,7 @@
                                                 <input type="text"
                                                        class="form-control @error('investigation_type.0.milage_rate') is-invalid @enderror investigation_input_dollar_sign"
                                                        name="investigation_type[0][milage_rate]"
+                                                       {{$disabled}}
                                                        value="{{ old('investigation_type.0.milage_rate', $survServiceLine->milage_rate ?? '') }}">
                                                 @error('investigation_type.0.milage_rate')
                                                 <span role="alert" class="text-danger small">
@@ -352,7 +356,8 @@
                                                 <input type="text"
                                                        class="form-control @error('investigation_type.1.hourly_rate') is-invalid @enderror investigation_input_dollar_sign"
                                                        name="investigation_type[1][hourly_rate]"
-                                                       value="{{ old('investigation_type.1.hourly_rate', $statServiceLine->hourly_rate ?? '') }}">
+                                                       {{$disabled}}
+                                                       value="{{ old('investigation_type.1.hourly_rate', $statServiceLine->hourly_rate ?? $rate) }}">
                                                 @error('investigation_type.1.hourly_rate')
                                                 <span role="alert" class="text-danger small">
                                                         {{ $message }}
@@ -364,7 +369,8 @@
                                                 <input type="text"
                                                        class="form-control @error('investigation_type.1.travel_rate') is-invalid @enderror investigation_input_dollar_sign"
                                                        name="investigation_type[1][travel_rate]"
-                                                       value="{{ old('investigation_type.1.travel_rate', $statServiceLine->travel_rate ?? '') }}">
+                                                       {{$disabled}}
+                                                       value="{{ old('investigation_type.1.travel_rate', $statServiceLine->travel_rate ?? $rate) }}">
                                                 @error('investigation_type.1.travel_rate')
                                                 <span role="alert" class="text-danger small">
                                                         {{ $message }}
@@ -376,7 +382,8 @@
                                                 <input type="text"
                                                        class="form-control @error('investigation_type.1.milage_rate') is-invalid @enderror investigation_input_dollar_sign"
                                                        name="investigation_type[1][milage_rate]"
-                                                       value="{{ old('investigation_type.1.milage_rate', $statServiceLine->milage_rate ?? '') }}">
+                                                       {{$disabled}}
+                                                       value="{{ old('investigation_type.1.milage_rate', $statServiceLine->milage_rate ?? $rate) }}">
                                                 @error('investigation_type.1.milage_rate')
                                                 <span role="alert" class="text-danger small">
                                                         {{ $message }}
@@ -430,7 +437,8 @@
                                                 <input type="text"
                                                        class="form-control @error('investigation_type.2.hourly_rate') is-invalid @enderror investigation_input_dollar_sign"
                                                        name="investigation_type[2][hourly_rate]"
-                                                       value="{{ old('investigation_type.2.hourly_rate', $miscServiceLine->hourly_rate ?? '') }}">
+                                                       {{$disabled}}
+                                                       value="{{ old('investigation_type.2.hourly_rate', $miscServiceLine->hourly_rate ?? $rate) }}">
                                                 @error('investigation_type.2.hourly_rate')
                                                 <span role="alert" class="text-danger small">
                                                         {{ $message }}
@@ -442,7 +450,8 @@
                                                 <input type="text"
                                                        class="form-control @error('investigation_type.2.travel_rate') is-invalid @enderror investigation_input_dollar_sign"
                                                        name="investigation_type[2][travel_rate]"
-                                                       value="{{ old('investigation_type.2.travel_rate', $miscServiceLine->travel_rate ?? '') }}">
+                                                       {{$disabled}}
+                                                       value="{{ old('investigation_type.2.travel_rate', $miscServiceLine->travel_rate ?? $rate) }}">
                                                 @error('investigation_type.2.travel_rate')
                                                 <span role="alert" class="text-danger small">
                                                         {{ $message }}
@@ -454,7 +463,8 @@
                                                 <input type="text"
                                                        class="form-control @error('investigation_type.2.milage_rate') is-invalid @enderror investigation_input_dollar_sign"
                                                        name="investigation_type[2][milage_rate]"
-                                                       value="{{ old('investigation_type.2.milage_rate', $miscServiceLine->milage_rate ?? '') }}">
+                                                       {{$disabled}}
+                                                       value="{{ old('investigation_type.2.milage_rate', $miscServiceLine->milage_rate ?? $rate) }}">
                                                 @error('investigation_type.2.milage_rate')
                                                 <span role="alert" class="text-danger small">
                                                         {{ $message }}
@@ -1272,7 +1282,7 @@
     <script>
         $(document).ready(function(){
     $('#bio').keyup(function() {
-    
+
     var characterCount = $(this).val().length,
         current = $('#current'),
         maximum = $('#maximum'),

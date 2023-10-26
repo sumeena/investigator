@@ -30,7 +30,7 @@
                                     <b><label>Company Name:</label></b>
                                 </div>
                                 @php
-                                    $companyName = $CompanyAdminProfile->company_name ?? $parentProfile->company_name;
+                                    @$companyName = $CompanyAdminProfile->company_name ?? $parentProfile->company_name;
                                 @endphp
                                 <div
                                     class="col-md-6">{{ ucfirst($companyName) ?? 'N/A' }}</div>
@@ -42,7 +42,7 @@
                                     <b><label>Company Phone:</label></b>
                                 </div>
                                 <div
-                                    class="col-md-6">{{ $CompanyAdminProfile->company_phone ?? $parentProfile->company_phone ?? 'N/A' }}</div>
+                                    class="col-md-6">{{ @$CompanyAdminProfile->company_phone ?? $parentProfile->company_phone ?? 'N/A' }}</div>
                             </div>
                         </div>
                     </div>
@@ -113,7 +113,7 @@
                                     <b><label> Timezone :</label></b>
                                 </div>
                                 @php
-                                    $timezone = $CompanyAdminProfile->timezone ?? $parentProfile->timezone;
+                                    @$timezone = $CompanyAdminProfile->timezone ?? $parentProfile->timezone;
                                 @endphp
                                 <div
                                     class="col-md-6">{{ $timezone ? $timezone->timezone . ' - [' . $timezone->name . ']' : '' }}</div>

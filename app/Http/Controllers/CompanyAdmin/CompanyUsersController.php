@@ -21,6 +21,7 @@ class CompanyUsersController extends Controller
 {
     public function index()
     {   //listing for all hm + company admin roles user
+      
       $companyAdmins = User::whereHas('userRole', function ($q) {
              $q->whereIn('role', ['company-admin', 'hiring-manager']);
          })->whereHas('companyAdmin', function ($q) {
@@ -40,14 +41,18 @@ class CompanyUsersController extends Controller
 
     public function store(CompanyUserRequest $request)
     {
+
         $password = isset($request->password) ? $request->password : Str::random(10);
         $data     = [
             'first_name' => $request->first_name,
             'last_name'  => $request->last_name,
             'phone'      => $request->phone,
             'email'      => $request->email,
+            'website'      => $request->website,
+            'company_profile_id'   => $request->companyProfileId,
             'password'   => Hash::make($password),
             'role'       => $request->role,
+
         ];
         $user     = User::updateOrCreate([
             'id' => $request->id
@@ -91,7 +96,23 @@ class CompanyUsersController extends Controller
         $user_id = isset($id) ? $id : '';
         return view('company-admin.company-users.reset-password', compact('user_id'));
     }
-
+    public function update(Request $request)
+    {
+        //$password='devteeest67855@gmail.com';
+      $data     = [
+          'first_name' => $request->first_name,
+          'last_name'  => $request->last_name,
+          'phone'      => $request->phone,
+          'email'      => $request->email,
+          //'password'   => Hash::make($password),
+          'company_profile_id'   => $request->companyProfileId,
+      ];
+      $user     = User::updateOrCreate([
+          'id' => $request->id
+      ], $data);
+      session()->flash('success', 'Company User Record updated Successfully!');
+      return redirect()->route('company-admin.company-users.index');
+    }
     public function passwordUpdate(PasswordRequest $request)
     { //update password for company
         $user = User::find($request->user_id);

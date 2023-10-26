@@ -9,8 +9,9 @@
                     <h5 class="mb-0">{{ isset($companyAdmin) && !empty($companyAdmin->id) ? 'Edit' : 'Add' }} Company
                         User</h5>
                 </div>
+
                 <div class="card-body">
-                    <form method="post" action="{{ route('company-admin.company-users.submit') }}">
+                    <form method="post" action="{{ isset($companyAdmin) && !empty($companyAdmin->id) ? route('company-admin.company-users.update') : route('company-admin.company-users.submit') }}">
                         @csrf
                         <div class="mb-3">
                             <label class="form-label" for="basic-default-fullname">First Name</label>
@@ -62,10 +63,11 @@
                         <div class="mb-3">
                             <label class="form-label" for="role">Company Website</label>
                             <input type="text" class="form-control" value="{{ $user?->website ?? $user?->parentCompany?->company->website }}" disabled>
+                            <input type="hidden" name="website" class="form-control" value="{{ $user?->website ?? $user?->parentCompany?->company->website }}" >
                         </div>
                         <div class="mb-3">
                             <label class="form-label" for="role">Role</label>
-                            <select name="role" id="role" class="form-control">
+                            <select name="role" id="role" class="form-control " {{ isset($companyAdmin) && !empty($companyAdmin->id) ? 'disabled' : '' }}>
                                 @foreach ($roles as $role)
                                     <option value="{{ $role->id }}" @selected(old('role', isset($companyAdmin) && $companyAdmin->role ? $companyAdmin->role : '') == $role->id)>
                                         @if ($role->role == 'company-admin')
@@ -77,7 +79,8 @@
                                 @endforeach
                             </select>
                         </div>
-
+                        <input type="hidden" name="companyProfileId" class="form-control" value="{{ isset($user->company_profile_id) && !empty($user->company_profile_id) ? $user->company_profile_id : '' }}">
+                        <input type="hidden" name="id" class="form-control" value="{{ isset($companyAdmin) && !empty($companyAdmin->id) ? $companyAdmin->id : '' }}">
                         <button type="submit" class="btn btn-primary">{{ isset($companyAdmin) && !empty($companyAdmin->id) ? 'Update' : 'Submit' }}</button>
                         @if (isset($companyAdmin) && $companyAdmin->id)
                             <a href="{{ route('company-admin.company-users.reset-password', $companyAdmin->id) }}">

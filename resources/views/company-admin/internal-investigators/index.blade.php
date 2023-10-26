@@ -5,11 +5,13 @@
 @section('content')
     <div class="card manage-index-list">
         <h5 class="card-header">Manage Internal Investigators</h5>
+        @if($role != 4)
         <a href="{{ route('company-admin.internal-investigators.add') }}" class="float-right">
             <button type="button" class="btn btn-primary" style="float:right;margin-right: 26px;">
                 Invite Investigator
             </button>
         </a>
+        @endif
         <div class="table-responsive text-nowrap">
             @if(session('success'))
                 <div class="alert alert-success" role="alert">
@@ -25,7 +27,10 @@
                     <th>Last</th>
                     <th>Email</th>
 {{--                    <th>Role</th>--}}
-                    <th>Action</th>
+  @if($role != 4)
+    <th>Action</th>
+  @endif
+
                 </tr>
                 </thead>
                 <tbody>
@@ -39,13 +44,17 @@
                             {{--<td>
                                 {{ ucfirst($investigator->userRole->role) }}
                             </td>--}}
-                            <td>
-                                <a href="{{ route('company-admin.internal-investigators.edit', $investigator->id) }}">Edit</a>
-                                | <a
-                                    onclick="return confirm('Are you sure want to delete?')"
-                                    href="{{route('company-admin.internal-investigators.delete', $investigator->id)}}">Delete</a>
-                                    | <a href="/company-admin/investigators/{{$investigator->id}}/view">View</a>
-                            </td>
+
+                              @if($role != 4)
+                              <td>
+                                  <a href="{{ route('company-admin.internal-investigators.edit', $investigator->id) }}">Edit</a>
+                                  | <a
+                                      onclick="return confirm('Are you sure want to delete?')"
+                                      href="{{route('company-admin.internal-investigators.delete', $investigator->id)}}">Delete</a>
+                                      | <a href="/company-admin/investigators/{{$investigator->id}}/view">View</a>
+                              </td>
+                              @endif
+
                         </tr>
                     @endforeach
                 @else

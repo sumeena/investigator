@@ -16,6 +16,7 @@ use App\Models\AssignmentUser;
 use App\Models\InvestigatorLanguage;
 use App\Models\State;
 use App\Models\User;
+use App\Models\CompanyAdminProfile;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -32,13 +33,15 @@ class CompanyAdminController extends Controller
 
     public function viewProfile()
     {
+
         $user = auth()->user();
         $user->load([
             'CompanyAdminProfile',
             'parentCompany.company.CompanyAdminProfile'
         ]);
+
         $profile       = $user->CompanyAdminProfile;
-        $parentCompany = $user->companyAdmin?->company?->CompanyAdminProfile;
+        $parentCompany = CompanyAdminProfile::find($user->company_profile_id);
         $timezones     = Timezone::where('active', 1)->get();
         return view('company-admin.profile', compact('profile', 'timezones', 'user', 'parentCompany'));
     }
@@ -46,32 +49,58 @@ class CompanyAdminController extends Controller
 
     public function store(CompanyAdminProfileRequest $request)
     {
+
         if($request->make_assignments_private == NULL)
             $request->make_assignments_private = 0;
 
         try {
-            $user = Auth::user();
-            $user->CompanyAdminProfile()->updateOrCreate([
-                'user_id' => $user->id
-            ], [
-                'company_name'  => $request->company_name,
-                'company_phone' => $request->company_phone,
-                'address'       => $request->address,
-                'address_1'     => $request->address_1,
-                'city'          => $request->city,
-                'state'         => $request->state,
-                'country'       => $request->country,
-                'zipcode'       => $request->zipcode,
-                'timezone_id'   => $request->timezone,
-                'make_assignments_private' => $request->make_assignments_private
-            ]);
+            $loginUser = Auth::user();
+            $loginUseId =$loginUser->id;
+            if(isset($request->companyProfileId) && !empty($request->companyProfileId)){
 
-            $user->CompanyAdminProfile()->update(['is_company_profile_submitted' => true]);
+              $user_id = Auth::user()->id;
+              $user    = CompanyAdminProfile::find($request->companyProfileId);
+              $user->update([
+                  'company_name'  => $request->company_name,
+                  'company_phone' => $request->company_phone,
+                  'address'       => $request->address,
+                  'address_1'     => $request->address_1,
+                  'city'          => $request->city,
+                  'state'         => $request->state,
+                  'country'       => $request->country,
+                  'zipcode'       => $request->zipcode,
+                  'timezone_id'   => $request->timezone,
+                  'make_assignments_private' => $request->make_assignments_private
+              ]);
+            }else{
+              $companyAdminProfile=$loginUser->CompanyAdminProfile()->updateOrCreate([
+                  'user_id' => $loginUseId
+              ], [
+                  'company_name'  => $request->company_name,
+                  'company_phone' => $request->company_phone,
+                  'address'       => $request->address,
+                  'address_1'     => $request->address_1,
+                  'city'          => $request->city,
+                  'state'         => $request->state,
+                  'country'       => $request->country,
+                  'zipcode'       => $request->zipcode,
+                  'timezone_id'   => $request->timezone,
+                  'make_assignments_private' => $request->make_assignments_private
+              ]);
+
+              $loginUser->CompanyAdminProfile()->update(['is_company_profile_submitted' => true]);
+              $user    = User::find($loginUseId);
+              $user->update([
+                  'company_profile_id' => $companyAdminProfile->id
+              ]);
+            }
+
 
             session()->flash('success', 'Company Profile Updated Sucessfully.');
             return redirect()->route('company-admin.view');
         } catch (\Exception $e) {
-            session()->flash('error', 'Something went wrong, please try again later!');
+            echo "Error: " . $e->getMessage();
+            session()->flash('error', 'Something went wrong, please try again later!'.$e->getMessage());
             return redirect()->back();
         }
     }
@@ -91,7 +120,7 @@ class CompanyAdminController extends Controller
             $investigators = User::investigatorFiltered($request)
                 ->paginate(20);
         }
-        
+
         if ($request->ajax()) {
 
             $html = view('company-admin.find-investigator-response', compact('investigators', 'assignmentCount','assignmentUsers'))->render();
@@ -201,14 +230,11 @@ class CompanyAdminController extends Controller
     public function companyProfile()
     {
         $user = auth()->user();
-        if (
-            (!$user->CompanyAdminProfile || !$user->CompanyAdminProfile->is_company_profile_submitted)
-            &&
-            (!$user?->companyAdmin?->company?->CompanyAdminProfile
-                || !$user?->companyAdmin?->company?->CompanyAdminProfile?->is_company_profile_submitted)
-        ) {
-            session()->flash('error', 'Please complete your profile first!');
-            return redirect()->route('company-admin.profile');
+        if (isset($user->company_profile_id) && $user->company_profile_id !== null) {
+
+        }else {
+          session()->flash('error', 'Please complete your profile first!');
+          return redirect()->route('company-admin.profile');
         }
         $user->load([
             'CompanyAdminProfile',
@@ -218,7 +244,7 @@ class CompanyAdminController extends Controller
         ]);
 
         $CompanyAdminProfile = $user->CompanyAdminProfile;
-        $parentProfile       = $user->companyAdmin?->company?->CompanyAdminProfile;
+        $parentProfile       = CompanyAdminProfile::find($user->company_profile_id);
 
         return view('company-admin.company-profile', compact(
             'CompanyAdminProfile',
