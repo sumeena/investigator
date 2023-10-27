@@ -10,6 +10,7 @@ use App\Models\Assignment;
 use App\Models\AssignmentUser;
 use App\Models\Chat;
 use App\Models\ChatMessage;
+use App\Models\CompanyUser;
 use App\Models\InvestigatorSearchHistory;
 use App\Models\Invitation;
 use App\Models\Language;
@@ -23,18 +24,32 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Illuminate\Testing\Assert;
+use Illuminate\Validation\Rules\Exists;
 
 class AssignmentsController extends Controller
 {
     public function index()
     {
-        $assignments = Assignment::withCount('users')->where(['user_id' => auth()->id(), 'is_delete' => NULL])->orderBy('created_at','desc')->paginate(10);
+
+        $userId = auth()->id();
+        $parentId = '';
+
+        $companyUser = CompanyUser::where('user_id', auth()->id())->exists();
+
+        if($companyUser) {
+            $parent = CompanyUser::where('user_id', auth()->id())->pluck('parent_id');
+            $parentId = $parent[0];
+        }
+
+        $assignments = Assignment::withCount('users')->where(['user_id' => $userId, 'is_delete' => NULL])->orWhere(['user_id' => $parentId, 'is_delete' => NULL])->orderBy('created_at','desc')->paginate(10);
+
 
         $html = view('company-admin.assignments-response', compact('assignments'))->render();
 
         return response()->json([
             'data' => $html,
         ]);
+
     }
 
     public function create()
@@ -84,23 +99,14 @@ class AssignmentsController extends Controller
         ]);
     }
 
-    /* public function edit(Assignment $assignment)
-    {
-        $assignment->load(['users', 'searchHistory', 'chats', 'chats.chatUsers', 'chats.chatUsers.media']);
 
-        dd($assignment);
-        return response()->json([
-            'success' => true,
-            'message' => 'Data fetched successfully!',
-            'data'    => $assignment,
-        ]);
-    } */
 
 
     /** edit find investigator */
 
     public function edit(Assignment $assignment, Request $request)
     {
+
         $states          = State::all();
         $languageOptions = Language::all();
         $filtered        = false;
@@ -174,6 +180,7 @@ class AssignmentsController extends Controller
 
     public function destroy(Assignment $assignment)
     {
+
         $assignment->delete();
 
         return response()->json([
@@ -231,9 +238,6 @@ class AssignmentsController extends Controller
         $notes = Assignment::where(['id' => $assignmentId])->pluck('notes');
 
         $assignmentStatus = Assignment::where('id',$assignmentId)->pluck('status');
-        // echo '<pre>';
-
-        // dd($chat);
 
         $html = view('company-admin.assignment.show-response', compact('messages', 'hiredStatus', 'authUserId', 'chat', 'hiredUser', 'assignmentStatus'))->render();
 
@@ -302,8 +306,10 @@ class AssignmentsController extends Controller
     public function sendMessage(Request $request) {
         $msg = $request->message;
         $chatId = $request->chat_id;
-        $authUserId = Auth::user()->id;
-        $msgSent = ChatMessage::create(array('user_id' => $authUserId, 'chat_id' => $chatId, 'content' => $msg, 'type' => 'text', 'is_delete' => '{"investigator": 0, "company-admin": 0}'));
+
+        $chatDetails = Chat::find($chatId);
+
+        $msgSent = ChatMessage::create(array('user_id' => $chatDetails->assignment->user_id, 'chat_id' => $chatId, 'content' => $msg, 'type' => 'text', 'is_delete' => '{"investigator": 0, "company-admin": 0}'));
 
         if($msgSent) {
             return response()->json([
@@ -317,15 +323,28 @@ class AssignmentsController extends Controller
     public function sendAttachmentMessage(Request $request) {
         $attachment = $request->file;
 
-        $fileName = time().'_'.$attachment->getClientOriginalName();
+        $attachment_file_name = preg_replace('/[^a-zA-Z0-9_ %\[\]\.\(\)%&-]/s', '', $attachment->getClientOriginalName());
+
+        $fileName = time().'_'. $attachment_file_name;
         $fileExt = $attachment->getClientOriginalExtension();
         $filePath = $attachment->storeAs('uploads', $fileName, 'public');
 
         $attachmentPath = '/storage/' . $filePath;
 
         $chatId = $request->chat_id;
-        $authUserId = Auth::user()->id;
-        $media = Media::create(array( 'file_name' => $attachment->getClientOriginalName(), 'file_ext' => $fileExt));
+
+        $chatDetails = Chat::find($chatId);
+
+        // $authUserId = Auth::user()->id;
+        $authUserId = auth()->id();
+
+        $companyUser = CompanyUser::where('user_id', auth()->id())->exists();
+        if($companyUser) {
+            $parent = CompanyUser::where('user_id', auth()->id())->pluck('parent_id');
+            $authUserId = $parent[0];
+        }
+
+        $media = Media::create(array( 'file_name' => $attachment_file_name, 'file_ext' => $fileExt));
         $msgSent = ChatMessage::create(array('user_id' => $authUserId, 'chat_id' => $chatId, 'content' => $attachmentPath, 'media_id' => $media->id, 'type' => 'media', 'is_read' => '{"company-admin : 0 , "investigator" : 1}'));
 
         if($msgSent) {
@@ -372,12 +391,11 @@ class AssignmentsController extends Controller
         ]);
 
         $investigator = User::find($request->investigator_id);
-        // $investigator->assignedAssignments()->sync($request->assignment);
+
         $authUser = auth()->user();
-        // foreach ($request->assignments as $item) {
+
             $assignment = Assignment::find($request->assignment);
-            /* $assignmentUser = AssignmentUser::where('assignment_id', $assignment->id)
-                ->where('user_id', $investigator->id)->first(); */
+
                 $storeAssignmentUser = AssignmentUser::updateOrCreate(['assignment_id' => $assignment->id, 'user_id' => $investigator->id],['assignment_id' => $assignment->id, 'user_id' => $investigator->id]);
 
                 Assignment::where('id',$assignment->id)->update(['status' => 'INVITED']);
@@ -408,14 +426,20 @@ class AssignmentsController extends Controller
                    'url'          => route('investigator.assignment.show', $storeAssignmentUser->id),
                ];
 
-            // Invitation::create($invitationData);
+
             Notification::create($notificationData);
 
-            $chat = Chat::create(array('assignment_id' => $assignment->id, 'company_admin_id' => $authUser->id, 'investigator_id' => $investigator->id, 'is_read' => '{"company-admin":1 , "investigator":0}'));
-            ChatMessage::create(array('user_id' => $authUser->id, 'chat_id' => $chat->id, 'content' => 'We have invited you to join this assignment. If you are interested, please let us know at your earliest convenience. We can discuss further details and address any questions you may have. Thank you', 'type' => 'text', 'is_delete' => '{"company-admin" : 0 , "investigator" : 0}'));
+            $companyUser = CompanyUser::where('user_id', auth()->id())->exists();
+            if($companyUser) {
+                $parent = CompanyUser::where('user_id', auth()->id())->pluck('parent_id');
+                $authUser->id = $parent[0];
+            }
+
+            $chat = Chat::create(array('assignment_id' => $assignment->id, 'company_admin_id' => $assignment->user_id, 'investigator_id' => $investigator->id, 'is_read' => '{"company-admin":1 , "investigator":0}'));
+            ChatMessage::create(array('user_id' => $assignment->user_id, 'chat_id' => $chat->id, 'content' => 'We have invited you to join this assignment. If you are interested, please let us know at your earliest convenience. We can discuss further details and address any questions you may have. Thank you', 'type' => 'text', 'is_delete' => '{"company-admin" : 0 , "investigator" : 0}'));
 
              Mail::to($investigator->email)->send(new JobInvitationMail($notificationData));
-        // }
+
 
         return response()->json([
             'success' => true,
@@ -427,11 +451,53 @@ class AssignmentsController extends Controller
     /** get list of assignments */
     public function assignments_list()
     {
-        // $assignments = Assignment::where('user_id', auth()->id())->withCount('invitations')->paginate(10);
-        $assignments = Assignment::withCount('users')->where(['user_id' => auth()->id(), 'is_delete' => NULL])->orderBy('created_at','desc')->paginate(10);
+      
+        $userId = auth()->id();
+        $parentId = '';
 
-        // dd($assignments);
+        $companyUser = CompanyUser::where('user_id', auth()->id())->exists();
 
+        if($companyUser) {
+            $parent = CompanyUser::where('user_id', auth()->id())->pluck('parent_id');
+            $parentId = $parent[0];
+        }
+
+
+        if(isset($_GET['searchby']) && !empty($_GET['searchby']) && isset($_GET['status-select']) && !empty($_GET['status-select']) ){
+          $searchBy=$_GET['searchby'];
+            $assignments = Assignment::withCount('users')->with('author')->where(function ($query) use ($searchBy) {
+                $query->where('assignment_id', 'like', '%' . $searchBy . '%')
+                    ->orWhere('client_id', 'like', '%' . $searchBy . '%');
+            })
+
+              ->Where(['status' => $_GET['status-select']])
+              ->orderBy('created_at','desc')->paginate(10);
+        }
+        elseif (isset($_GET['searchby']) && !empty($_GET['searchby'])) {
+          $searchBy=$_GET['searchby'];
+          $assignments = Assignment::withCount('users')
+            ->with('author')
+            ->where(function ($query) use ($searchBy) {
+                $query->where('assignment_id', 'like', '%' . $searchBy . '%')
+                    ->orWhere('client_id', 'like', '%' . $searchBy . '%');
+            })
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
+
+
+        }
+        elseif (isset($_GET['status-select']) && !empty($_GET['status-select'])) {
+          $assignments = Assignment::withCount('users')->with('author')->where(
+            [
+              'status' => "".$_GET['status-select']."",
+            ]
+            )
+            ->where(['status' => "".$_GET['status-select'].""])
+            ->orderBy('created_at','desc')->paginate(10);
+        }
+        else{
+            $assignments = Assignment::withCount('users')->with('author')->where(['user_id' => $userId, 'is_delete' => NULL])->orWhere(['user_id' => $parentId, 'is_delete' => NULL])->orderBy('created_at','desc')->paginate(10);
+        }
         return view('company-admin.assignments', compact('assignments'));
     }
 
@@ -440,7 +506,7 @@ class AssignmentsController extends Controller
         $notes = $request->notes;
         $assignmentId = $request->assignment_id;
 
-        // $userId = $request->user_id;
+
         $notesUpdated = Assignment::where(['id'=>$assignmentId])->update(['notes' => $notes]);
         return response()->json([
             'success' => true,
@@ -450,7 +516,7 @@ class AssignmentsController extends Controller
 
     public function getAssignmentNotes(Request $request) {
         $assignmentId = $request->assignment_id;
-        // $userId = $request->user_id;
+
         $assignmentNotes = Assignment::where(['assignment_id'=>$assignmentId])->pluck('notes');
         return response([
             'notes' => $assignmentNotes

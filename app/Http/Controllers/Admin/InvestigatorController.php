@@ -50,8 +50,6 @@ class InvestigatorController extends Controller
             session()->flash('success', 'Hi Admin , Investigator Record Updated Successfully!');
         } else {
             try {
-                // echo $user->email; die;
-
                 $mailData = [
                     'role' => $user->userRole->role,
                     'first_name' => $user->first_name,
@@ -59,14 +57,7 @@ class InvestigatorController extends Controller
                     'email'      => $user->email,
                     'password'   => $password
                 ];
-
-                $abc = new UserCredentialMail($mailData);
-                /* echo '<pre>';
-                print_r($abc); */
-
-
-
-            $mail = Mail::to($user->email)->send(new UserCredentialMail($mailData));
+                $mail = Mail::to($user->email)->send(new UserCredentialMail($mailData));
 
             if (Mail::failures()) {
                 print_r(response()->Fail('Sorry! Please try again latter'));
@@ -82,7 +73,8 @@ class InvestigatorController extends Controller
     }
 
     public function edit($id)
-    { //find exist investigator user and return data in form
+    {
+      /** find exist investigator user and return data in form **/
         $investigator = User::find($id);
         return view('admin.investigator.add', ['investigator' => $investigator]);
     }
@@ -153,5 +145,10 @@ class InvestigatorController extends Controller
             'languageOptions'
         ));
     }
-
+    public function checkInvestigatorType()
+    {
+        if(auth()->user()->investigatorType != 'internal'){
+          return "Contractor";
+        }
+    }
 }

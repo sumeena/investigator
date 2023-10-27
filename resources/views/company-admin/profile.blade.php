@@ -99,19 +99,7 @@
                                         <input type="text" id="administrative_area_level_1"
                                                class="form-control @error('state') is-invalid @enderror" name="state"
                                                value="{{ old('state', $profile->state ?? $parentCompany->state ?? '') }}">
-                                        <!-- <select class="form-select @error('state') is-invalid @enderror" name="state">
-                                                                                                                                                        @if (isset($states))
-                                            @foreach ($states as $state)
-                                                <option
-                                                                                                                                                                                                            value="{{ $state->id }}" {{ isset($user->state_id) && ($user->state_id == $state->id || old('state') == $state->id) ? 'selected' : '' }}>{{ $state->code }}</option>
 
-
-
-
-
-                                            @endforeach
-                                        @endif
-                                        </select> -->
                                     </div>
                                 </div>
                                 @error('state')
@@ -130,11 +118,6 @@
                                                class="form-control @error('country') is-invalid @enderror"
                                                name="country"
                                                value="{{ old('country', $profile->country ?? $parentCompany->country ?? '') }}">
-                                        <!-- <select id="defaultSelect"
-                                                                                                                                                            class="form-control @error('country') is-invalid @enderror"
-                                                                                                                                                            name="country">
-                                                                                                                                                        <option selected="selected" value="1">USA</option>
-                                                                                                                                                    </select> -->
                                     </div>
                                 </div>
                                 @error('country')
@@ -163,7 +146,7 @@
                                 <div class="mb-3">
                                     <label class="form-label" for="basic-default-email">Website</label>
                                     <div class="input-group input-group-merge">
-                                        <input type="text" class="form-control"
+                                        <input type="text"  class="form-control"
                                                value="{{ $user?->website ?? $user?->companyAdmin?->company?->website ?? '' }}"
                                                disabled>
                                     </div>
@@ -190,9 +173,24 @@
                                     @enderror
                                 </div>
                             </div>
+                            <input type="hidden" name="companyProfileId" class="form-control"
+                                   value="{{ isset($user->company_profile_id) && !empty($user->company_profile_id) ? $user->company_profile_id : '' }}"
+                                   >
+                            <div class="col-md-12">
+                                <div class="form-check ">
+                                    <input name="make_assignments_private" class="form-check-input" type="checkbox"
+                                    value="1" @checked(old('make_assignments_private', $profile->make_assignments_private ?? $parentCompany->make_assignments_private ?? '') == 1)
+                                     id="makeAssignmentsPrivate">
+
+                                    <label class="form-check-label" for="makeAssignmentsPrivate">
+                                        Make Assignments Private
+                                    </label>
+                                </div>
+                            </div>
                         </div>
 
                         <hr>
+
                         <button type="submit"
                                 class="btn btn-primary">{{ isset($profile) && !empty($profile->id) ? 'Update' : 'Submit' }}</button>
                     </form>

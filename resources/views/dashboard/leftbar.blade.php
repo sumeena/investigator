@@ -32,12 +32,7 @@
                 @endif
             @endif
 
-            @if(
-    (auth()->user()->CompanyAdminProfile && auth()->user()->CompanyAdminProfile->is_company_profile_submitted)
-    || (auth()->user()->companyAdmin && auth()->user()->companyAdmin->company
-    && auth()->user()->companyAdmin->company->CompanyAdminProfile
-    && auth()->user()->companyAdmin->company->CompanyAdminProfile->is_company_profile_submitted)
-)
+            @if(auth()->user() && auth()->user()->company_profile_id)
                 @if(request()->segment(1) == 'company-admin')
                     <a href="{{ route('company-admin.index') }}" class="menu-link">
                         <i class="menu-icon tf-icons bx bx-home-circle"></i>
@@ -79,12 +74,7 @@
 
         @if(auth()->user()->userRole && auth()->user()->userRole->role == 'company-admin')
 
-            @if(
-    (auth()->user()->CompanyAdminProfile && auth()->user()->CompanyAdminProfile->is_company_profile_submitted)
-    || (auth()->user()->companyAdmin && auth()->user()->companyAdmin->company
-    && auth()->user()->companyAdmin->company->CompanyAdminProfile
-    && auth()->user()->companyAdmin->company->CompanyAdminProfile->is_company_profile_submitted)
-)
+          @if(auth()->user() && auth()->user()->company_profile_id)
                 <li class="menu-item {{ request()->routeIs('company-admin.find_investigator') ? 'active' : '' }}">
                     <a href="{{ route('company-admin.find_investigator') }}" class="menu-link">
                         <i class="bx bx-user me-2"></i>
@@ -111,7 +101,14 @@
                         <div data-i18n="Analytics">Company Users</div>
                     </a>
                 </li>
-            
+
+                <li class="menu-item {{ request()->routeIs('company-admin.internal-investigators.index') ? 'active' : '' }}">
+                    <a href="{{ route('company-admin.internal-investigators.index') }}" class="menu-link">
+                        <i class="bx bxs-user me-2"></i>
+                        <div data-i18n="Analytics">Internal Investigators</div>
+                    </a>
+                </li>
+
             @else
                 <li class="menu-item {{ request()->routeIs('company-admin.profile') ? 'active' : '' }}">
                     <a href="{{ route('company-admin.profile') }}" class="menu-link">
@@ -138,13 +135,17 @@
                         <div data-i18n="Analytics">Assignments</div>
                     </a>
                 </li>
+                @if(auth()->user()->investigatorType != 'internal')
 
-                <li class="menu-item {{ request()->routeIs('investigator.company-admins.index') ? 'active' : '' }}">
-                    <a href="{{ route('investigator.company-admins.index') }}" class="menu-link">
-                        <i class="bx bx-user me-2"></i>
-                        <div data-i18n="Analytics">Companies</div>
-                    </a>
-                </li>
+                    <li class="menu-item {{ request()->routeIs('investigator.company-admins.index') ? 'active' : '' }}">
+                        <a href="{{ route('investigator.company-admins.index') }}" class="menu-link">
+                            <i class="bx bx-user me-2"></i>
+                            <div data-i18n="Analytics">Companies</div>
+                        </a>
+                    </li>
+
+                @endif
+
 
                 <li class="menu-item {{ request()->routeIs('calendar') ? 'active' : '' }}">
                     <a href="/investigator/calendar" class="menu-link">
@@ -179,6 +180,18 @@
                 </a>
             </li>
 
+            <li class="menu-item {{ request()->routeIs('hm.assignments-list') ? 'active' : '' }}">
+                <a href="{{ route('hm.assignments-list') }}" class="menu-link">
+                    <i class="bx bx-user me-2"></i>
+                    <div data-i18n="Analytics">Assignments</div>
+                </a>
+            </li>
+            <li class="menu-item {{ request()->routeIs('hm.internal-investigators.index') ? 'active' : '' }}">
+                <a href="{{ route('hm.internal-investigators.index') }}" class="menu-link">
+                    <i class="bx bxs-user me-2"></i>
+                    <div data-i18n="Analytics">Internal Investigators</div>
+                </a>
+            </li>
             <li class="menu-item {{ request()->routeIs('hm.company-users.index') ? 'active' : '' }}">
                 <a href="{{ route('hm.company-users.index') }}" class="menu-link">
                     <i class="bx bx-user me-2"></i>

@@ -41,9 +41,7 @@
                             <button type="button" class="btn btn-outline-light btn-sm btn-hire-now">Back</button>
                         </a>
 
-                        <!-- <a href="/investigator/profile" class="investigator-view-profile-link">
-                                <button type="button">Edit Investigator Profile</button>
-                            </a> -->
+
                     </div>
                 </div>
                 <div class="row mx-0 py-1 px-3">
@@ -203,20 +201,15 @@
     <div class="modal-dialog" role="document" style="width:300px; height:200px">
         <div class="modal-content">
             <div class="modal-header">
-                <!-- w-100 class so that header
-                div covers 100% width of parent div -->
+
                 <h5 class="modal-title w-100 text-center" id="exampleModalLabel">
                     Attachment
                 </h5>
-                <!-- <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">
-                            ×
-                        </span>
-                    </button> -->
+
             </div>
             <!--Modal body with image-->
             <div class="modal-body text-center attachment-src">
-                <!-- <img class="attachment-src" src="gfg.png" /> -->
+                
             </div>
             <div class="modal-footer" style="margin: 0 auto;">
                 <button type="button" class="btn btn-primary send-attachment" data-dismiss="modal"> <i class="fa-solid fa-paper-plane"></i> </button>

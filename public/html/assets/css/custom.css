@@ -148,7 +148,7 @@ padding-right: 5px;
   padding: 0;
 }
 
-.pad-a-10 
+.pad-a-10
 {
   padding: 10px;
 }
@@ -262,7 +262,7 @@ button.btn.btn-outline-light.btn-sm.btn-hire-now, button.btn.btn-light.btn-sm.bt
 	margin: 0em 0;
 }
 .assignmentMain > .row > .col-md-2 > .card > button.btn.btn-success.active {
-	border-left-color: #0b509d;	
+	border-left-color: #0b509d;
 }
 .assignmentMain .btn.btn-success.btn-users.users-list:after {
 	content: "\ebac";
@@ -297,8 +297,38 @@ button.btn.btn-outline-light.btn-sm.btn-hire-now, button.btn.btn-light.btn-sm.bt
 		/* margin-top: -5em; */
 		margin-bottom: 1.5em;
 	}
-	
+
 }
 
 
 /*  Assignment Page  Ends  */
+
+
+/* Loader Overlay */
+.custom-loader-overlay {
+    display: none !important;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.loader {
+    border: 6px solid #f3f3f3;
+    border-top: 6px solid #3498db;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}

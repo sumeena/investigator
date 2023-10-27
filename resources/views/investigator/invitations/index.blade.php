@@ -42,7 +42,16 @@
                                 @forelse($invitations as $invitation)
                                     <tr>
                                         <td>{{ $invitations->firstItem() + $loop->index }}</td>
-                                        <td>{{ @$invitation->assignment->author->CompanyAdminProfile->company_name }}</td>
+
+                                        @php
+                                            if($invitation->assignment->author->parentCompany != null)
+                                            {
+                                            $company_name = $invitation->assignment->author->parentCompany->company->CompanyAdminProfile->company_name;
+                                            }
+                                            else
+                                            $company_name = $invitation->assignment->author->CompanyAdminProfile->company_name;
+                                        @endphp
+                                        <td>{{ @$company_name ?? null ?: 'N/A' }}</td>
                                         <td>{{ @$invitation->assignment->author->email ?? 'N/A' }}</td>
                                         <td>{{ @$invitation->assignment->author->CompanyAdminProfile->company_phone ?? 'N/A' }}</td>
                                         <td>{{ @Str::upper($invitation->assignment->client_id) }}</td>
@@ -58,7 +67,7 @@
                                         else
                                             $status = $invitation->assignment->status;
                                         @endphp
-                                        
+
                                         {{ @Str::upper($status) }}</td>
                                         <!-- <td>{{ $invitation->created_at->diffForHumans() }}</td> -->
                                         <td>{{ $invitation->created_at->format('d-m-Y') }}</td>

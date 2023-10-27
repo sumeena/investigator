@@ -51,10 +51,10 @@ class InvestigatorProfileRequest extends FormRequest
             'survelance_report'                     => 'bail|nullable|image|mimes:jpeg,png,jpg',
             'camera_type'                           => 'bail|required',
             'camera_model_number'                   => 'bail|required',
-            'licenses'                              => 'bail|required|array|min:1',
+            /*'licenses'                              => 'bail|required|array|min:1',
             'licenses.*.state'                      => 'bail|required',
             'licenses.*.license_number'             => 'bail|required|string',
-            'licenses.*.expiration_date'            => 'required',
+            'licenses.*.expiration_date'            => 'required',*/
             'work_vehicles'                         => 'bail|required|array|min:1',
             'work_vehicles.*.make'                  => 'bail|required|string',
             'work_vehicles.*.model'                 => 'bail|required|string',

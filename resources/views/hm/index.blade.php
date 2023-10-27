@@ -25,11 +25,30 @@
                             <div class="card-body">
                                 <h5 class="card-title text-primary">Dashboard</h5>
                                 <p class="mb-4">
-                                    <span class="fw-bold">Hiring Manager</span> Dashboard <span
-                                        class="fw-bold">Features</span> Coming Soon!
+                                    <span class="fw-bold">Hiring Manager</span> Dashboard 
                                 </p>
+                                <table class="table" id="assignment-table">
+                                 <tbody>
+                                    <tr>
+                                       <td>Assignments</td>
+                                       <td>{{$assignmentCount}}</td>
+                                    </tr>
+                                    <tr>
+                                       <td>Company admin users</td>
+                                       <td>{{$companyAdminCount}}</td>
+                                    </tr>
+                                    <tr>
+                                       <td>Company HM  users</td>
+                                       <td>{{$companyHmCount}}</td>
+                                    </tr>
+                                    <tr>
+                                       <td>Internal Investigators</td>
+                                       <td>{{$internalCount}}</td>
+                                    </tr>
+                              </tbody>
 
-                                <!-- <a href="javascript:;" class="btn btn-sm btn-outline-primary">View Badges</a> -->
+                              </table>
+
                             </div>
                         </div>
                         <div class="col-sm-5 text-center text-sm-left">

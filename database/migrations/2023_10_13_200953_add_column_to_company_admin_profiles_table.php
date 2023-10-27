@@ -13,12 +13,10 @@ return new class extends Migration
      */
     public function up()
     {
-      Schema::create('investigator_search_histories', function (Blueprint $table) {
-          $table->string('distance')->nullable();
-          $table->string('withInternalInvestigator')->nullable();
-          $table->string('withExternalInvestigator')->nullable();
-
-      });
+        Schema::table('company_admin_profiles', function (Blueprint $table) {
+            $table->boolean('make_assignments_private')
+              ->default(false)->after('is_company_profile_submitted');
+        });
     }
 
     /**
@@ -28,8 +26,8 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('investigator_search_histories', function (Blueprint $table) {
-            //
+        Schema::table('company_admin_profiles', function (Blueprint $table) {
+            $table->dropColumn('make_assignments_private');
         });
     }
 };

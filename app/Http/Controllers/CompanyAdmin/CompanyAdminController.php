@@ -16,29 +16,44 @@ use App\Models\AssignmentUser;
 use App\Models\InvestigatorLanguage;
 use App\Models\State;
 use App\Models\User;
+use App\Models\CompanyAdminProfile;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use App\Models\CompanyUser;
 
 
 class CompanyAdminController extends Controller
 {
     public function index()
     {
-        return view('company-admin.index');
+        $user = auth()->user();
+        $companyUser = CompanyUser::where('user_id', auth()->id())->exists();
+        $internalCount = User::where('investigatorType', "internal")->where('company_profile_id', $user->company_profile_id)->count();
+        $companyAdminCount = User::where('role', 3)->where('company_profile_id', $user->company_profile_id)->count();
+        $companyHmCount = User::where('role', 4)->where('company_profile_id', $user->company_profile_id)->count();
+        $parentId=NULL;
+        if($companyUser) {
+            $parent = CompanyUser::where('user_id', auth()->id())->pluck('parent_id');
+            $parentId = $parent[0];
+        }
+        $assignmentCount = Assignment::withCount('users')->with('author')->where(['user_id' => $user->id, 'is_delete' => NULL])->orWhere(['user_id' => $parentId, 'is_delete' => NULL])->orderBy('created_at','desc')->count();
+        return view('company-admin.index',compact('user','assignmentCount','internalCount','companyAdminCount','companyHmCount'));
     }
 
     public function viewProfile()
     {
+
         $user = auth()->user();
         $user->load([
             'CompanyAdminProfile',
             'parentCompany.company.CompanyAdminProfile'
         ]);
+
         $profile       = $user->CompanyAdminProfile;
-        $parentCompany = $user->companyAdmin?->company?->CompanyAdminProfile;
+        $parentCompany = CompanyAdminProfile::find($user->company_profile_id);
         $timezones     = Timezone::where('active', 1)->get();
         return view('company-admin.profile', compact('profile', 'timezones', 'user', 'parentCompany'));
     }
@@ -46,37 +61,64 @@ class CompanyAdminController extends Controller
 
     public function store(CompanyAdminProfileRequest $request)
     {
-        //echo "<pre>"; print_r($request->all()); die;
-        try {
-            $user = Auth::user();
-            $user->CompanyAdminProfile()->updateOrCreate([
-                'user_id' => $user->id
-            ], [
-                'company_name'  => $request->company_name,
-                'company_phone' => $request->company_phone,
-                'address'       => $request->address,
-                'address_1'     => $request->address_1,
-                'city'          => $request->city,
-                'state'         => $request->state,
-                'country'       => $request->country,
-                'zipcode'       => $request->zipcode,
-                'timezone_id'   => $request->timezone,
-            ]);
 
-            $user->CompanyAdminProfile()->update(['is_company_profile_submitted' => true]);
+        if($request->make_assignments_private == NULL)
+            $request->make_assignments_private = 0;
+
+        try {
+            $loginUser = Auth::user();
+            $loginUseId =$loginUser->id;
+            if(isset($request->companyProfileId) && !empty($request->companyProfileId)){
+
+              $user_id = Auth::user()->id;
+              $user    = CompanyAdminProfile::find($request->companyProfileId);
+              $user->update([
+                  'company_name'  => $request->company_name,
+                  'company_phone' => $request->company_phone,
+                  'address'       => $request->address,
+                  'address_1'     => $request->address_1,
+                  'city'          => $request->city,
+                  'state'         => $request->state,
+                  'country'       => $request->country,
+                  'zipcode'       => $request->zipcode,
+                  'timezone_id'   => $request->timezone,
+                  'make_assignments_private' => $request->make_assignments_private
+              ]);
+            }else{
+              $companyAdminProfile=$loginUser->CompanyAdminProfile()->updateOrCreate([
+                  'user_id' => $loginUseId
+              ], [
+                  'company_name'  => $request->company_name,
+                  'company_phone' => $request->company_phone,
+                  'address'       => $request->address,
+                  'address_1'     => $request->address_1,
+                  'city'          => $request->city,
+                  'state'         => $request->state,
+                  'country'       => $request->country,
+                  'zipcode'       => $request->zipcode,
+                  'timezone_id'   => $request->timezone,
+                  'make_assignments_private' => $request->make_assignments_private
+              ]);
+
+              $loginUser->CompanyAdminProfile()->update(['is_company_profile_submitted' => true]);
+              $user    = User::find($loginUseId);
+              $user->update([
+                  'company_profile_id' => $companyAdminProfile->id
+              ]);
+            }
+
 
             session()->flash('success', 'Company Profile Updated Sucessfully.');
             return redirect()->route('company-admin.view');
         } catch (\Exception $e) {
-            session()->flash('error', 'Something went wrong, please try again later!');
+            echo "Error: " . $e->getMessage();
+            session()->flash('error', 'Something went wrong, please try again later!'.$e->getMessage());
             return redirect()->back();
         }
     }
 
     public function findInvestigator(Request $request)
     {
-
-        // dd($request->all());
         $states          = State::all();
         $languageOptions = Language::all();
         $filtered        = false;
@@ -84,8 +126,7 @@ class CompanyAdminController extends Controller
         $assignments     = Assignment::where('user_id', auth()->id())->paginate(10);
         $assignmentCount = Assignment::where('user_id', auth()->id())->count();
         $assignmentID = Assignment::where('id', $request->assignment_id)->pluck('assignment_id');
-        $assignmentUsers = AssignmentUser::where('assignment_id', )->pluck('user_id')->toArray();
-
+        $assignmentUsers = AssignmentUser::where('assignment_id',$request->assignment_id )->pluck('user_id')->toArray();
         if ($this->checkQueryAvailablity($request)) {
             $filtered      = true;
             $investigators = User::investigatorFiltered($request)
@@ -97,7 +138,7 @@ class CompanyAdminController extends Controller
             $html = view('company-admin.find-investigator-response', compact('investigators', 'assignmentCount','assignmentUsers'))->render();
             $login=route('login');
             if(isset($request->assignment_id) && (isset($request->fieldsUpdated) && $request->fieldsUpdated == '1')){
-                
+
                 $notificationData = [
                 'title'        => 'The assignment ID '.$assignmentID[0].' which you were invited for has been updated.',
                 'loginUrl'        => $login,
@@ -109,7 +150,7 @@ class CompanyAdminController extends Controller
                 $assignmentUsers = AssignmentUser::where(['assignment_id' => $request->assignment_id,'hired' => 0])->get();
                     foreach ($assignmentUsers as $item) {
                         $investigatorUser = User::find($item->user_id);
-                        
+
                         Mail::to($investigatorUser->email)->send(new JobUpdate($notificationData));
                     }
                 }
@@ -172,7 +213,8 @@ class CompanyAdminController extends Controller
     }
 
     public function companyResetPassword()
-    { //show reset password form for company
+    {
+      /** show reset password form for company **/
         return view('company-admin.reset-password');
     }
 
@@ -183,14 +225,7 @@ class CompanyAdminController extends Controller
      * @param array $data
      * @return \Illuminate\Contracts\Validation\Validator
      */
-    /* protected function validator(array $data)
-    {
-        return Validator::make($data, [
-            'password'   => ['required', 'string', 'min:10', 'confirmed', 'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{10,}$/'],
-        ], [
-            'password.regex' => 'Password is invalid, please follow the instructions below!',
-        ]);
-    } */
+
 
 
     public function companyPasswordUpdate(PasswordRequest $request)
@@ -207,14 +242,11 @@ class CompanyAdminController extends Controller
     public function companyProfile()
     {
         $user = auth()->user();
-        if (
-            (!$user->CompanyAdminProfile || !$user->CompanyAdminProfile->is_company_profile_submitted)
-            &&
-            (!$user?->companyAdmin?->company?->CompanyAdminProfile
-                || !$user?->companyAdmin?->company?->CompanyAdminProfile?->is_company_profile_submitted)
-        ) {
-            session()->flash('error', 'Please complete your profile first!');
-            return redirect()->route('company-admin.profile');
+        if (isset($user->company_profile_id) && $user->company_profile_id !== null) {
+
+        }else {
+          session()->flash('error', 'Please complete your profile first!');
+          return redirect()->route('company-admin.profile');
         }
         $user->load([
             'CompanyAdminProfile',
@@ -224,7 +256,7 @@ class CompanyAdminController extends Controller
         ]);
 
         $CompanyAdminProfile = $user->CompanyAdminProfile;
-        $parentProfile       = $user->companyAdmin?->company?->CompanyAdminProfile;
+        $parentProfile       = CompanyAdminProfile::find($user->company_profile_id);
 
         return view('company-admin.company-profile', compact(
             'CompanyAdminProfile',
@@ -236,6 +268,7 @@ class CompanyAdminController extends Controller
 
     public function saveInvestigatorSearchHistory(Request $request)
     {
+
         $availability = $request->availability.','.$request->start_time.' - '.$request->end_time;
         InvestigatorSearchHistory::updateOrCreate([
             'user_id'      => auth()->id(),
@@ -252,6 +285,8 @@ class CompanyAdminController extends Controller
             'misc'         => $request->misc,
             'license_id'   => $request->license,
             'distance'     => $request->distance,
+            'withInternalInvestigator'     => $request->withInternalInvestigator,
+            'withExternalInvestigator'     => $request->withExternalInvestigator,
             'languages'    => $request->get('languages'),
             'availability' => $availability
         ]);
@@ -280,6 +315,8 @@ class CompanyAdminController extends Controller
             'misc'         => $request->misc,
             'license_id'   => $request->license,
             'distance'     => $request->distance,
+            'withInternalInvestigator'     => $request->withInternalInvestigator,
+            'withExternalInvestigator'     => $request->withExternalInvestigator,
             'languages'    => $request->get('languages'),
             'availability' => $availability,
             'assignment_id'=> $request->assignment_id

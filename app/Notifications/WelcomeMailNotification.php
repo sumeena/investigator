@@ -13,13 +13,15 @@ class WelcomeMailNotification extends Notification
     use Queueable;
 
     public $user;
+    public $pass;
 
     /**
      * Create a new notification instance.
      */
-    public function __construct(User $user)
+    public function __construct(User $user, $pass = 0)
     {
         $this->user = $user;
+        $this->pass = $pass;
     }
 
     /**
@@ -38,9 +40,13 @@ class WelcomeMailNotification extends Notification
      */
     public function toMail(object $notifiable): MailMessage
     {
-      
+
+
+
         $mailData = [
             'name' => $this->user->first_name,
+            'email' => $this->user->email,
+            'password' => $this->pass,
         ];
 
         return (new MailMessage)->markdown(

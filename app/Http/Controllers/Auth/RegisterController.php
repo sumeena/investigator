@@ -110,11 +110,18 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
+
+        if($data['role'] == 3){
+          $investigatorType = "external";
+        }else{
+          $investigatorType = "";
+        }
         $userData = User::create([
             'first_name' => $data['first_name'],
             'last_name'  => $data['last_name'],
             'role'       => $data['role'],
             'email'      => $data['email'],
+            'investigatorType' => $investigatorType,
             'website'    => $this->checkIsCompanyAdminRole($data['role']) ? preg_replace('/^www\./', '', $data['website']) : null,
             'password'   => Hash::make($data['password']),
         ]);

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\CompanyAdmin;
+namespace App\Http\Controllers\Hm;
 
 use App\Http\Controllers\Controller;
 use App\Mail\UserCredentialMail;
@@ -60,11 +60,4 @@ class InvestigatorController extends Controller
             'languageOptions'
         ));
     }
-    public function checkInvestigatorType()
-    {
-        if(auth()->user()->investigatorType != 'internal'){
-          return "Contractor";
-        }
-    }
-
 }

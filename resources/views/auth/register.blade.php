@@ -231,22 +231,16 @@
                     errorBagTypes.push("length");
                 else
                     removeErrorSuccess("length");
-                    //removeItem(errorBagTypes, 'length');
-
                 // for atleast single number
                 if (numberValid)
                     errorBagTypes.push("number");
                 else
                     removeErrorSuccess("number");
-                    //removeItem(errorBagTypes, 'number');
-
                 // for lower case
                 if (lowercaseLetterValid)
                     errorBagTypes.push("lowercase");
                 else
                     removeErrorSuccess("lowercase");
-
-                    //removeItem(errorBagTypes, 'lowercase');
 
                 // for upper case
                 if (capitalLetterValid)
@@ -254,15 +248,13 @@
                 else
                     removeErrorSuccess("uppercase");
 
-                    //removeItem(errorBagTypes, 'uppercase');
-
                 // for special symbols
                 if (specialCharacterValid)
                     errorBagTypes.push("special_character");
                 else
                     removeErrorSuccess("special_character");
 
-                    //removeItem(errorBagTypes, 'special_character');
+
 
                 console.log("ERR", errorBagTypes)
                 if (errorBagTypes.length > 0){
@@ -276,7 +268,7 @@
                     $("#password-error").html(`<strong>Password is invalid, please follow the instructions below!</strong>`);
                     $("#password-error").removeClass("hide");
                     $(this).addClass("is-invalid");
-                    //$(document).find(".text-success").removeClass("text-success").addClass("text-danger")
+
                 } else {
                     $("#password-error").text("");
                     $("#password-error").addClass("hide");

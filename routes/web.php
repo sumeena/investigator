@@ -3,7 +3,9 @@
 use App\Http\Controllers\Admin\HmController as AdminHmController;
 use App\Http\Controllers\CompanyAdmin\AssignmentsController;
 use App\Http\Controllers\CompanyAdmin\CompanyUsersController;
+use App\Http\Controllers\CompanyAdmin\InternalInvestigatorsController;
 use App\Http\Controllers\Hm\AssignmentsController as HMAssignmentsController;
+use App\Http\Controllers\Hm\InvestigatorController as HMInvestigatorController;
 use App\Http\Controllers\Hm\HmController;
 use App\Http\Controllers\Investigator\CompanyAdminsController;
 use App\Http\Controllers\Investigator\InvitationsController;
@@ -58,6 +60,7 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['admin']],
 
     Route::group(['prefix' => 'hiring-managers', 'as' => 'hiring-managers.'], function () {
         Route::get('/', [AdminHmController::class, 'index'])->name('index');
+
         Route::get('/add', [AdminHmController::class, 'view'])->name('add');
         Route::post('/submit', [AdminHmController::class, 'store'])->name('submit');
         Route::get('/delete/{id}', [AdminHmController::class, 'delete'])->name('delete');
@@ -89,7 +92,7 @@ Route::group(['prefix' => 'company-admin', 'as' => 'company-admin.', 'middleware
     Route::get('/', [CompanyAdminController::class, 'index'])->name('index');
     Route::get('/profile', [CompanyAdminController::class, 'viewProfile'])->name('profile');
     Route::get('/find-investigators', [CompanyAdminController::class, 'findInvestigator'])->name('find_investigator');
-    
+
     Route::post('/find-investigators-histories', [CompanyAdminController::class, 'saveInvestigatorSearchHistory'])->name('save-investigator-search-history');
 
     Route::post('/assignment/save-notes', [AssignmentsController::class, 'saveAssignmentNotes'])->name('assignment.save-notes');
@@ -98,7 +101,7 @@ Route::group(['prefix' => 'company-admin', 'as' => 'company-admin.', 'middleware
     Route::post('/find-investigators-histories', [CompanyAdminController::class, 'saveInvestigatorSearchHistory'])->name('save-investigator-search-history');
 
     Route::post('/search-investigators-histories', [CompanyAdminController::class, 'updateInvestigatorSearchHistory'])->name('update-investigator-search-history');
-    
+
     Route::get('/assignments', [AssignmentsController::class, 'index'])->name('assignments');
     Route::get('/assignments/create', [AssignmentsController::class, 'create'])->name('assignments.create');
     Route::post('/assignments/invite', [AssignmentsController::class, 'invite'])->name('assignments.invite');
@@ -109,7 +112,7 @@ Route::group(['prefix' => 'company-admin', 'as' => 'company-admin.', 'middleware
 
     Route::get('/assignments/{assignment}/edit', [AssignmentsController::class, 'edit'])->name('assignments.edit');
     Route::get('/assignments/{assignment}/mark-as-complete', [AssignmentsController::class, 'markComplete'])->name('assignments.mark-as-complete');
-    
+
     Route::put('/assignments/{assignment}/update', [AssignmentsController::class, 'update'])->name('assignments.update');
     Route::delete('/assignments/{assignment}/destroy', [AssignmentsController::class, 'destroy'])->name('assignments.destroy');
 
@@ -139,11 +142,25 @@ Route::group(['prefix' => 'company-admin', 'as' => 'company-admin.', 'middleware
         Route::get('/', [CompanyUsersController::class, 'index'])->name('index');
         Route::get('/add', [CompanyUsersController::class, 'view'])->name('add');
         Route::post('/submit', [CompanyUsersController::class, 'store'])->name('submit');
+        Route::post('/update', [CompanyUsersController::class, 'update'])->name('update');
         Route::get('/delete/{id}', [CompanyUsersController::class, 'delete'])->name('delete');
         Route::get('/edit/{id}', [CompanyUsersController::class, 'edit'])->name('edit');
         Route::get('/reset-password/{id}', [CompanyUsersController::class, 'resetPassword'])
             ->name('reset-password');
         Route::post('/update-password', [CompanyUsersController::class, 'passwordUpdate'])
+            ->name('update-password');
+    });
+
+    Route::group(['prefix' => 'internal-investigators', 'as' => 'internal-investigators.'], function () {
+        Route::get('/', [InternalInvestigatorsController::class, 'index'])->name('index');
+
+        Route::get('/add', [InternalInvestigatorsController::class, 'add'])->name('add');
+        Route::post('/submit', [InternalInvestigatorsController::class, 'store'])->name('submit');
+        Route::get('/delete/{id}', [InternalInvestigatorsController::class, 'delete'])->name('delete');
+        Route::get('/edit/{id}', [InternalInvestigatorsController::class, 'edit'])->name('edit');
+        Route::get('/reset-password/{id}', [InternalInvestigatorsController::class, 'resetPassword'])
+            ->name('reset-password');
+        Route::post('/update-password', [InternalInvestigatorsController::class, 'passwordUpdate'])
             ->name('update-password');
     });
 
@@ -161,12 +178,22 @@ Route::group(['prefix' => 'hm', 'as' => 'hm.', 'middleware' => ['hm']], function
     Route::get('/company-users', [HmController::class, 'companyUsers'])->name('company-users.index');
     Route::get('/profile', [HmController::class, 'viewProfile'])->name('profile');
     Route::get('/find-investigators', [CompanyAdminController::class, 'findInvestigator'])->name('find_investigator');
-    Route::post('/find-investigators-histories', [CompanyAdminController::class, 'saveInvestigatorSearchHistory'])
-        ->name('save-investigator-search-history');
+    Route::post('/find-investigators-histories', [CompanyAdminController::class, 'saveInvestigatorSearchHistory'])->name('save-investigator-search-history');
+
+    Route::post('/search-investigators-histories', [CompanyAdminController::class, 'updateInvestigatorSearchHistory'])->name('update-investigator-search-history');
+
+    Route::get('/assignments-list', [HMAssignmentsController::class, 'assignments_list'])->name('assignments-list');
     Route::get('/assignments', [HMAssignmentsController::class, 'index'])->name('assignments');
+
     Route::get('/assignments/create', [HMAssignmentsController::class, 'create'])->name('assignments.create');
     Route::post('/assignments/invite', [HMAssignmentsController::class, 'invite'])->name('assignments.invite');
     Route::post('/assignments/store', [HMAssignmentsController::class, 'store'])->name('assignments.store');
+
+    Route::get('/assignment/{assignment}/show', [HMAssignmentsController::class, 'show'])->name('assignment.show');
+
+    Route::get('/assignment/fetchAssignmentUser', [HMAssignmentsController::class, 'getAssignmentUser'])->name('assignment.assignment-user.show');
+    Route::post('/assignment/hire-now', [HMAssignmentsController::class, 'hireInvestigator'])->name('assignment.hire-now');
+
     Route::get('/assignments/{assignment}/edit', [HMAssignmentsController::class, 'edit'])->name('assignments.edit');
     Route::put('/assignments/{assignment}/update', [HMAssignmentsController::class, 'update'])->name('assignments.update');
     Route::delete('/assignments/{assignment}/destroy', [HMAssignmentsController::class, 'destroy'])->name('assignments.destroy');
@@ -180,6 +207,12 @@ Route::group(['prefix' => 'hm', 'as' => 'hm.', 'middleware' => ['hm']], function
     Route::post('/my-profile/update', [HmController::class, 'hmProfileUpdate'])
         ->name('profile.update');
     Route::get('/view-profile', [HmController::class, 'companyProfile'])->name('view');
+    Route::group(['prefix' => 'internal-investigators', 'as' => 'internal-investigators.'], function () {
+        Route::get('/', [InternalInvestigatorsController::class, 'index'])->name('index');
+    });
+    Route::group(['prefix' => 'investigators', 'as' => 'investigators.'], function () {
+        Route::get('/{id}/view', [HMInvestigatorController::class, 'profileView'])->name('view');
+    });
 });
 
 

@@ -10,18 +10,24 @@
             @php
             $action = route('company-admin.find_investigator');
             $assignmentsAction = route('company-admin.assignments');
+            $assignmentsListAction = route('company-admin.assignments-list');
             $assignmentCreateAction = route('company-admin.assignments.create');
             $assignmentStoreAction = route('company-admin.assignments.store');
-            $assignmentEditAction = '/company-admin/assignments/';
+            $assignmentEditAction = 'company-admin.assignments.edit';
+            $assignmentsDeleteAction = route('company-admin.assignments.destroy', ['assignment' => 'assignmentIdPlaceholder']);
+            $assignmentShowAction = 'company-admin.assignment.show';
             $assignmentInviteAction = route('company-admin.assignments.invite');
             $assignmentSelect2Action = route('company-admin.select2-assignments');
             $searchStoreAction = route('company-admin.save-investigator-search-history');
-            if (request()->routeIs('hm.find_investigator')) {
+            if (request()->routeIs('hm.assignments-list')) {
             $action = route('hm.find_investigator');
             $assignmentsAction = route('hm.assignments');
+            $assignmentsListAction = route('hm.assignments-list');
+            $assignmentsDeleteAction = route('hm.assignments.destroy', ['assignment' => 'assignmentIdPlaceholder']);
             $assignmentCreateAction = route('hm.assignments.create');
+            $assignmentEditAction = 'hm.assignments.edit';
+            $assignmentShowAction = 'hm.assignment.show';
             $assignmentStoreAction = route('hm.assignments.store');
-            $assignmentEditAction = '/hm/assignments/';
             $assignmentInviteAction = route('hm.assignments.invite');
             $assignmentSelect2Action = route('hm.select2-assignments');
             $searchStoreAction = route('hm.save-investigator-search-history');
@@ -34,24 +40,58 @@
                         <div class="card-header">
                             <div class="row">
                                 <div class="col">
-                                    <h5 class="">
-                                        Assignments
-
-                                        <!-- <a href="http://127.0.0.1:8000/company-admin/profile" class="btn btn-outline-primary btn-sm text-white float-end mt-n1">
-                                                Edit Company Profile
-                                            </a> -->
-                                    </h5>
+                                    <h5 class="">Assignments</h5>
                                 </div>
                             </div>
                         </div>
                         <div class="card-body">
                             <div class="table-responsive text-nowrap" id="assignment-container">
+                              <form method="get" action="{{ $assignmentsListAction }}" id="findAssignmentForm">
+
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="mb-1">
+                                            <div class="card">
+                                                <h5 class="card-header pt-2 pb-0">Search</h5>
+                                                <div class="table-responsive text-nowrap">
+                                                    <table class="table hr_contact">
+                                                        <tbody>
+                                                        <tr>
+                                                            <td>
+                                                                <input type="text" class="form-control"
+                                                                       name="searchby" placeholder="Search by Assignment ID OR CLIENT ID OR CREATED BY"
+                                                                       value="<?php if(isset($_GET['searchby'])){ echo $_GET['searchby'];};?>"
+                                                                       id="searchby">
+                                                            </td>
+                                                            <td>
+                                                                <select class="form-select" name="status-select"
+                                                                        id="status-select">
+                                                                    <option value="">Select Status</option>
+                                                                        <option value="OPEN" <?php  if(isset($_GET['status-select']) && $_GET['status-select'] =="OPEN"){ echo "selected"; };?> >OPEN </option>
+                                                                        <option value="INVITED" <?php  if(isset($_GET['status-select']) && $_GET['status-select'] =="INVITED"){ echo "selected"; };?> >INVITED </option>
+                                                                        <option value="ASSIGNED" <?php  if(isset($_GET['status-select']) && $_GET['status-select'] =="ASSIGNED"){ echo "selected"; };?> >ASSIGNED </option>
+                                                                </select>
+                                                              </td>
+                                                              <td>
+                                                                  <input type="submit" value="Search" class="btn btn-primary"/>
+                                                                </td>
+                                                          </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                </form>
                                 <table class="table" id="assignment-table">
                                     <thead>
                                         <tr>
                                             <th>#</th>
                                             <th>Assignment ID</th>
                                             <th>Client ID</th>
+                                            <th>Created By</th>
                                             <th>Invites Sent</th>
                                             <th>Status</th>
                                             <th>Date Created</th>
@@ -64,6 +104,7 @@
                                             <td>{{ $assignments->firstItem() + $loop->index }}</td>
                                             <td>{{ Str::upper($assignment->assignment_id) }}</td>
                                             <td>{{ Str::upper($assignment->client_id) }}</td>
+                                            <td>{{ @$assignment->author->first_name }} {{ @$assignment->author->last_name }}</td>
                                             <td>{{ Str::upper($assignment->users_count) }}</td>
                                             <td>{{ Str::upper($assignment->status) }}</td>
                                             <td>
@@ -71,18 +112,35 @@
                                             </td>
 
                                             <td class="text-center">
-                                                <a href="{{ route('company-admin.assignments.edit', [$assignment->id]) }}"><i class="fas fa-pencil"></i></a> |
+                                                @php
+                                                $pointer="pointer-events: none";
+                                                if($assignment->status == 'OPEN' || $assignment->status == 'INVITED')
+                                                    $pointer="";
+                                                @endphp
+                                                @if($assignment->status == 'OPEN' || $assignment->status == 'INVITED')
+                                                  <a style="@php echo $pointer; @endphp" href="{{ route($assignmentEditAction, [$assignment->id]) }}"><i class="fas fa-pencil"></i></a> |
+                                                @else
+                                                  <a style="@php echo $pointer; @endphp" href="javascript:void(0)"><i class="fas fa-pencil"></i></a> |
+                                                @endif
 
-                                                <a href="{{ route('company-admin.assignment.show', [$assignment->id]) }}"><i class="fas fa-eye"></i></a> |
+
+                                                <a href="{{ route($assignmentShowAction, [$assignment->id]) }}"><i class="fas fa-eye"></i></a> |
 
                                                 @php
                                                 $pointer="pointer-events: none";
                                                 if($assignment->status == 'OPEN')
                                                     $pointer="";
                                                 @endphp
-                                                <a style="@php echo $pointer; @endphp" href="javascript:void(0)" class="deleteAssignmentBtn" data-id="{{ $assignment->id }}">
+                                                @if($assignment->status == 'OPEN')
+                                                <a  href="javascript:void(0)" class="deleteAssignmentBtn" data-id="{{ $assignment->id }}">
                                                     <i class="fas fa-trash"></i>
-                                                </a> | 
+                                                </a> |
+                                                @else
+                                                <a style="@php echo $pointer; @endphp" href="javascript:void(0)">
+                                                    <i class="fas fa-trash" ></i>
+                                                </a> |
+                                                @endif
+
                                                 <a class="callCloneAssignmentModal" data-assignment-id="{{ $assignment->id }}" data-assignment-url="{{ $assignmentCreateAction }}" data-client-id="{{ $assignment->client_id }}" href="javascript:void(0)"><i class="fa-solid fa-clone"></i></a>
                                             </td>
                                         </tr>
@@ -134,7 +192,7 @@
                             Assignment ID
                         </label>
                         <input type="hidden" name="source_assignment_id" class="form-control" id="sourceAssignmentId" placeholder="Enter assignment ID" readonly required>
-                        
+
                         <input type="text" name="assignment_id" class="form-control" id="assignmentId" placeholder="Enter assignment ID" readonly required>
                     </div>
                     <div class="form-group">
@@ -150,123 +208,6 @@
                     </button>
                     <button type="submit" class="btn btn-primary">
                         Save
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-
-{{-- Create Assignment Modal --}}
-<div class="modal fade" id="assignmentCreateModal" tabindex="-1" aria-labelledby="assignmentCreateModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="assignmentCreateModalLabel">Create Assignment</h5>
-                <button type="button" class="close btn btn-danger" data-dismiss="modal" aria-label="Close" id="createModalCloseIconBtn">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <form id="assignmentCreateForm">
-                <div class="modal-body">
-                    <div class="form-group mb-3">
-                        <label for="assignment-id">
-                            Assignment ID
-                        </label>
-                        <input type="text" name="assignment_id" class="form-control" id="assignment-id" placeholder="Enter assignment ID" readonly required>
-                    </div>
-                    <div class="form-group">
-                        <label for="client-id">
-                            Client ID
-                        </label>
-                        <input type="text" name="client_id" class="form-control" id="client-id" placeholder="Enter client ID" required>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal" id="createModalCloseBtn">
-                        Close
-                    </button>
-                    <button type="submit" class="btn btn-primary">
-                        Save
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-
-{{-- No Assignment Create Assignment Modal --}}
-<div class="modal fade" id="noAssignmentCreateModal" tabindex="-1" aria-labelledby="noAssignmentCreateModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="noAssignmentCreateModalLabel">Create Assignment</h5>
-                <button type="button" class="close btn btn-danger" data-dismiss="modal" aria-label="Close" id="noCreateModalCloseIconBtn">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <form id="noAssignmentCreateForm">
-                <div class="modal-body">
-                    <div class="form-group mb-3">
-                        <label for="no-assignment-id">
-                            Assignment ID
-                        </label>
-                        <input type="text" name="assignment_id" class="form-control" id="no-assignment-id" placeholder="Enter assignment ID" readonly required>
-                    </div>
-                    <div class="form-group">
-                        <label for="no-client-id">
-                            Client ID
-                        </label>
-                        <input type="text" name="client_id" class="form-control" id="no-client-id" placeholder="Enter client ID" required>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal" id="noCreateModalCloseBtn">
-                        Close
-                    </button>
-                    <button type="submit" class="btn btn-primary">
-                        Save
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-{{-- Edit Assignment Modal --}}
-<div class="modal fade" id="assignmentEditModal" tabindex="-1" aria-labelledby="assignmentEditModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="assignmentEditModalLabel">Edit Assignment</h5>
-                <button type="button" class="close btn btn-danger" data-dismiss="modal" aria-label="Close" id="editModalCloseIconBtn">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <form id="assignmentEditForm">
-                <div class="modal-body">
-                    <input type="hidden" name="id" id="assignment-edit-id">
-                    <div class="form-group mb-3">
-                        <label for="edit-assignment-id">
-                            Assignment ID
-                        </label>
-                        <input type="text" name="assignment_id" class="form-control" id="edit-assignment-id" placeholder="Enter assignment ID" readonly required>
-                    </div>
-                    <div class="form-group">
-                        <label for="edit-client-id">
-                            Client ID
-                        </label>
-                        <input type="text" name="client_id" class="form-control" id="edit-client-id" placeholder="Enter client ID" required>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal" id="editModalCloseBtn">
-                        Close
-                    </button>
-                    <button type="submit" class="btn btn-primary">
-                        Update
                     </button>
                 </div>
             </form>
@@ -369,86 +310,6 @@
         });
     }
 
-    function saveSearchHistoryData() {
-        // input selector
-        const country = $('#country');
-        const street = $('#autocomplete');
-        const city = $('#locality');
-        const state = $('#administrative_area_level_1');
-        const zip = $('#postal_code');
-        const surv = $('#surveillance');
-        const stat = $('#statements');
-        const misc = $('#misc');
-        const lang = $('#language-select');
-        const license = $('#license-select');
-        const lat = $('#lat');
-        const lng = $('#lng');
-
-
-        // values
-        const countryValue = country.val();
-        const streetValue = street.val();
-        const cityValue = city.val();
-        const stateValue = state.val();
-        const zipValue = zip.val();
-        const survValue = surv.is(':checked');
-        const statValue = stat.is(':checked');
-        const miscValue = misc.is(':checked');
-        const languages = lang.val();
-        const licenseValue = license.val();
-        const latValue = lat.val();
-        const lngValue = lng.val();
-
-        const data = {
-            country: countryValue,
-            street: streetValue,
-            city: cityValue,
-            state: stateValue,
-            zipcode: zipValue
-        };
-
-        if (latValue && lngValue) {
-            data['lat'] = latValue;
-            data['lng'] = lngValue;
-        }
-
-        if (statValue) {
-            data['statements'] = 'statements';
-        }
-
-        if (miscValue) {
-            data['misc'] = 'misc';
-        }
-
-        if (survValue) {
-            data['surveillance'] = 'surveillance';
-        }
-
-        if (languages && languages.length) {
-            data['languages'] = languages;
-        }
-
-        if (licenseValue) {
-            data['license'] = licenseValue;
-        }
-
-        let success = false;
-
-        $.ajax({
-            url: '{{ $searchStoreAction }}',
-            type: 'POST',
-            data: data,
-            success: function(response) {
-                // console.log('searchHistoryStore', response);
-            },
-            error: function(xhr) {
-                console.log(xhr.responseText);
-                success = false;
-            }
-        });
-
-        return success;
-    }
 
     $(document).ready(function() {
         $('#language-select').select2({
@@ -456,113 +317,6 @@
             allowClear: true,
             closeOnSelect: false,
             width: '100%',
-        });
-
-        const form = $('#find-investigator-form');
-        form.on('submit', function(e) {
-            e.preventDefault();
-
-            // input selector
-            const zip = $('#postal_code');
-            const surv = $('#surveillance');
-            const stat = $('#statements');
-            const misc = $('#misc');
-            const lang = $('#language-select');
-            const license = $('#license-select');
-            const lat = $('#lat');
-            const lng = $('#lng');
-            const availability = $('#availability');
-
-
-            // values
-            const zipValue = zip.val();
-            const survValue = surv.is(':checked');
-            const statValue = stat.is(':checked');
-            const miscValue = misc.is(':checked');
-            const languages = lang.val();
-            const licenseValue = license.val();
-            const latValue = lat.val();
-            const lngValue = lng.val();
-            const availabilityValue = availability.val();
-
-            const data = {
-                page: 1
-            };
-
-            // error selector
-            const zipError = $('#zipcode-error');
-            const serviceTypeError = $('#service-type-error');
-            let hasError = false;
-
-            // Hide error
-            zipError.addClass('d-none');
-            serviceTypeError.addClass('d-none');
-
-            // Remove error class
-            zip.removeClass('is-invalid');
-
-
-            if (!zipValue) {
-                // Show error
-                zipError.removeClass('d-none');
-
-                // Add error class
-                zip.addClass('is-invalid');
-
-                hasError = true;
-            }
-
-            if (!surv.is(':checked') && !stat.is(':checked') && !misc.is(':checked')) {
-                // Show error
-                serviceTypeError.removeClass('d-none');
-                hasError = true;
-            }
-
-            if (hasError) {
-                return false;
-            }
-
-            // Hide error
-            zipError.addClass('d-none');
-            serviceTypeError.addClass('d-none');
-
-            // Remove error class
-            zip.removeClass('is-invalid');
-
-            // hide other errors
-            $('#zipcode-lat-lng-error').addClass('d-none');
-            $('#zipcode-lat-lng-loading').addClass('d-none');
-
-            if (latValue && lngValue) {
-                data['lat'] = latValue;
-                data['lng'] = lngValue;
-            }
-
-            if (statValue) {
-                data['statements'] = 'statements';
-            }
-
-            if (miscValue) {
-                data['misc'] = 'misc';
-            }
-
-            if (survValue) {
-                data['surveillance'] = 'surveillance';
-            }
-
-            if (languages && languages.length) {
-                data['languages'] = languages;
-            }
-
-            if (licenseValue) {
-                data['license'] = licenseValue;
-            }
-
-            if (availabilityValue) {
-                data['availability'] = availabilityValue;
-            }
-
-            fetchData(data);
         });
 
         $('#postal_code').on('input', function() {
@@ -644,8 +398,6 @@
 
             fetchAssignmentData(data);
         });
-
-
         $('button[data-toggle="pill"]').on('shown.bs.tab', function(event) {
             event.target // newly activated tab
             if (event.target.innerText === 'Assignments') {
@@ -683,41 +435,6 @@
                 }
             });
         });
-
-        // Create Assignment
-        $('#assignmentCreateForm').on('submit', function(e) {
-            e.preventDefault();
-
-            const assignmentId = $('#assignment-id');
-            const clientId = $('#client-id');
-
-            const assignmentIdVal = assignmentId.val();
-            const clientIdVal = clientId.val();
-
-            const data = {
-                assignment_id: assignmentIdVal,
-                client_id: clientIdVal
-            };
-
-
-            $.ajax({
-                url: '{{ $assignmentStoreAction }}',
-                type: 'POST',
-                data: data,
-                success: function(response) {
-                    $('#assignment-flash').text(response.message);
-                    $('#assignment-flash').show();
-                    fetchAssignmentData({
-                        page: 1
-                    });
-                    $('#assignmentCreateModal').modal('hide');
-                },
-                error: function(xhr) {
-                    console.log(xhr.responseText);
-                }
-            });
-        });
-
         $('#editModalCloseBtn').on('click', function() {
             $('#assignmentEditModal').modal('hide');
         });
@@ -743,137 +460,19 @@
         $('#noCreateModalCloseIconBtn').on('click', function() {
             $('#noAssignmentCreateModal').modal('hide');
         });
-
-        // Load Assignment Create Modal Data
-        $('#noAssignmentCreateModal').on('show.bs.modal', function(event) {
-            const modal = $(this)
-
-            $.ajax({
-                url: '{{ $assignmentCreateAction }}',
-                type: 'GET',
-                success: function(response) {
-                    modal.find('#no-assignment-id').val(response.data.assignment_id);
-                },
-                error: function(xhr) {
-                    console.log(xhr.responseText);
-                }
-            });
-        });
-
-        // Create Assignment from no assignment
-        $('#noAssignmentCreateForm').on('submit', function(e) {
-            e.preventDefault();
-
-            const assignmentId = $('#no-assignment-id');
-            const clientId = $('#no-client-id');
-
-            const assignmentIdVal = assignmentId.val();
-            const clientIdVal = clientId.val();
-
-            const data = {
-                assignment_id: assignmentIdVal,
-                client_id: clientIdVal
-            };
-
-            $.ajax({
-                url: '{{ $assignmentStoreAction }}',
-                type: 'POST',
-                data: data,
-                success: function(response) {
-                    $('#assignment-flash').text(response.message);
-                    $('#assignment-flash').show();
-                    fetchAssignmentData({
-                        page: 1
-                    });
-                    $('#noAssignmentCreateModal').modal('hide');
-                    $('#inviteModal').modal('show');
-                    $('.inviteSendBtn').each(function() {
-                        let inviteBtn = $(this);
-                        let hasAssignment = !!inviteBtn.data('assignment-count');
-
-                        if (!hasAssignment) {
-                            inviteBtn.data('assignment-count', 1);
-                        }
-                    });
-                    $('#jobs').select2({
-                        placeholder: 'Select Assignments',
-                        allowClear: true,
-                        closeOnSelect: false,
-                        width: '100%',
-                        dropdownParent: $("#inviteModal"),
-                        ajax: {
-                            url: '{{ $assignmentSelect2Action }}'
-                        }
-                    });
-
-                },
-                error: function(xhr) {
-                    console.log(xhr.responseText);
-                }
-            });
-        });
-
-        // Edit Assignment
-        $(document).on('click', '.editAssignmentBtn', function() {
-            const editBtn = $(this);
-            const modal = $('#assignmentEditModal');
-
-            $.ajax({
-                url: '{{ $assignmentEditAction }}' + editBtn.data('id') + '/edit',
-                type: 'GET',
-                success: function(response) {
-                    modal.find('#assignment-edit-id').val(response.data.id);
-                    modal.find('#edit-assignment-id').val(response.data.assignment_id);
-                    modal.find('#edit-client-id').val(response.data.client_id);
-                    modal.modal('show');
-                },
-                error: function(xhr) {
-                    console.log(xhr.responseText);
-                }
-            });
-        });
-
-        $('#assignmentEditModal').on('submit', function(e) {
-            e.preventDefault();
-
-            const assignmentId = $('#assignment-edit-id');
-            const clientId = $('#edit-client-id');
-
-            const assignmentIdVal = assignmentId.val();
-            const clientIdVal = clientId.val();
-
-            const data = {
-                client_id: clientIdVal
-            };
-
-
-            $.ajax({
-                url: '{{ $assignmentEditAction }}' + assignmentIdVal + '/update',
-                type: 'PUT',
-                data: data,
-                success: function(response) {
-                    $('#assignment-flash').text(response.message);
-                    $('#assignment-flash').show();
-                    fetchAssignmentData({
-                        page: 1
-                    });
-                    $('#assignmentEditModal').modal('hide');
-                },
-                error: function(xhr) {
-                    console.log(xhr.responseText);
-                }
-            });
-        });
-
         // Delete Assignment
         $(document).on('click', '.deleteAssignmentBtn', function() {
             const deleteBtn = $(this);
 
             // confirm prompt
             if (confirm('Are you sure you want to delete this assignment?')) {
+            var assignmentId =  deleteBtn.data("id");
                 $.ajax({
-                    url: '{{ $assignmentEditAction }}' + deleteBtn.data('id') + '/delete',
-                    type: 'POST',
+                    url: '{{ $assignmentsDeleteAction }}'.replace('assignmentIdPlaceholder', assignmentId),
+                    type: 'DELETE', // Use DELETE method
+                    data: {
+                        "_token": "{{ csrf_token() }}"
+                    },
                     success: function(response) {
                         $('#assignment-flash').text(response.message);
                         $('#assignment-flash').show();
@@ -887,8 +486,6 @@
                 });
             }
         });
-
-
         // Send Invitation
         $('#inviteModalCloseBtn').on('click', function() {
             $('#inviteModal').modal('hide');
@@ -898,72 +495,7 @@
             $('#inviteModal').modal('hide');
         });
 
-        $(document).on('click', '.inviteSendBtn', function() {
-            const inviteBtn = $(this);
-            const hasAssignments = !!inviteBtn.data('assignment-count');
-            const modal = $('#inviteModal');
-            const noAssignmentModal = $('#noAssignmentModal');
-            modal.find('#invite-investigator-id').val(inviteBtn.data('investigator-id'));
 
-            if (!hasAssignments) {
-                noAssignmentModal.modal('show');
-                return;
-            }
-
-            $('#jobs').select2({
-                placeholder: 'Select Assignments',
-                allowClear: true,
-                closeOnSelect: false,
-                width: '100%',
-                dropdownParent: $("#inviteModal"),
-                ajax: {
-                    url: '{{ $assignmentSelect2Action }}'
-                }
-            });
-
-
-            modal.modal('show');
-        });
-
-        $('#inviteForm').on('submit', function(e) {
-            e.preventDefault();
-
-            const investigatorId = $('#invite-investigator-id');
-            const jobs = $('#jobs');
-            const inviteFormSubmitBtn = $('#inviteFormSubmitBtn');
-
-            const investigatorIdVal = investigatorId.val();
-            const jobsVal = jobs.val();
-
-            const data = {
-                investigator_id: investigatorIdVal,
-                assignments: jobsVal
-            };
-
-            inviteFormSubmitBtn.attr('disabled', true);
-            inviteFormSubmitBtn.html(`<i class="fa fa-spinner fa-pulse"></i>
-                            <span class="sr-only">Loading...</span>
-                            Sending...`);
-
-            $.ajax({
-                url: '{{ $assignmentInviteAction }}',
-                type: 'POST',
-                data: data,
-                success: function(response) {
-                    $('#assignment-flash').text(response.message);
-                    $('#assignment-flash').show();
-                    $('#inviteModal').modal('hide');
-                    saveSearchHistoryData();
-                },
-                error: function(xhr) {
-                    console.log(xhr.responseText);
-                },
-                complete: function() {
-                    inviteFormSubmitBtn.attr('disabled', false);
-                    inviteFormSubmitBtn.html('Send');
-                }
-            });
-        });
     });
 </script>
 @endpush

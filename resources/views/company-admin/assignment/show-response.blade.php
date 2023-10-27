@@ -56,11 +56,7 @@
     @endforelse
     @endif
 
-    <!-- <div class="d-flex flex-row justify-content-end mb-4">
-        <div class="p-3 me-3 border send-msg">
-            <p class="small mb-0">Thank you, I really like your product.</p>
-        </div>
-    </div> -->
+
 
     <div class="row mb-3 send-msg-box">
         @php
@@ -87,7 +83,6 @@
             <button type="button" {{$disabled}} data-no-attachment-action="/company-admin/assignment/send-user-msg" data-attachment-action="/company-admin/assignment/send-attachment" class="btn btn-primary btn-rounded btn-icon mt-2 btn-sm sendMessageFromAssignment">
                 <i class="fa-solid fa-paper-plane"></i>
             </button>
-            <!-- <input class="form-control bg-info text-white border-0 p-2" type="button" name="" value="Start Chat"> -->
-            <!-- </div> -->
+            
         </div>
     </div>

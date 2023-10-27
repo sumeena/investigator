@@ -6,6 +6,20 @@
         <div class="card col-xs-12 assignmentMain p-0">
             <div class="row m-0">
                 @php
+                $viewProfile = '/company-admin/';
+                if (request()->routeIs('hm.assignment.show')) {
+                $action = route('hm.find_investigator');
+                $assignmentsAction = route('hm.assignments');
+                $assignmentCreateAction = route('hm.assignments.create');
+                $assignmentEditAction = 'hm.assignments.edit';
+                $assignmentShowAction = 'hm.assignment.show';
+                $assignmentStoreAction = route('hm.assignments.store');
+                $assignmentInviteAction = route('hm.assignments.invite');
+                $assignmentSelect2Action = route('hm.select2-assignments');
+                $searchStoreAction = route('hm.save-investigator-search-history');
+                $viewProfile = '/hm/';
+                }
+
                 $usersCount = count($assignment->users);
                 @endphp
 
@@ -32,15 +46,7 @@
                                     Assignment ID: {{ @Str::upper($assignment->assignment_id) }}
                                 </h5>
                             </div>
-                            <!-- <div class="col-md-3 assignment-col">
-                                    <a href="javascript:void(0)" class="hire-user investigator-view-profile-link"></a>
-                                </div> -->
 
-
-                            <!-- <a href="/investigator/profile" class="investigator-view-profile-link">
-                                <button type="button">Edit Investigator Profile</button>
-                            </a> -->
-                            <!-- </div> -->
                         </div>
                         <div class="row mx-0 py-1 px-3">
                             <div class="col-md-4">
@@ -207,7 +213,7 @@
         <div class="card col-xs-12 assignmentMain p-0">
                         @if($usersCount > 0)
                         <div class="row m-0">
-                            
+
                             <div class="col-md-2 pad-a-0">
                                 <div class="card profileData">
                                     @foreach($assignment->users as $user)
@@ -220,7 +226,7 @@
                                     </ul>
                                 </div>
                             </div>
-                            
+
 
                             <div class=" {{ $usersCount > 0 ? 'col-md-10' : 'col-md-12' }} py-3">
                                 @if(session('success'))
@@ -235,7 +241,7 @@
                                         <div class="col col-md-12">
                                             <h5 class="">
                                                 Messages
-                                                <a href="" target="_blank" class="btn btn-outline-light btn-md m-l-20 view-investigator-profile">View Profile</a>
+                                                <a href="" data-role="{{$viewProfile}}" target="_blank" class="btn btn-outline-light btn-md m-l-20 view-investigator-profile">View Profile</a>
 
                                                 <a href="javascript:void(0)" class="btn btn-outline-light btn-md m-l-20 hire-user btn-hire-now"></a>
 
@@ -265,22 +271,14 @@
                     <div class="modal-dialog" role="document" style="width:300px; height:200px">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <!-- w-100 class so that header
-                div covers 100% width of parent div -->
+
                                 <h5 class="modal-title w-100 text-center" id="exampleModalLabel">
                                     Attachment
                                 </h5>
-                                <!-- <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">
-                            ×
-                        </span>
-                    </button> -->
+
                             </div>
                             <!--Modal body with image-->
-                            <div class="modal-body text-center attachment-src">
-
-                                <!-- <img class="attachment-src" src="gfg.png" /> -->
-                            </div>
+                            <div class="modal-body text-center attachment-src"></div>
                             <div class="modal-footer" style="margin: 0 auto;">
                                 <!-- <small class="error">jpg, jpeg, png, docx, ppt are allowed</small> -->
                                 <button type="button" class="btn btn-primary send-attachment" data-dismiss="modal"> <i class="fa-solid fa-paper-plane"></i> </button>
