@@ -8,14 +8,30 @@
         </a>
     </div>
 
-    <div class="navbar-nav-right d-flex align-items-center" id="navbar-collapse">
+    <div class="navbar-nav-right d-flex align-items-center " id="navbar-collapse">
         <ul class="navbar-nav flex-row align-items-center ms-auto">
             <!-- Notification -->
             @if(auth()->user()->userRole->role == 'investigator')
                 <li class="nav-item" style="margin-right:20px; font-size: 20px;">
                     <a class="nav-link" href="{{ route('investigator.notifications.index') }}">
                         <i class="fas fa-bell"></i>
-                        <span class="badge bg-primary" style="font-size: 12px;">{{ getNotificationsCount() }}</span>
+                        <span class="badge bg-primary" rel='{{auth()->user()->userRole->role}}' style="font-size: 12px;">{{ getNotificationsCount() }}</span>
+                    </a>
+                </li>
+            @endif
+            @if(auth()->user()->userRole->role == 'company-admin')
+                <li class="nav-item" style="margin-right:20px; font-size: 20px;">
+                    <a class="nav-link" href="/company-admin/notification">
+                        <i class="fas fa-bell"></i>
+                        <span class="badge bg-primary" rel='{{auth()->user()->userRole->role}}' style="font-size: 12px;">{{ getNotificationsCount() }}</span>
+                    </a>
+                </li>
+            @endif
+            @if(auth()->user()->userRole->role == 'hiring-manager')
+                <li class="nav-item" style="margin-right:20px; font-size: 20px;">
+                    <a class="nav-link" href="/hm/notification">
+                        <i class="fas fa-bell"></i>
+                        <span class="badge bg-primary" rel='{{auth()->user()->userRole->role}}' style="font-size: 12px;">{{ getNotificationsCount() }}</span>
                     </a>
                 </li>
             @endif

@@ -108,6 +108,12 @@
                         <div data-i18n="Analytics">Internal Investigators</div>
                     </a>
                 </li>
+                <li class="menu-item {{ request()->routeIs('company-admin.settings') ? 'active' : '' }}">
+                    <a href="{{ route('company-admin.settings.index') }}" class="menu-link">
+                        <i class="bx bxs-card me-2"></i>
+                        <div data-i18n="Analytics">Settings</div>
+                    </a>
+                </li>
 
             @else
                 <li class="menu-item {{ request()->routeIs('company-admin.profile') ? 'active' : '' }}">
@@ -162,8 +168,14 @@
                     </a>
                 </li>
             @endif
-
+            <li class="menu-item {{ request()->routeIs('investigator.investigatorsettings') ? 'active' : '' }}">
+                <a href="{{ route('investigator.index') }}" class="menu-link">
+                    <i class="bx bxs-card me-2"></i>
+                    <div data-i18n="Analytics">Settings</div>
+                </a>
+            </li>
         @endif
+
 
         @if(auth()->user()->userRole && auth()->user()->userRole->role == 'hiring-manager')
             <li class="menu-item {{ request()->routeIs('hm.view') ? 'active' : '' }}">
@@ -196,6 +208,12 @@
                 <a href="{{ route('hm.company-users.index') }}" class="menu-link">
                     <i class="bx bx-user me-2"></i>
                     <div data-i18n="Analytics">Company Users</div>
+                </a>
+            </li>
+            <li class="menu-item {{ request()->routeIs('hm.settings') ? 'active' : '' }}">
+                <a href="{{ route('hm.settings.index') }}" class="menu-link">
+                    <i class="bx bxs-card me-2"></i>
+                    <div data-i18n="Analytics">Settings</div>
                 </a>
             </li>
         @endif

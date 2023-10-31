@@ -75,6 +75,7 @@
         </div>
         <div class="col-md-1 pad-a-0 text-center">
             <!-- <div class="start-chat-btn position-relative"> -->
+            @if(auth()->user()->userRole && auth()->user()->userRole->role == 'company-admin')
             <input type="file" data-chat-id="{{$chat[0]}}" name="attachment" id="attachment" class="attachment">
             <button type="button" class="btn btn-warning btn-rounded btn-icon mt-2 btn-sm attachment-button" {{$disabled}} id="attachment-button">
                 <i class="fa-solid fa-paperclip"></i>
@@ -83,6 +84,16 @@
             <button type="button" {{$disabled}} data-no-attachment-action="/company-admin/assignment/send-user-msg" data-attachment-action="/company-admin/assignment/send-attachment" class="btn btn-primary btn-rounded btn-icon mt-2 btn-sm sendMessageFromAssignment">
                 <i class="fa-solid fa-paper-plane"></i>
             </button>
-            
+            @else
+            <input type="file" data-chat-id="{{$chat[0]}}" name="attachment" id="attachment" class="attachment">
+            <button type="button" class="btn btn-warning btn-rounded btn-icon mt-2 btn-sm attachment-button" {{$disabled}} id="attachment-button">
+                <i class="fa-solid fa-paperclip"></i>
+            </button>
+
+            <button type="button" {{$disabled}} data-no-attachment-action="/hm/assignment/send-user-msg" data-attachment-action="/hm/assignment/send-attachment" class="btn btn-primary btn-rounded btn-icon mt-2 btn-sm sendMessageFromAssignment">
+                <i class="fa-solid fa-paper-plane"></i>
+            </button>
+            @endif
+
         </div>
     </div>

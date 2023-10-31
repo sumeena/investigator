@@ -4,12 +4,17 @@ use App\Http\Controllers\Admin\HmController as AdminHmController;
 use App\Http\Controllers\CompanyAdmin\AssignmentsController;
 use App\Http\Controllers\CompanyAdmin\CompanyUsersController;
 use App\Http\Controllers\CompanyAdmin\InternalInvestigatorsController;
+use App\Http\Controllers\CompanyAdmin\NotificationController;
+use App\Http\Controllers\CompanyAdmin\SettingsController;
 use App\Http\Controllers\Hm\AssignmentsController as HMAssignmentsController;
 use App\Http\Controllers\Hm\InvestigatorController as HMInvestigatorController;
 use App\Http\Controllers\Hm\HmController;
+use App\Http\Controllers\Hm\HmSettingsController;
+use App\Http\Controllers\Hm\NotificationController as HmNotificationController;
 use App\Http\Controllers\Investigator\CompanyAdminsController;
 use App\Http\Controllers\Investigator\InvitationsController;
 use App\Http\Controllers\Investigator\NotificationsController;
+use App\Http\Controllers\Investigator\InvestigatorSettingsController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\AdminController;
@@ -138,6 +143,17 @@ Route::group(['prefix' => 'company-admin', 'as' => 'company-admin.', 'middleware
     Route::post('/assignment/send-user-msg', [AssignmentsController::class, 'sendMessage'])->name('assignment.send-msg');
     Route::post('/assignment/send-attachment', [AssignmentsController::class, 'sendAttachmentMessage'])->name('assignment.send-attachment');
 
+    /** Settings**/
+    Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
+    Route::post('/settings/store', [SettingsController::class, 'store'])->name('settings.store');
+
+    Route::get('/notification/latestNotification', [NotificationController::class, 'latestNotification'])->name('notification.latestNotification');
+    Route::get('/notification', [NotificationController::class, 'index'])->name('notification.index');
+    Route::get('/notification/{notification}/show', [NotificationController::class, 'show'])->name('notification.show');
+    Route::get('/notification/{notification}/destroy', [NotificationController::class, 'destroy'])->name('notification.destroy');
+    Route::get('/notification/mark-all-read', [NotificationController::class, 'markAllRead'])->name('notification.mark-all-read');
+
+
     Route::group(['prefix' => 'company-users', 'as' => 'company-users.'], function () {
         Route::get('/', [CompanyUsersController::class, 'index'])->name('index');
         Route::get('/add', [CompanyUsersController::class, 'view'])->name('add');
@@ -207,6 +223,18 @@ Route::group(['prefix' => 'hm', 'as' => 'hm.', 'middleware' => ['hm']], function
     Route::post('/my-profile/update', [HmController::class, 'hmProfileUpdate'])
         ->name('profile.update');
     Route::get('/view-profile', [HmController::class, 'companyProfile'])->name('view');
+    /** Settings**/
+    Route::get('/settings', [HmSettingsController::class, 'index'])->name('settings.index');
+    Route::post('/settings/store', [HmSettingsController::class, 'store'])->name('settings.store');
+    // send msg from assignment
+    Route::post('/assignment/send-user-msg', [HMAssignmentsController::class, 'sendMessage'])->name('assignment.send-msg');
+    Route::post('/assignment/send-attachment', [HMAssignmentsController::class, 'sendAttachmentMessage'])->name('assignment.send-attachment');
+
+    Route::get('/notification/latestNotification', [HmNotificationController::class, 'latestNotification'])->name('notification.latestNotification');
+    Route::get('/notification', [HmNotificationController::class, 'index'])->name('notification.index');
+    Route::get('/notification/{notification}/show', [HmNotificationController::class, 'show'])->name('notification.show');
+    Route::get('/notification/{notification}/destroy', [HmNotificationController::class, 'destroy'])->name('notification.destroy');
+    Route::get('/notification/mark-all-read', [HmNotificationController::class, 'markAllRead'])->name('notification.mark-all-read');
     Route::group(['prefix' => 'internal-investigators', 'as' => 'internal-investigators.'], function () {
         Route::get('/', [InternalInvestigatorsController::class, 'index'])->name('index');
     });
@@ -255,10 +283,14 @@ Route::group(['prefix' => 'investigator', 'as' => 'investigator.', 'middleware' 
     Route::get('/assignments-listing', [InvitationsController::class, 'index'])->name('assignments-listing');
     Route::get('/assignment/{assignment_user}/show', [InvitationsController::class, 'show'])->name('assignment.show');
     Route::get('/assignment/{assignment_user}/destroy', [InvitationsController::class, 'destroy'])->name('assignment.destroy');
+    /** Settings**/
+    Route::get('/settings', [InvestigatorSettingsController::class, 'index'])->name('index');
+    Route::post('/settings/store', [InvestigatorSettingsController::class, 'store'])->name('settings.store');
 
     // Notification routes
     Route::get('/notifications', [NotificationsController::class, 'index'])->name('notifications.index');
     Route::get('/notifications/{notification}/show', [NotificationsController::class, 'show'])->name('notifications.show');
     Route::get('/notifications/{notification}/destroy', [NotificationsController::class, 'destroy'])->name('notifications.destroy');
     Route::get('/notifications/mark-all-read', [NotificationsController::class, 'markAllRead'])->name('notifications.mark-all-read');
+    Route::get('/notifications/latestNotification', [NotificationsController::class, 'latestNotification'])->name('notifications.latestNotification');
 });

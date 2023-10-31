@@ -18,6 +18,7 @@ use App\Models\Media;
 use App\Models\Notification;
 use App\Models\State;
 use App\Models\User;
+use App\Models\Settings;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -25,6 +26,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Illuminate\Testing\Assert;
 use Illuminate\Validation\Rules\Exists;
+use App\Mail\NewMassageMail;
 
 class AssignmentsController extends Controller
 {
@@ -263,7 +265,7 @@ class AssignmentsController extends Controller
         $notificationDataClosed = [
            'title'        => 'The assignment you were invited on has been closed.',
            'login'        => ' to your account so view the details.',
-           'loginUrl'        => $login,
+           'loginUrl'        => route('login'),
            'thanks'        => 'Ilogistics Team',
 
         ];
@@ -310,6 +312,40 @@ class AssignmentsController extends Controller
         $chatDetails = Chat::find($chatId);
 
         $msgSent = ChatMessage::create(array('user_id' => $chatDetails->assignment->user_id, 'chat_id' => $chatId, 'content' => $msg, 'type' => 'text', 'is_delete' => '{"investigator": 0, "company-admin": 0}'));
+        $authUser =auth();
+        $assignmentUser = AssignmentUser::where(['assignment_id' => $chatDetails->assignment->id])->pluck('id');;
+        $assignment = Assignment::where(['id' => $chatDetails->assignment_id])->paginate(1);
+
+        $notificationData = [
+           'user_id'      => $chatDetails->investigator_id,
+           'from_user_id' =>  auth()->id(),
+           'title'        => 'You have received new message on assignment '.$assignment[0]->assignment_id.'',
+           'type'         => 'newmassage',
+           'url'          => route('investigator.assignment.show', $assignmentUser[0]),
+       ];
+
+
+        Notification::create($notificationData);
+        $settings = Settings::where('user_id', auth()->id())->paginate(1);
+        if($settings->count() > 0){
+          if($settings[0]->new_message == 1 ){
+            $userDetails = User::where('id', $chatDetails->investigator_id)->paginate(1);
+
+            $notificationData = [
+              'first_name' => $userDetails[0]->first_name,
+              'last_name' =>$userDetails[0]->last_name,
+               'title'        => 'You have received new message on assignment '.$assignment[0]->assignment_id.'',
+               'login'        => ' to your account so view the details.',
+               'loginUrl'        => route('login'),
+               'thanks'        => 'Ilogistics Team',
+
+            ];
+
+            if(!empty($userDetails[0]->email)){
+              Mail::to($userDetails[0]->email)->send(new NewMassageMail($notificationData));
+            }
+          }
+        }
 
         if($msgSent) {
             return response()->json([
@@ -451,7 +487,7 @@ class AssignmentsController extends Controller
     /** get list of assignments */
     public function assignments_list()
     {
-      
+
         $userId = auth()->id();
         $parentId = '';
 
