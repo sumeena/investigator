@@ -1,4 +1,7 @@
 $(document).ready(function(){
+  setInterval(function() { latestNotification() }, 2000);
+//latestNotification()
+
   resetPassword("#password");
   resetPassword("#new-password");
     if($('.users-list').length > 0) {
@@ -140,11 +143,18 @@ $(document).ready(function(){
             return false;
         }
 
+        $('.custom-loader-overlay').attr("style", "display: flex !important");
+
+
+
         $.ajax({
             url : action,
             method : 'POST',
             data : { message : msgContent, chat_id : chatId },
             success : function(data) {
+                if(data.error){
+                  alert(data.message)
+                }
                 $('#messageTextArea').val('');
             },
             complete : function(){
@@ -156,6 +166,7 @@ $(document).ready(function(){
                 setTimeout(() => {
                     $(".success-msg").parent('div').remove();
                 }, 1500);
+                $('.custom-loader-overlay').hide();
             }
         })
     });
@@ -196,6 +207,8 @@ $(document).ready(function(){
         })
 
     });
+
+
 
     $(document).on('keyup', '#notesTextArea', function(){
         $('.confirm-div').html('<div class="col-md-1"><button type="button" class="btn btn-success btn-notes-check"><i class="fa fa-check fa-lg"></i></button></div> <div class="col-md-1"><button type="button" class="btn btn-danger btn-notes-cancel"><i class="fa fa-times fa-lg"></i></button></div>');
@@ -327,6 +340,26 @@ $(document).ready(function(){
 });
 
 
+
+function latestNotification() {
+  //'investigator'
+  var role = $(".badge.bg-primary").attr("rel");
+  if(role == "investigator"){
+      var sendUrl= '/investigator/notifications/latestNotification';
+  }else if(role == "company-admin") {
+    var sendUrl= '/company-admin/notification/latestNotification';
+  }else {
+      var sendUrl= '/hm/notification/latestNotification';
+  }
+
+    $.ajax({
+        url: ''+sendUrl+'',
+        method : 'GET',
+        success : function(response) {
+             $('.badge.bg-primary').text(response);
+           }
+    })
+  }
 function checkGoogleAccessToken() {
     $.ajax({
         url : "/investigator/checkToken",

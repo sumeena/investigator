@@ -4,16 +4,22 @@ namespace App\Http\Controllers\Investigator;
 
 use App\Http\Controllers\Controller;
 use App\Models\AssignmentUser;
+use App\Models\Assignment;
 use App\Models\Chat;
+use App\Models\User;
 use App\Models\ChatMessage;
 use App\Models\InvestigatorSearchHistory;
 // use App\Models\Invitation;
+use App\Models\Notification;
 use App\Models\Language;
 use App\Models\Media;
+use App\Mail\NewMassageMail;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Settings;
+use Illuminate\Support\Facades\Mail;
 
 class InvitationsController extends Controller
 {
@@ -69,8 +75,68 @@ class InvitationsController extends Controller
         $msg = $request->message;
         $chatId = $request->chat_id;
         $authUserId = Auth::user()->id;
+        $chatDetails = Chat::find($chatId);
         $msgSent = ChatMessage::create(array('user_id' => $authUserId, 'chat_id' => $chatId, 'content' => $msg, 'type' => 'text', 'is_delete' => '{"company-admin" : 0 , "investigator" : 0}'));
 
+        $assignmentUser = AssignmentUser::where(['assignment_id' => $chatDetails->assignment_id])->pluck('id');;
+        $userDetails = User::where('id', $chatDetails->company_admin_id)->paginate(1);
+        $assignment = Assignment::where(['id' => $chatDetails->assignment_id])->paginate(1);
+
+        if($userDetails[0]->role == 2){
+          $url=route('company-admin.assignment.show', $chatDetails->assignment_id);
+        }else {
+          $url=route('hm.assignment.show', $chatDetails->assignment_id);
+        }
+        $notificationData = [
+           'user_id'      => $chatDetails->company_admin_id,
+           'from_user_id' =>  auth()->id(),
+           'title'        => 'You have received new message on assignment '.$assignment[0]->assignment_id.'',
+           'type'         => 'newmassage',
+           'url'          => $url,
+       ];
+
+
+        Notification::create($notificationData);
+        $settings = Settings::where('user_id', $chatDetails->company_admin_id)->paginate(1);
+        if($settings->count() > 0){
+          if($settings[0]->new_message == 1 ){
+
+
+            $notificationData = [
+              'first_name' => $userDetails[0]->first_name,
+              'last_name' =>$userDetails[0]->last_name,
+               'title'        => 'You have received new message on assignment '.$assignment[0]->assignment_id.'',
+               'login'        => ' to your account so view the details.',
+               'loginUrl'        => route('login'),
+               'thanks'        => 'Ilogistics Team',
+
+            ];
+
+            if(!empty($userDetails[0]->email)){
+              Mail::to($userDetails[0]->email)->send(new NewMassageMail($notificationData));
+            }
+          }
+          if($settings[0]->new_message_on_message == 1 ){
+
+            if(!empty($userDetails[0]->phone)){
+                $sendSms=$this->sendSms($userDetails[0]->phone,$assignment[0]->assignment_id);
+                if($sendSms !="sent"){
+                  $notificationData = [
+                    'first_name' => $userDetails[0]->first_name,
+                    'last_name' =>$userDetails[0]->last_name,
+                     'title'        => "Please recheck the phone on your profile. We use phone number to send you notifications and you may miss out on important information if it's not valid.
+Please correct it as soon as you can.",
+                     'login'        => ' to your account so view the details.',
+                     'loginUrl'        => route('login'),
+                     'phoneupdate' =>"update",
+                     'thanks'        => 'Ilogistics Team',
+
+                  ];
+                   Mail::to($userDetails[0]->email)->send(new NewMassageMail($notificationData));
+                 }
+            }
+          }
+        }
         if($msgSent) {
             return response()->json([
                 'success' => true,

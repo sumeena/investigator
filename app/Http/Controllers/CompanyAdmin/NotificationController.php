@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Http\Controllers\Investigator;
+namespace App\Http\Controllers\CompanyAdmin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Notification;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 
-class NotificationsController extends Controller
+class NotificationController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -22,7 +22,7 @@ class NotificationsController extends Controller
             ->where('is_read', 0)
             ->paginate(20);
 
-        return view('investigator.notifications.index', compact('notifications'));
+        return view('company-admin.notifications.index', compact('notifications'));
     }
 
     /**
@@ -48,7 +48,7 @@ class NotificationsController extends Controller
     {
         $notification->delete();
 
-        return redirect()->route('investigator.notifications.index')
+        return redirect()->route('company-admin.notification.index')
             ->with('success', 'Notification deleted successfully.');
     }
 
@@ -61,7 +61,7 @@ class NotificationsController extends Controller
     {
         Notification::where('user_id', auth()->id())->update(['is_read' => true]);
 
-        return redirect()->route('investigator.notifications.index')
+        return redirect()->route('company-admin.notification.index')
             ->with('success', 'Marked all notifications as read.');
     }
     /**

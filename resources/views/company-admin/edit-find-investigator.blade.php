@@ -1114,7 +1114,7 @@
             });
         });
 
-        
+
 
 
         // Send Invitation
@@ -1141,15 +1141,19 @@
 
             $(inviteBtn).attr('disabled', true);
             $(inviteBtn).html('<i class="fa fa-spinner fa-pulse"></i>');
-
+            $(".custom-loader-overlay").attr("style","display: flex !important;")
             $.ajax({
                 url: '{{ $assignmentInviteAction }}',
                 type: 'POST',
                 data: data,
                 success: function(response) {
+                  $(".custom-loader-overlay").hide()
                     $('#assignment-flash').text(response.message);
                     $('#assignment-flash').show();
                     // $('#inviteModal').modal('hide');
+                    if(response.error){
+                      alert(response.message);
+                    }
 
                 },
                 error: function(xhr) {
@@ -1157,6 +1161,7 @@
                 },
                 complete: function() {
                     // $(inviteBtn).attr('disabled', false);
+
                     $(inviteBtn).removeClass('btn-info').addClass('btn-success');
                     $(inviteBtn).html('<i class="fas fa-check"></i>');
                 }
