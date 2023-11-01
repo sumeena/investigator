@@ -42,7 +42,7 @@
                             <div class="col-md-12">
                                 <div class="mb-3">
                                            <ul class="list-group list-group-flush">
-                                              <li class="list-group-item">Hired / Closed on assignment
+                                              <li class="list-group-item">When assignment status is assigned or closed
                                                              <label class="switch ">
                                                                <input name="" disabled type="checkbox" value="1" class="primary" checked >
                                                                <span class="slider round"></span>
@@ -68,7 +68,7 @@
                             <div class="col-md-12">
                                 <div class="mb-3">
                                       <ul class="list-group list-group-flush">
-                                         <li class="list-group-item">Assignment Update
+                                         <li class="list-group-item">Assignment requirement update
                                                         <label class="switch ">
                                                           <input name="assignment_update" type="checkbox" value="1" class="primary" {{isset($settings->assignment_update) ? 'checked':'' }}>
                                                           <span class="slider round"></span>
@@ -100,7 +100,7 @@
                             <div class="col-md-12">
                                 <div class="mb-3">
                                            <ul class="list-group list-group-flush">
-                                              <li class="list-group-item">Hired / Closed on assignment
+                                              <li class="list-group-item">When assignment status is assigned or closed
                                                              <label class="switch ">
                                                                <input name="assignment_hired_or_closed_message" {{isset($settings->assignment_hired_or_closed_message) ? 'checked':'' }} type="checkbox" value="1" class="primary" >
                                                                <span class="slider round"></span>
@@ -125,7 +125,7 @@
                             <div class="col-md-12">
                                 <div class="mb-3">
                                       <ul class="list-group list-group-flush">
-                                         <li class="list-group-item">Assignment Update
+                                         <li class="list-group-item">Assignment requirement update
                                                   <label class="switch ">
                                                     <input name="assignment_update_message" type="checkbox" value="1" class="primary" {{isset($settings->assignment_update_message) ? 'checked':'' }}>
                                                     <span class="slider round"></span>

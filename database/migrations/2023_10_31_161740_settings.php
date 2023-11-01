@@ -21,6 +21,10 @@ return new class extends Migration
           $table->string('new_message')->nullable();
           $table->string('assignment_update')->nullable();
           $table->string('user_role')->nullable();
+          $table->string('assignment_invite_message')->nullable();
+          $table->string('assignment_hired_or_closed_message')->nullable();
+          $table->string('new_message_on_message')->nullable();
+          $table->string('assignment_update_message')->nullable();
           $table->timestamp('updated_at')->nullable();
           $table->timestamp('created_at')->nullable();
 
