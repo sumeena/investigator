@@ -20,6 +20,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Settings;
 use Illuminate\Support\Facades\Mail;
+use Twilio\Rest\Client;
 
 class InvitationsController extends Controller
 {
@@ -168,6 +169,28 @@ Please correct it as soon as you can.",
                 'ext' => $fileExt
             ]);
         }
+    }
+    public function sendSms($number,$assignmentId)
+    {
+        $account_sid = env('TWILIO_ACCOUNT_SID');
+        $auth_token = env('TWILIO_AUTH_TOKEN');
+        $twilio_number = env('SERVICES_TWILIO_PHONE_NUMBER');
+        //$twilio_number = "+12569801067"; // Your Twilio phone number
+
+        $client = new Client($account_sid, $auth_token);
+         try {
+          $client->messages->create(
+              '+91'.$number, // Recipient's phone number
+              array(
+                  'from' => $twilio_number,
+                  'body' => 'You have received new message on assignment '.$assignmentId.''
+              )
+          );
+        } catch (\Exception $e) {
+        // Handle exceptions or errors
+        return "Error: " . $e->getMessage();
+    }
+        return "sent";
     }
 
 }
