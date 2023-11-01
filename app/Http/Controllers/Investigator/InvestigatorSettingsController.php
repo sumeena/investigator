@@ -25,14 +25,19 @@ class InvestigatorSettingsController extends Controller
     }
   public function store(Request $request)
     {
-        $settingsData = [
-            'user_id'       => auth()->id(),
-            'assignment_invite' => $request->assignment_invite,
-            'assignment_hired_or_closed'     => $request->assignment_hired_or_closed,
-            'new_message'     => $request->new_message,
-            'assignment_update'     => $request->assignment_update,
-            'user_role'     => auth()->user()->userRole->role,
-        ];
+      //+echo "<pre>"; print_r($_POST); die;
+      $settingsData = [
+          'user_id'       => auth()->id(),
+          'assignment_invite' => $request->assignment_invite,
+          'assignment_hired_or_closed'     => $request->assignment_hired_or_closed,
+          'new_message'     => $request->new_message,
+          'assignment_update'     => $request->assignment_update,
+          'assignment_invite_message'     => $request->assignment_invite_message,
+          'assignment_hired_or_closed_message'     => $request->assignment_hired_or_closed_message,
+          'new_message_on_message'     => $request->new_message_on_message,
+          'assignment_update_message'     => $request->assignment_update_message,
+          'user_role'     => auth()->user()->userRole->role,
+      ];
         $user     = Settings::updateOrCreate([
             'id' => $request->id
         ], $settingsData);

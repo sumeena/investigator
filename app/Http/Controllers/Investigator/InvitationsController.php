@@ -97,7 +97,7 @@ class InvitationsController extends Controller
 
 
         Notification::create($notificationData);
-        $settings = Settings::where('user_id', auth()->id())->paginate(1);
+        $settings = Settings::where('user_id', $chatDetails->company_admin_id)->paginate(1);
         if($settings->count() > 0){
           if($settings[0]->new_message == 1 ){
 
@@ -114,6 +114,26 @@ class InvitationsController extends Controller
 
             if(!empty($userDetails[0]->email)){
               Mail::to($userDetails[0]->email)->send(new NewMassageMail($notificationData));
+            }
+          }
+          if($settings[0]->new_message_on_message == 1 ){
+
+            if(!empty($userDetails[0]->phone)){
+                $sendSms=$this->sendSms($userDetails[0]->phone,$assignment[0]->assignment_id);
+                if($sendSms !="sent"){
+                  $notificationData = [
+                    'first_name' => $userDetails[0]->first_name,
+                    'last_name' =>$userDetails[0]->last_name,
+                     'title'        => "Please recheck the phone on your profile. We use phone number to send you notifications and you may miss out on important information if it's not valid.
+Please correct it as soon as you can.",
+                     'login'        => ' to your account so view the details.',
+                     'loginUrl'        => route('login'),
+                     'phoneupdate' =>"update",
+                     'thanks'        => 'Ilogistics Team',
+
+                  ];
+                   Mail::to($userDetails[0]->email)->send(new NewMassageMail($notificationData));
+                 }
             }
           }
         }

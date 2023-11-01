@@ -152,6 +152,9 @@ $(document).ready(function(){
             method : 'POST',
             data : { message : msgContent, chat_id : chatId },
             success : function(data) {
+                if(data.error){
+                  alert(data.message)
+                }
                 $('#messageTextArea').val('');
             },
             complete : function(){

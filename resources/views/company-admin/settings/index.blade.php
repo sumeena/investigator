@@ -20,6 +20,9 @@
                     @endif
                     <form method="post" action="{{ route('company-admin.settings.store') }}" enctype="multipart/form-data">
                         @csrf
+                        <hr>
+                        <h6 class="mb-0">Notification for Email</h6>
+                        <hr>
                         <div class="row">
 
                             <div class="col-md-12">
@@ -28,6 +31,25 @@
                                       <li class="list-group-item">New Message on assignments
                                                      <label class="switch ">
                                                        <input name="new_message" type="checkbox" value="1" class="primary" {{isset($settings->new_message) ? 'checked':'' }}>
+                                                       <span class="slider round"></span>
+                                                     </label>
+                                         </li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                        </div>
+                        <hr>
+                        <h6 class="mb-0">Notification for Message</h6>
+                        <hr>
+                        <div class="row">
+
+                            <div class="col-md-12">
+                                <div class="mb-3">
+                                   <ul class="list-group list-group-flush">
+                                      <li class="list-group-item">New Message on assignments
+                                                     <label class="switch ">
+                                                       <input name="new_message_on_message" type="checkbox" value="1" class="primary" {{isset($settings->new_message_on_message) ? 'checked':'' }}>
                                                        <span class="slider round"></span>
                                                      </label>
                                          </li>

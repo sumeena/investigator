@@ -11,7 +11,14 @@ class Settings extends Model
 {
     use HasFactory;
         protected $table = 'settings';
-        protected $fillable = ['user_id','assignment_invite', 'assignment_hired_or_closed', 'new_message', 'assignment_update','user_role'];
+        protected $fillable = ['user_id','assignment_invite', 'assignment_hired_or_closed', 'new_message',
+         'assignment_update',
+         'user_role',
+         'assignment_invite_message',
+         'assignment_hired_or_closed_message',
+         'new_message_on_message',
+         'assignment_update_message',
+         ];
         protected $guarded = ['id'];
 
 

@@ -20,6 +20,9 @@
                     @endif
                     <form method="post" action="{{ route('investigator.settings.store') }}" enctype="multipart/form-data">
                         @csrf
+                        <hr>
+                        <h6 class="mb-0">Notification for Email</h6>
+                        <hr>
                         <div class="row">
                             <div class="col-md-12">
                                 <div class="mb-3">
@@ -70,6 +73,63 @@
                                                           <input name="assignment_update" type="checkbox" value="1" class="primary" {{isset($settings->assignment_update) ? 'checked':'' }}>
                                                           <span class="slider round"></span>
                                                         </label>
+                                            </li>
+                                       </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <hr>
+                        <h6 class="mb-0">Notification for Message</h6>
+                        <hr>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="mb-3">
+                                    <ul class="list-group list-group-flush">
+                                       <li class="list-group-item">New Assignment invite
+                                                      <label class="switch ">
+                                                        <input name="assignment_invite_message"  type="checkbox"
+                                                         value="1" class="primary"  {{isset($settings->assignment_invite_message) ? 'checked':'' }}>
+                                                        <span class="slider round"></span>
+                                                      </label>
+                                          </li>
+                                     </ul>
+
+
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="mb-3">
+                                           <ul class="list-group list-group-flush">
+                                              <li class="list-group-item">Hired / Closed on assignment
+                                                             <label class="switch ">
+                                                               <input name="assignment_hired_or_closed_message" {{isset($settings->assignment_hired_or_closed_message) ? 'checked':'' }} type="checkbox" value="1" class="primary" >
+                                                               <span class="slider round"></span>
+                                                             </label>
+                                                 </li>
+                                            </ul>
+                                </div>
+                            </div>
+
+                            <div class="col-md-12">
+                                <div class="mb-3">
+                                    <ul class="list-group list-group-flush">
+                                       <li class="list-group-item">New Message on assignments
+                                              <label class="switch ">
+                                                <input name="new_message_on_message" type="checkbox" value="1" class="primary" {{isset($settings->new_message_on_message) ? 'checked':'' }}>
+                                                <span class="slider round"></span>
+                                              </label>
+                                        </li>
+                                     </ul>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="mb-3">
+                                      <ul class="list-group list-group-flush">
+                                         <li class="list-group-item">Assignment Update
+                                                  <label class="switch ">
+                                                    <input name="assignment_update_message" type="checkbox" value="1" class="primary" {{isset($settings->assignment_update_message) ? 'checked':'' }}>
+                                                    <span class="slider round"></span>
+                                                  </label>
                                             </li>
                                        </ul>
                                 </div>

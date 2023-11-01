@@ -32,9 +32,16 @@ class NewMassageMail extends Mailable
      */
     public function envelope()
     {
-        return new Envelope(
-            subject: 'New Massage has been received',
-        );
+        if(isset($this->data['phoneupdate']) && $this->data['phoneupdate'] == "update"){
+          return new Envelope(
+              subject: 'Please update your Phone',
+          );
+        }else {
+          return new Envelope(
+              subject: 'New Massage has been received',
+          );
+        }
+
     }
 
     /**

@@ -27,6 +27,7 @@ use Illuminate\Support\Str;
 use Illuminate\Testing\Assert;
 use Illuminate\Validation\Rules\Exists;
 use App\Mail\NewMassageMail;
+use Twilio\Rest\Client;
 
 class AssignmentsController extends Controller
 {
@@ -290,12 +291,29 @@ class AssignmentsController extends Controller
            'companyName'  => 'Company Name: ' .$company_name,
            'thanks'        => 'Ilogistics Team',
          ];
+
          foreach ($assignmentUserInfo as $item) {
              $investigatorUser = User::find($item->user_id);
+
              if($item->hired == 1){
                 Mail::to($investigatorUser->email)->send(new HireJob($notificationDataHired));
              }else{
                 Mail::to($investigatorUser->email)->send(new CloseJob($notificationDataClosed));
+             }
+             $settings = Settings::where('user_id', $item->id)->paginate(1);
+
+             if($settings->count() > 0){
+                  if($settings[0]->assignment_hired_or_closed_message == 1 ){
+                    if(!empty($investigatorUser->phone)){
+                        $sendSms=$this->sendSms($investigatorUser->phone,$assignment->assignment_id);
+                        if($sendSms !="sent"){
+                            return response()->json([
+                               'error' => true,
+                               'message' => $sendSms,
+                           ]);
+                         }
+                    }
+                  }
              }
          }
          session()->flash('success', 'Assignment assigned successfully');
@@ -306,6 +324,7 @@ class AssignmentsController extends Controller
     /** Send msg */
 
     public function sendMessage(Request $request) {
+
         $msg = $request->message;
         $chatId = $request->chat_id;
 
@@ -326,10 +345,12 @@ class AssignmentsController extends Controller
 
 
         Notification::create($notificationData);
-        $settings = Settings::where('user_id', auth()->id())->paginate(1);
+        $settings = Settings::where('user_id', $chatDetails->investigator_id)->paginate(1);
+
         if($settings->count() > 0){
+          $userDetails = User::where('id', $chatDetails->investigator_id)->paginate(1);
           if($settings[0]->new_message == 1 ){
-            $userDetails = User::where('id', $chatDetails->investigator_id)->paginate(1);
+
 
             $notificationData = [
               'first_name' => $userDetails[0]->first_name,
@@ -345,12 +366,33 @@ class AssignmentsController extends Controller
               Mail::to($userDetails[0]->email)->send(new NewMassageMail($notificationData));
             }
           }
+
+          if($settings[0]->new_message_on_message == 1 ){
+
+            if(!empty($userDetails[0]->phone)){
+                $sendSms=$this->sendSms($userDetails[0]->phone,$assignment[0]->assignment_id);
+                if($sendSms !="sent"){
+                  $notificationData = [
+                    'first_name' => $userDetails[0]->first_name,
+                    'last_name' =>$userDetails[0]->last_name,
+                     'title'        => "Please recheck the phone on your profile. We use phone number to send you notifications and you may miss out on important information if it's not valid.
+Please correct it as soon as you can.",
+                     'login'        => ' to your account so view the details.',
+                     'loginUrl'        => route('login'),
+                     'phoneupdate' =>"update",
+                     'thanks'        => 'Ilogistics Team',
+
+                  ];
+                   Mail::to($userDetails[0]->email)->send(new NewMassageMail($notificationData));
+                 }
+            }
+          }
         }
 
         if($msgSent) {
             return response()->json([
                 'success' => true,
-                'message' => 'Message Sent',
+                'message' => 'Message Sentxxx',
             ]);
         }
     }
@@ -421,6 +463,7 @@ class AssignmentsController extends Controller
 
     public function invite(Request $request)
     {
+
         $request->validate([
             'investigator_id' => 'bail|required|integer|exists:users,id',
             'assignment'     => 'bail|required',
@@ -475,6 +518,31 @@ class AssignmentsController extends Controller
             ChatMessage::create(array('user_id' => $assignment->user_id, 'chat_id' => $chat->id, 'content' => 'We have invited you to join this assignment. If you are interested, please let us know at your earliest convenience. We can discuss further details and address any questions you may have. Thank you', 'type' => 'text', 'is_delete' => '{"company-admin" : 0 , "investigator" : 0}'));
 
              Mail::to($investigator->email)->send(new JobInvitationMail($notificationData));
+             $settings = Settings::where('user_id', $investigator->id)->paginate(1);
+
+             if($settings->count() > 0){
+                  if($settings[0]->assignment_invite_message == 1 ){
+                    if(!empty($investigator->phone)){
+                        $sendSms=$this->sendSms($investigator->phone,$assignment->assignment_id);
+                        if($sendSms !="sent"){
+                          $notificationData = [
+                            'first_name' => $investigator->first_name,
+                            'last_name' =>$investigator->last_name,
+                             'title'        => "Please recheck the phone on your profile. We use phone number to send you notifications and you may miss out on important information if it's not valid.
+        Please correct it as soon as you can.",
+                             'login'        => ' to your account so view the details.',
+                             'loginUrl'        => route('login'),
+                             'phoneupdate' =>"update",
+                             'thanks'        => 'Ilogistics Team',
+
+                          ];
+                           Mail::to($investigator->email)->send(new NewMassageMail($notificationData));
+                         }
+                     }
+                }
+            }
+
+
 
 
         return response()->json([
@@ -575,5 +643,27 @@ class AssignmentsController extends Controller
             'success' => true,
             'message' => 'Assignment deleted successfully!',
         ]);
+    }
+    public function sendSms($number,$assignmentId)
+    {
+        $account_sid = env('TWILIO_ACCOUNT_SID');
+        $auth_token = env('TWILIO_AUTH_TOKEN');
+        $twilio_number = env('SERVICES_TWILIO_PHONE_NUMBER');
+        //$twilio_number = "+12569801067"; // Your Twilio phone number
+
+        $client = new Client($account_sid, $auth_token);
+         try {
+          $client->messages->create(
+              '+91'.$number, // Recipient's phone number
+              array(
+                  'from' => $twilio_number,
+                  'body' => 'You have received new message on assignment '.$assignmentId.''
+              )
+          );
+        } catch (\Exception $e) {
+        // Handle exceptions or errors
+        return "Error: " . $e->getMessage();
+    }
+        return "sent";
     }
 }

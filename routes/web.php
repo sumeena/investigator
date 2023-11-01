@@ -23,6 +23,7 @@ use App\Http\Controllers\Admin\InvestigatorController as AdminInvestigatorContro
 use App\Http\Controllers\CompanyAdmin\CompanyAdminController;
 use App\Http\Controllers\CompanyAdmin\InvestigatorController as CAInvestigatorController;
 use App\Http\Controllers\Investigator\InvestigatorController;
+use App\Http\Controllers\TwilioController;
 
 /*
 |--------------------------------------------------------------------------
@@ -41,6 +42,9 @@ Route::get('/', function () {
 });
 
 Auth::routes();
+
+
+Route::get('/send-sms', [TwilioController::class, 'sendSms']);
 
 // Admin Dashboard Routes
 Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['admin']], function () {
