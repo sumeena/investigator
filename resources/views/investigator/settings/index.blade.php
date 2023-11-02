@@ -79,7 +79,7 @@
                             </div>
                         </div>
                         <hr>
-                        <h6 class="mb-0">Notification for Message</h6>
+                        <h6 class="mb-0">Notification for SMS</h6>
                         <hr>
                         <div class="row">
                             <div class="col-md-12">

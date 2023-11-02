@@ -38,7 +38,7 @@ class NewMassageMail extends Mailable
           );
         }else {
           return new Envelope(
-              subject: 'New Massage has been received',
+              subject: 'New Message has been received',
           );
         }
 
