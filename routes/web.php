@@ -267,7 +267,6 @@ Route::group(['prefix' => 'investigator', 'as' => 'investigator.', 'middleware' 
 
     Route::get('/calendar', [InvestigatorController::class, 'investigatorCalendar'])->name('calendar');
 
-
     Route::post('/calendar/fetch-events', [InvestigatorController::class, 'investigatorCalendarEvents'])->name('calendar.fetch-events');
     Route::get('/calendar/fetch-events-onload', [InvestigatorController::class, 'investigatorCalendarEventsOnLoad'])->name('calendar.fetch-events-onload');
 
@@ -281,6 +280,8 @@ Route::group(['prefix' => 'investigator', 'as' => 'investigator.', 'middleware' 
     Route::post('/assignment/send-msg', [InvitationsController::class, 'sendMessage'])->name('assignment.send-msg');
     Route::post('/assignment/send-attachment', [InvitationsController::class, 'sendAttachmentMessage'])->name('assignment.send-attachment');
 
+    // confirm assignment status
+    Route::get('/assignment/{id}/confirmation/{status}', [InvitationsController::class, 'assignmentConfirmation'])->name('assignment.confirmation');
 
     // Invitation routes
     Route::get('/invitations', [InvitationsController::class, 'index'])->name('invitations.index');

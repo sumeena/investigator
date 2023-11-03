@@ -19,15 +19,22 @@
                         <h5 class="">
                             Assignment ID: {{ @Str::upper($assignmentUser->assignment->assignment_id) }}
 
+                            <a href="javascript:history.back()" class="investigator-view-profile-link">
+                                <button type="button" class="pull-right btn btn-outline-light btn-sm">Back</button>
+                            </a>
+
                             @if($assignmentUser->hired == 1)
-                            <a style="margin-right: 80px;" href="javascript:void(0)" class="hire-user investigator-view-profile-link">
+                            <a style="margin-right: 20px;" href="javascript:void(0)" class="hire-user investigator-view-profile-link">
                                 <button type="button" class="btn btn-light btn-sm btn-hired">ASSIGNED</button>
                             </a>
                             @endif
 
-                            <a href="javascript:history.back()" class="investigator-view-profile-link">
-                                <button type="button" class="btn btn-outline-light btn-sm">Back</button>
-                            </a>
+                            @if($assignmentUser->status == NULL || $assignmentUser->status == '')
+                                <a style="margin-right: 500px;" href="{{route('investigator.assignment.confirmation',[$assignmentUser->id,'reject'])}}" class="investigator-view-profile-link"><button type="button" class="btn btn-outline-light btn-sm">Reject</button></a>
+
+                                <a  href="{{route('investigator.assignment.confirmation',[$assignmentUser->id,'accept'])}}" class="investigator-view-profile-link"><button type="button" class="btn btn-outline-light btn-sm">Accept</button></a>
+                            @endif
+
                         </h5>
                     </div>
                 </div>
@@ -47,17 +54,16 @@
                                 <b><label>Company:</label></b>
                             </div>
                             <div class="col-md-6">
-                            @php
-                                if($assignmentUser->assignment->author->parentCompany != null)
-                                {
-                                $company_name = $assignmentUser->assignment->author->parentCompany->company->CompanyAdminProfile->company_name;
-                                }
-                                else
-                                $company_name = $assignmentUser->assignment->author->CompanyAdminProfile->company_name;
-                            @endphp
-
-
-                            {{ @$company_name ?? null ?: 'N/A' }}</div>
+                                @php
+                                    if($assignmentUser->assignment->author->parentCompany != null)
+                                    {
+                                    $company_name = $assignmentUser->assignment->author->parentCompany->company->CompanyAdminProfile->company_name;
+                                    }
+                                    else
+                                    $company_name = $assignmentUser->assignment->author->CompanyAdminProfile->company_name;
+                                @endphp
+                                {{ @$company_name ?? null ?: 'N/A' }}
+                            </div>
                         </div>
                     </div>
 
@@ -101,16 +107,14 @@
                                 <b><label>Job Location:</label></b>
                             </div>
                             @php
-                            $jobLocationArray = array(@$assignmentUser->assignment->searchHistory->street, @$assignmentUser->assignment->searchHistory->city, @$assignmentUser->assignment->searchHistory->state, @$assignmentUser->assignment->searchHistory->zipcode, @$assignmentUser->assignment->searchHistory->country);
-
-                            $jobLocationArray = array_filter($jobLocationArray);
-                            $jobLocation = implode(',',$jobLocationArray);
+                                $jobLocationArray = array(@$assignmentUser->assignment->searchHistory->street, @$assignmentUser->assignment->searchHistory->city, @$assignmentUser->assignment->searchHistory->state, @$assignmentUser->assignment->searchHistory->zipcode, @$assignmentUser->assignment->searchHistory->country);
+                                $jobLocationArray = array_filter($jobLocationArray);
+                                $jobLocation = implode(',',$jobLocationArray);
                             @endphp
 
                             <div class="col-md-6">{{ @$jobLocation ?? null ?: 'N/A' }}</div>
                         </div>
                     </div>
-
 
                 </div>
                 <div class="row mx-0 py-1 px-3">
@@ -149,7 +153,6 @@
                             <div class="col-md-6">{{ @$availabilityDate[0] ?? null ?: 'N/A' }}</div>
                         </div>
                     </div>
-
                 </div>
 
                 <div class="row mx-0 py-1 px-3">
@@ -167,28 +170,41 @@
                             <div class="col-md-6">
                                 <b><label>Job Status:</label></b>
                             </div>
-
                             @php
-                            $status = '';
-                            if($assignmentUser->hired == 1 && $assignmentUser->assignment->status == 'ASSIGNED')
-                                $status = 'ASSIGNED';
-                            else if(($assignmentUser->hired == 0 && $assignmentUser->assignment->status == 'ASSIGNED') || ($assignmentUser->hired == 0 && $assignmentUser->assignment->status == 'COMPLETED'))
-                                $status = 'CLOSED';
-                            else
-                                $status = $assignmentUser->assignment->status;
 
+                                $status = '';
+
+                                if($assignmentUser->assignment->status == 'OFFER SENT' && $assignmentUser->hired == 0 && ($assignmentUser->status == NULL || $assignmentUser->status == '') )
+                                {
+                                    $status = 'OFFER RECEIVED';
+                                }
+                                else if($assignmentUser->hired == 0 && $assignmentUser->status == 'REJECTED')
+                                {
+                                    $status = 'OFFER '.$assignmentUser->status;
+                                }
+                                else if($assignmentUser->hired == 0 && $assignmentUser->status == 'CANCELLED')
+                                {
+                                    $status = 'OFFER '.$assignmentUser->status;
+                                }
+                                else if($assignmentUser->hired == 1 && $assignmentUser->status == 'ACCEPTED' && $assignmentUser->assignment->status == 'ASSIGNED')
+                                {
+                                    $status = $assignmentUser->assignment->status;
+                                }
+                                else if($assignmentUser->hired == 0 && $assignmentUser->assignment->status == 'ASSIGNED' &&($assignmentUser->status == NULL || $assignmentUser->status == ''))
+                                {
+                                    $status = 'CLOSED';
+                                }
+                               
                             @endphp
-
                             <div class="col-md-6">{{ @$status ?? null ?: 'N/A' }}</div>
                         </div>
                     </div>
-
-
                 </div>
 
                 <div class="row pt-3">
                     <div class="col col-md-12">
-                        <h5 class="">Messages</h5>
+                        <h5 class="">Messages
+                        </h5>
                     </div>
                 </div>
 
@@ -254,14 +270,14 @@
                         @endif
 
                         @php
-                            if($assignmentUser->assignment->status == 'INVITED')
-                            $disabled = '';
-                            else if($assignmentUser->assignment->status == 'ASSIGNED' && $assignmentUser->hired == 0)
-                            $disabled = 'disabled';
-                            else if($assignmentUser->assignment->status == 'ASSIGNED' && $assignmentUser->hired == 1)
-                            $disabled = '';
-                            else
-                            $disabled = 'disabled';
+                        if($assignmentUser->assignment->status == 'INVITED')
+                        $disabled = '';
+                        else if($assignmentUser->assignment->status == 'ASSIGNED' && $assignmentUser->hired == 0)
+                        $disabled = 'disabled';
+                        else if($assignmentUser->assignment->status == 'ASSIGNED' && $assignmentUser->hired == 1)
+                        $disabled = '';
+                        else
+                        $disabled = 'disabled';
                         @endphp
 
                         <div class="row mb-3 send-msg-box">
@@ -310,7 +326,7 @@
             </div>
             <!--Modal body with image-->
             <div class="modal-body text-center attachment-src">
-                
+
             </div>
             <div class="modal-footer" style="margin: 0 auto;">
                 <button type="button" class="btn btn-primary send-attachment"> <i class="fa-solid fa-paper-plane"></i> </button>
