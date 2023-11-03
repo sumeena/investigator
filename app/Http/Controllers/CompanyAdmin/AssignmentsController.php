@@ -477,7 +477,8 @@ Please correct it as soon as you can.",
 
                 $storeAssignmentUser = AssignmentUser::updateOrCreate(['assignment_id' => $assignment->id, 'user_id' => $investigator->id],['assignment_id' => $assignment->id, 'user_id' => $investigator->id]);
 
-                Assignment::where('id',$assignment->id)->update(['status' => 'INVITED']);
+                // Assignment::where('id',$assignment->id)->update(['status' => 'INVITED']);
+                Assignment::where('id',$assignment->id)->update(['status' => 'OFFER SENT']);
                 $login=route('login');
 
                 $company_name = '';
@@ -542,9 +543,6 @@ Please correct it as soon as you can.",
                 }
             }
 
-
-
-
         return response()->json([
             'success' => true,
             'message' => 'Invitation sent successfully!',
@@ -555,10 +553,8 @@ Please correct it as soon as you can.",
     /** get list of assignments */
     public function assignments_list()
     {
-
         $userId = auth()->id();
-        $parentId = '';
-
+        $parentId = NULL;
         $companyUser = CompanyUser::where('user_id', auth()->id())->exists();
 
         if($companyUser) {
@@ -566,18 +562,17 @@ Please correct it as soon as you can.",
             $parentId = $parent[0];
         }
 
-
         if(isset($_GET['searchby']) && !empty($_GET['searchby']) && isset($_GET['status-select']) && !empty($_GET['status-select']) ){
+
           $searchBy=$_GET['searchby'];
             $assignments = Assignment::withCount('users')->with('author')->where(function ($query) use ($searchBy) {
                 $query->where('assignment_id', 'like', '%' . $searchBy . '%')
                     ->orWhere('client_id', 'like', '%' . $searchBy . '%');
             })
-
               ->Where(['status' => $_GET['status-select']])
               ->orderBy('created_at','desc')->paginate(10);
         }
-        elseif (isset($_GET['searchby']) && !empty($_GET['searchby'])) {
+        else if(isset($_GET['searchby']) && !empty($_GET['searchby'])) {
           $searchBy=$_GET['searchby'];
           $assignments = Assignment::withCount('users')
             ->with('author')
@@ -587,10 +582,8 @@ Please correct it as soon as you can.",
             })
             ->orderBy('created_at', 'desc')
             ->paginate(10);
-
-
         }
-        elseif (isset($_GET['status-select']) && !empty($_GET['status-select'])) {
+        else if(isset($_GET['status-select']) && !empty($_GET['status-select'])) {
           $assignments = Assignment::withCount('users')->with('author')->where(
             [
               'status' => "".$_GET['status-select']."",
@@ -599,8 +592,12 @@ Please correct it as soon as you can.",
             ->where(['status' => "".$_GET['status-select'].""])
             ->orderBy('created_at','desc')->paginate(10);
         }
-        else{
-            $assignments = Assignment::withCount('users')->with('author')->where(['user_id' => $userId, 'is_delete' => NULL])->orWhere(['user_id' => $parentId, 'is_delete' => NULL])->orderBy('created_at','desc')->paginate(10);
+        else {
+
+            if(!empty($parentId)) {
+                $userId = $parentId;
+            }
+            $assignments = Assignment::withCount('users')->with('author')->where(['user_id' => $userId, 'is_delete' => NULL])->orderBy('created_at','desc')->paginate(10);
         }
         return view('company-admin.assignments', compact('assignments'));
     }

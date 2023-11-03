@@ -17,7 +17,7 @@ return new class extends Migration
           $table->id();
           $table->string('user_id')->nullable();
           $table->string('assignment_invite')->nullable();
-          $table->string('assignment_hired_or_closed	')->nullable();
+          $table->string('assignment_hired_or_closed')->nullable();
           $table->string('new_message')->nullable();
           $table->string('assignment_update')->nullable();
           $table->string('user_role')->nullable();
@@ -25,10 +25,8 @@ return new class extends Migration
           $table->string('assignment_hired_or_closed_message')->nullable();
           $table->string('new_message_on_message')->nullable();
           $table->string('assignment_update_message')->nullable();
-          $table->timestamp('updated_at')->nullable();
-          $table->timestamp('created_at')->nullable();
-
-      });
+          $table->timestamps();
+        });
     }
 
     /**
@@ -38,6 +36,6 @@ return new class extends Migration
      */
     public function down()
     {
-        //
+        Schema::dropIfExists('settings');
     }
 };

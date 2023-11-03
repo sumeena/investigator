@@ -29,7 +29,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                @foreach($companyAdmins as $key=>$companyAdmin)
+                @forelse($companyAdmins as $key=>$companyAdmin)
                     <tr>
                         <td>{{ $companyAdmins->firstItem() + $loop->index }}</td>
                         <td>{{$companyAdmin->first_name}}</td>
@@ -48,7 +48,13 @@
                                 href="{{route('company-admin.company-users.delete', $companyAdmin->id)}}">Delete</a>
                         </td>
                     </tr>
-                @endforeach
+                    @empty
+                    <tr>
+                        <td colspan="100%" class="text-center">
+                            No company users found!
+                        </td>
+                    </tr>
+                @endforelse
                 </tbody>
 
                 @if(count($companyAdmins))

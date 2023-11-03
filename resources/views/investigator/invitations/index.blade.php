@@ -42,7 +42,6 @@
                                 @forelse($invitations as $invitation)
                                     <tr>
                                         <td>{{ $invitations->firstItem() + $loop->index }}</td>
-
                                         @php
                                             if($invitation->assignment->author->parentCompany != null)
                                             {
@@ -57,15 +56,27 @@
                                         <td>{{ @Str::upper($invitation->assignment->client_id) }}</td>
                                         <td>{{ @Str::upper($invitation->assignment->assignment_id) }}</td>
                                         <td>
-
                                         @php
-                                        $status = '';
-                                        if($invitation->hired == 1 && $invitation->assignment->status == 'ASSIGNED')
-                                            $status = 'ASSIGNED';
-                                        else if(($invitation->hired == 0 && $invitation->assignment->status == 'ASSIGNED') || ($invitation->hired == 0 && $invitation->assignment->status == 'COMPLETED'))
-                                            $status = 'CLOSED';
-                                        else
+                                        if($invitation->assignment->status == 'OFFER SENT' && $invitation->hired == 0 && ($invitation->status == NULL || $invitation->status == '') )
+                                        {
+                                            $status = 'OFFER RECEIVED';
+                                        }
+                                        else if($invitation->hired == 0 && $invitation->status == 'REJECTED')
+                                        {
+                                            $status = 'OFFER '.$invitation->status;
+                                        }
+                                        else if($invitation->hired == 0 && $invitation->status == 'CANCELLED')
+                                        {
+                                            $status = 'OFFER '.$invitation->status;
+                                        }
+                                        else if($invitation->hired == 1 && $invitation->status == 'ACCEPTED' && $invitation->assignment->status == 'ASSIGNED')
+                                        {
                                             $status = $invitation->assignment->status;
+                                        }
+                                        else if($invitation->hired == 0 && $invitation->assignment->status == 'ASSIGNED' &&($invitation->status == NULL || $invitation->status == ''))
+                                        {
+                                            $status = 'CLOSED';
+                                        }
                                         @endphp
 
                                         {{ @Str::upper($status) }}</td>
@@ -79,7 +90,7 @@
                                 @empty
                                     <tr>
                                         <td colspan="100%" class="text-center">
-                                            No invitations found!
+                                            No assignments found!
                                         </td>
                                     </tr>
                                 @endforelse

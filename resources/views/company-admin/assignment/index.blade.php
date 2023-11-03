@@ -59,7 +59,7 @@
                                 @empty
                                     <tr>
                                         <td colspan="100%" class="text-center">
-                                            No invitations found!
+                                            No assignments found!
                                         </td>
                                     </tr>
                                 @endforelse

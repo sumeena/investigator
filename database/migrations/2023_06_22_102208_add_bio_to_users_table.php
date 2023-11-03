@@ -15,7 +15,6 @@ return new class extends Migration
     {
         Schema::table('users', function($table) {
             $table->text('bio')->nullable()->after('is_investigator_profile_submitted');
-            $table->text('investigatorType')->nullable()->after('bio');
         });
     }
 
@@ -28,7 +27,6 @@ return new class extends Migration
     {
         Schema::table('users', function($table) {
             $table->dropColumn('bio');
-            $table->dropColumn('investigatorType');
         });
     }
 };
