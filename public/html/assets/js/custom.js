@@ -191,8 +191,7 @@ $(document).ready(function(){
                 var userAssignmentStatus = response.userAssignmentStatus;
 
                 /* $('.hire-user').html('<button data-user-id="'+userId+'" data-assignment-id="'+assignmentId+'" type="button" class="btn btn-outline-light btn-sm btn-hire-now">ASSIGN NOW</button>'); */
-                if(userAssignmentStatus == 'INVITED' && assignmentStatus != "OFFER SENT") {
-                    console.log('here');
+                if(userAssignmentStatus == 'INVITED' && assignmentStatus != "OFFER SENT"  && assignmentStatus != "ASSIGNED") {
                     $('.hire-user').data('user-id',userId).data('assignment-id',assignmentId).addClass('btn btn-outline-light btn-md m-l-20 btn-hire-now').removeClass('d-none').html('ASSIGN NOW');
                 }
                 else if(userAssignmentStatus == 'OFFER RECEIVED') {

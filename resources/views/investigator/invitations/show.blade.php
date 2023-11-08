@@ -257,7 +257,7 @@
 
                         @php
                         $disabled = 'disabled';
-                        if(($assignmentUser->status == 'INVITED' && $assignmentUser->assignment->status == 'INVITED') || ($assignmentUser->status == 'OFFER RECEIVED') || ($assignmentUser->status == 'INVITED' && $assignmentUser->assignment->status == 'OFFER REJECTED') || ($assignmentUser->status == 'INVITED' && $assignmentUser->assignment->status == 'OFFER CANCELLED'))
+                        if(($assignmentUser->status == 'INVITED' && $assignmentUser->assignment->status == 'INVITED') || ($assignmentUser->status == 'OFFER RECEIVED') || ($assignmentUser->status == 'INVITED' && $assignmentUser->assignment->status == 'OFFER REJECTED') || ($assignmentUser->status == 'INVITED' && $assignmentUser->assignment->status == 'OFFER CANCELLED') || ($assignmentUser->status == 'ASSIGNED' && $assignmentUser->assignment->status == 'ASSIGNED'))
                         $disabled = '';
                         @endphp
 

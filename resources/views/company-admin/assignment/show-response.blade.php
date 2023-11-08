@@ -60,7 +60,7 @@
         @php
         $disabled = 'disabled';
 
-        if(($userAssignmentStatus == 'INVITED' && $assignmentStatus[0] == 'INVITED') || ($userAssignmentStatus == 'OFFER RECEIVED') || ($userAssignmentStatus == 'INVITED' && $assignmentStatus[0] == 'OFFER REJECTED') || ($userAssignmentStatus == 'INVITED' && $assignmentStatus[0] == 'OFFER CANCELLED'))
+        if(($userAssignmentStatus == 'INVITED' && $assignmentStatus[0] == 'INVITED') || ($userAssignmentStatus == 'OFFER RECEIVED') || ($userAssignmentStatus == 'INVITED' && $assignmentStatus[0] == 'OFFER REJECTED') || ($userAssignmentStatus == 'INVITED' && $assignmentStatus[0] == 'OFFER CANCELLED') || ($userAssignmentStatus == 'ASSIGNED' && $assignmentStatus[0] == 'ASSIGNED'))
         $disabled = '';
 
         @endphp
