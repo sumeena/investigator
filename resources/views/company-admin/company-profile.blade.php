@@ -15,7 +15,6 @@
                         <div class="col">
                             <h5 class="">
                                 Company Profile
-
                                 <a href="{{ route('company-admin.profile') }}"
                                    class="btn btn-outline-primary btn-sm text-white float-end mt-n1">
                                     Edit Company Profile
@@ -27,7 +26,7 @@
                         <div class="col-md-6">
                             <div class="row">
                                 <div class="col-md-6">
-                                    <b><label>Company Name:</label></b>
+                                    <b><label>Company Name :</label></b>
                                 </div>
                                 @php
                                     @$companyName = $CompanyAdminProfile->company_name ?? $parentProfile->company_name;
@@ -39,7 +38,7 @@
                         <div class="col-md-6">
                             <div class="row">
                                 <div class="col-md-6">
-                                    <b><label>Company Phone:</label></b>
+                                    <b><label>Company Phone :</label></b>
                                 </div>
                                 <div
                                     class="col-md-6">{{ @$CompanyAdminProfile->company_phone ?? $parentProfile->company_phone ?? 'N/A' }}</div>
@@ -50,7 +49,7 @@
                         <div class="col-md-6">
                             <div class="row">
                                 <div class="col-md-6">
-                                    <b><label>Address</label></b>
+                                    <b><label>Address :</label></b>
                                 </div>
                                 <div
                                     class="col-md-6">{{ $CompanyAdminProfile->address ?? $parentProfile->address ?? 'N/A' }}</div>
@@ -59,7 +58,7 @@
                         <div class="col-md-6">
                             <div class="row">
                                 <div class="col-md-6">
-                                    <b><label>Address 1:</label></b>
+                                    <b><label>Address 1 :</label></b>
                                 </div>
                                 <div
                                     class="col-md-6">{{ $CompanyAdminProfile->address_1 ?? $parentProfile->address_1 ?? 'N/A' }}</div>
@@ -70,7 +69,7 @@
                         <div class="col-md-6">
                             <div class="row">
                                 <div class="col-md-6">
-                                    <b><label>City</label></b>
+                                    <b><label>City :</label></b>
                                 </div>
                                 <div
                                     class="col-md-6">{{ $CompanyAdminProfile->city ?? $parentProfile->city ?? 'N/A' }}</div>
@@ -79,7 +78,7 @@
                         <div class="col-md-6">
                             <div class="row">
                                 <div class="col-md-6">
-                                    <b><label>State:</label></b>
+                                    <b><label>State :</label></b>
                                 </div>
                                 <div
                                     class="col-md-6">{{ $CompanyAdminProfile->state ?? $parentProfile->company_phone ?? 'N/A' }}</div>
@@ -90,7 +89,7 @@
                         <div class="col-md-6">
                             <div class="row">
                                 <div class="col-md-6">
-                                    <b><label>Country</label></b>
+                                    <b><label>Country :</label></b>
                                 </div>
                                 <div
                                     class="col-md-6">{{ $CompanyAdminProfile->country ?? $parentProfile->country ?? 'N/A' }}</div>
@@ -126,6 +125,21 @@
                                 </div>
                                 <div
                                     class="col-md-6">{{ $user?->website ?? $user?->companyAdmin?->company?->website ?? 'N/A' }}</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mx-0 py-1 px-3">
+                        <div class="col-md-6">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <b><label> Make Assignments Private :</label></b>
+                                </div>
+                                @php
+                                    @$makeAssignmentsPrivate = $CompanyAdminProfile->make_assignments_private ?? $parentProfile->make_assignments_private;
+                                @endphp
+                                <div
+                                    class="col-md-6">{{ $makeAssignmentsPrivate == 0 ? 'No' : 'Yes' }}</div>
                             </div>
                         </div>
                     </div>

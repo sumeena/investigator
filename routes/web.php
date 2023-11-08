@@ -143,6 +143,10 @@ Route::group(['prefix' => 'company-admin', 'as' => 'company-admin.', 'middleware
     Route::get('/assignment/fetchAssignmentUser', [AssignmentsController::class, 'getAssignmentUser'])->name('assignment.assignment-user.show');
     Route::post('/assignment/hire-now', [AssignmentsController::class, 'hireInvestigator'])->name('assignment.hire-now');
 
+    /** Recall Assignment */
+
+    Route::get('/assignment/{id}/recall', [AssignmentsController::class, 'assignmentRecall'])->name('assignment.recall');
+
     // send msg from assignment
     Route::post('/assignment/send-user-msg', [AssignmentsController::class, 'sendMessage'])->name('assignment.send-msg');
     Route::post('/assignment/send-attachment', [AssignmentsController::class, 'sendAttachmentMessage'])->name('assignment.send-attachment');
@@ -267,7 +271,6 @@ Route::group(['prefix' => 'investigator', 'as' => 'investigator.', 'middleware' 
 
     Route::get('/calendar', [InvestigatorController::class, 'investigatorCalendar'])->name('calendar');
 
-
     Route::post('/calendar/fetch-events', [InvestigatorController::class, 'investigatorCalendarEvents'])->name('calendar.fetch-events');
     Route::get('/calendar/fetch-events-onload', [InvestigatorController::class, 'investigatorCalendarEventsOnLoad'])->name('calendar.fetch-events-onload');
 
@@ -281,6 +284,8 @@ Route::group(['prefix' => 'investigator', 'as' => 'investigator.', 'middleware' 
     Route::post('/assignment/send-msg', [InvitationsController::class, 'sendMessage'])->name('assignment.send-msg');
     Route::post('/assignment/send-attachment', [InvitationsController::class, 'sendAttachmentMessage'])->name('assignment.send-attachment');
 
+    // confirm assignment status
+    Route::get('/assignment/{id}/confirmation/{status}', [InvitationsController::class, 'assignmentConfirmation'])->name('assignment.confirmation');
 
     // Invitation routes
     Route::get('/invitations', [InvitationsController::class, 'index'])->name('invitations.index');

@@ -191,8 +191,7 @@
 
                         <hr>
 
-                        <button type="submit"
-                                class="btn btn-primary">{{ isset($profile) && !empty($profile->id) ? 'Update' : 'Submit' }}</button>
+                        <button type="submit" class="btn btn-primary">{{ isset($profile) && !empty($profile->id) ? 'Update' : 'Submit' }}</button>
                     </form>
                 </div>
             </div>

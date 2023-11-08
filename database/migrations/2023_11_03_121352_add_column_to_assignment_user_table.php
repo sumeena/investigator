@@ -13,12 +13,9 @@ return new class extends Migration
      */
     public function up()
     {
-      Schema::create('investigator_search_histories', function (Blueprint $table) {
-          $table->string('distance')->nullable();
-          $table->string('withInternalInvestigator')->nullable();
-          $table->string('withExternalInvestigator')->nullable();
-
-      });
+        Schema::table('assignment_user', function (Blueprint $table) {
+            $table->string('status')->after('hired')->nullable();
+        });
     }
 
     /**
@@ -28,8 +25,8 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('investigator_search_histories', function (Blueprint $table) {
-            //
+        Schema::table('assignment_user', function (Blueprint $table) {
+            $table->dropColumn('status');
         });
     }
 };

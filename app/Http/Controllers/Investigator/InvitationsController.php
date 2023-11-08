@@ -170,6 +170,7 @@ Please correct it as soon as you can.",
             ]);
         }
     }
+
     public function sendSms($number,$assignmentId)
     {
         $account_sid = env('TWILIO_ACCOUNT_SID');
@@ -191,6 +192,16 @@ Please correct it as soon as you can.",
         return "Error: " . $e->getMessage();
     }
         return "sent";
+    }
+
+
+    public function assignmentConfirmation($id, $status) {
+      $assignmentUser = AssignmentUser::find($id);
+      $hired = ($status == 'ACCEPTED' ? 1 : 0);
+      $assignmentStatus = ($status == 'ACCEPTED' ? 'ASSIGNED' : 'OFFER REJECTED');
+      $updateAssignmentUser = AssignmentUser::where('id', $id)->update(['status'=> $assignmentStatus, 'hired' => $hired]);
+      $updateAssignment = Assignment::where('id', $assignmentUser->assignment_id)->update(['status'=> $assignmentStatus]);
+      return redirect()->route('investigator.assignment.show',$id)->with('success', 'Assignment '.$status);
     }
 
 }
