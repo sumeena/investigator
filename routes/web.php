@@ -143,6 +143,10 @@ Route::group(['prefix' => 'company-admin', 'as' => 'company-admin.', 'middleware
     Route::get('/assignment/fetchAssignmentUser', [AssignmentsController::class, 'getAssignmentUser'])->name('assignment.assignment-user.show');
     Route::post('/assignment/hire-now', [AssignmentsController::class, 'hireInvestigator'])->name('assignment.hire-now');
 
+    /** Recall Assignment */
+
+    Route::get('/assignment/{id}/recall', [AssignmentsController::class, 'assignmentRecall'])->name('assignment.recall');
+
     // send msg from assignment
     Route::post('/assignment/send-user-msg', [AssignmentsController::class, 'sendMessage'])->name('assignment.send-msg');
     Route::post('/assignment/send-attachment', [AssignmentsController::class, 'sendAttachmentMessage'])->name('assignment.send-attachment');

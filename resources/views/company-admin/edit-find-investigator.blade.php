@@ -18,28 +18,28 @@
                     @endif
 
                     @php
-                    $action = route('company-admin.find_investigator');
-                    $assignmentsAction = route('company-admin.assignments');
-                    $assignmentCreateAction = route('company-admin.assignments.create');
-                    $assignmentStoreAction = route('company-admin.assignments.store');
-                    $assignmentEditAction = '/company-admin/assignments/';
-                    $assignmentInviteAction = route('company-admin.assignments.invite');
-                    $assignmentSelect2Action = route('company-admin.select2-assignments');
-                    $searchStoreAction = route('company-admin.save-investigator-search-history');
-                    $searchEditAction = route('company-admin.update-investigator-search-history');
-                    if (request()->routeIs('hm.assignments.edit')) {
-                    $action = route('hm.find_investigator');
-                    $assignmentsAction = route('hm.assignments');
-                    $assignmentCreateAction = route('hm.assignments.create');
-                    $assignmentStoreAction = route('hm.assignments.store');
-                    $assignmentEditAction = '/hm/assignments/';
-                    $assignmentInviteAction = route('hm.assignments.invite');
-                    $assignmentSelect2Action = route('hm.select2-assignments');
-                    $searchStoreAction = route('hm.save-investigator-search-history');
-                    $searchEditAction = route('hm.update-investigator-search-history');
-
-                    }
+                        $action = route('company-admin.find_investigator');
+                        $assignmentsAction = route('company-admin.assignments');
+                        $assignmentCreateAction = route('company-admin.assignments.create');
+                        $assignmentStoreAction = route('company-admin.assignments.store');
+                        $assignmentEditAction = '/company-admin/assignments/';
+                        $assignmentInviteAction = route('company-admin.assignments.invite');
+                        $assignmentSelect2Action = route('company-admin.select2-assignments');
+                        $searchStoreAction = route('company-admin.save-investigator-search-history');
+                        $searchEditAction = route('company-admin.update-investigator-search-history');
+                        if (request()->routeIs('hm.assignments.edit')) {
+                            $action = route('hm.find_investigator');
+                            $assignmentsAction = route('hm.assignments');
+                            $assignmentCreateAction = route('hm.assignments.create');
+                            $assignmentStoreAction = route('hm.assignments.store');
+                            $assignmentEditAction = '/hm/assignments/';
+                            $assignmentInviteAction = route('hm.assignments.invite');
+                            $assignmentSelect2Action = route('hm.select2-assignments');
+                            $searchStoreAction = route('hm.save-investigator-search-history');
+                            $searchEditAction = route('hm.update-investigator-search-history');
+                        }
                     @endphp
+                    
                     <form method="get" action="{{ $action }}" id="find-investigator-form">
 
                         <div class="row">
@@ -108,7 +108,7 @@
                                                             </span>
                                                         </td>
                                                         <td>
-                                                            <input type="text" class="form-control caseDistanceField" name="distance" placeholder="Distance (IN MILES)" value="{{$assignment->searchHistory->distance}}" id="distance">
+                                                            <input type="text" class="form-control caseDistanceField" name="distance" placeholder="Distance (IN MILES)" value="{{@$assignment->searchHistory->distance}}" id="distance">
                                                         </td>
                                                     </tr>
                                                 </tbody>
@@ -128,15 +128,15 @@
                                                 <tbody>
                                                     <tr>
                                                         <td>
-                                                            <input class="form-check-input" type="checkbox" id="surveillance" value="surveillance" name="surveillance" @checked($assignment->searchHistory->surveillance == 'surveillance')>
+                                                            <input class="form-check-input" type="checkbox" id="surveillance" value="surveillance" name="surveillance" @checked(@$assignment->searchHistory->surveillance == 'surveillance')>
                                                             <label>Surveillance</label>
                                                         </td>
                                                         <td>
-                                                            <input class="form-check-input" type="checkbox" id="statements" value="statements" name="statements" @checked($assignment->searchHistory->statements == 'statements')>
+                                                            <input class="form-check-input" type="checkbox" id="statements" value="statements" name="statements" @checked(@$assignment->searchHistory->statements == 'statements')>
                                                             <label>Statements</label>
                                                         </td>
                                                         <td>
-                                                            <input class="form-check-input" type="checkbox" value="misc" name="misc" id="misc" @checked($assignment->searchHistory->misc == 'misc')>
+                                                            <input class="form-check-input" type="checkbox" value="misc" name="misc" id="misc" @checked(@$assignment->searchHistory->misc == 'misc')>
                                                             <label>Misc</label>
                                                         </td>
                                                     </tr>
@@ -166,7 +166,7 @@
                                                             <select class="form-select" name="license" id="license-select">
                                                                 <option value="">Select License</option>
                                                                 @foreach($states as $state)
-                                                                <option value="{{ $state->id }}" @selected($assignment->searchHistory->license_id == $state->id)>
+                                                                <option value="{{ $state->id }}" @selected(@$assignment->searchHistory->license_id == $state->id)>
                                                                     {{ $state->code }}
                                                                 </option>
                                                                 @endforeach
@@ -197,7 +197,7 @@
                                                         <select id="language-select" class="form-control form-select" name="languages[]" multiple>
                                                             <option value="">Select Languages</option>
                                                             @foreach($languageOptions as $languageOption)
-                                                            <option value="{{ $languageOption['id'] }}" @selected($assignment->searchHistory->languages && in_array($languageOption['id'], $assignment->searchHistory->languages))>
+                                                            <option value="{{ $languageOption['id'] }}" @selected(@$assignment->searchHistory->languages && in_array($languageOption['id'], $assignment->searchHistory->languages))>
                                                                 {{ $languageOption['name'] }}
                                                             </option>
                                                             @endforeach
@@ -211,13 +211,11 @@
                             </div>
 
                             @php
-
-                            $availability = explode(',',$assignment->searchHistory->availability);
-
-                            $minDate = explode('-', $availability[0]);
-
-                            $timeAvailability = explode('-', $availability[1]);
-
+                                if(@$assignment->searchHistory->availability){
+                                $availability = explode(',',@$assignment->searchHistory->availability);
+                                $minDate = explode('-', $availability[0]);
+                                $timeAvailability = explode('-', $availability[1]);
+                            }
                             @endphp
 
                             <div class="col-md-6">
@@ -229,7 +227,7 @@
                                                 <tr>
                                                     <td>
 
-                                                        <input type="text" class="form-control caseAvailabilityField" data-min-date="{{$minDate[0]}}" name="e_datetimes" placeholder="Availability (Date)" value="{{$availability[0]}}" id="e-availability" />
+                                                        <input type="text" class="form-control caseAvailabilityField" data-min-date="{{@$minDate[0]}}" name="e_datetimes" placeholder="Availability (Date)" value="{{@$availability[0]}}" id="e-availability" />
 
                                                         <span role="alert" class="text-danger small d-none" id="availability-error"> Availability is required! </span>
                                                     </td>
@@ -251,7 +249,7 @@
                                             <tbody>
                                                 <tr>
                                                     <td>
-                                                        <input type="text" class="form-control availabilityTimeField e-timepickerstart" data-start-time="{{$timeAvailability[0]}}" name="start_time" placeholder="Availability (Time)" id="timepickerstart" value="{{$timeAvailability[0]}}" />
+                                                        <input type="text" class="form-control availabilityTimeField e-timepickerstart" data-start-time="{{@$timeAvailability[0]}}" name="start_time" placeholder="Availability (Time)" id="timepickerstart" value="{{@$timeAvailability[0]}}" />
 
                                                         <span role="alert" class="text-danger small d-none" id="time-error"> Time is required! </span>
                                                     </td>
@@ -271,7 +269,7 @@
                                             <tbody>
                                                 <tr>
                                                     <td>
-                                                        <input type="text" class="form-control availabilityTimeField e-timepickerend" name="end_time" data-end-time="{{$timeAvailability[1]}}" value="{{$timeAvailability[1]}}" placeholder="Availability (Time)" id="timepickerend" />
+                                                        <input type="text" class="form-control availabilityTimeField e-timepickerend" name="end_time" data-end-time="{{@$timeAvailability[1]}}" value="{{@$timeAvailability[1]}}" placeholder="Availability (Time)" id="timepickerend" />
 
                                                         <span role="alert" class="text-danger small d-none" id="time-error"> Time is required! </span>
                                                     </td>
@@ -290,10 +288,8 @@
                                     <div class="card">
                                         <div class="table-responsive">
 
-                                            <input type="hidden" id="assignmentID" value="{{$assignment->id}}">
-                                            <input type="hidden" id="searchHistoryID" value="{{$assignment->searchHistory->id}}">
-
-
+                                            <input type="hidden" id="assignmentID" value="{{@$assignment->id}}">
+                                            <input type="hidden" id="searchHistoryID" value="{{@$assignment->searchHistory->id}}">
 
                                             <input type="hidden" id="fieldsUpdated" value="0">
 
@@ -303,11 +299,7 @@
                                                 Search
                                             </button>
 
-
-
                                         </div>
-
-
                                     </div>
                                 </div>
                             </div>
@@ -322,13 +314,13 @@
                                                           <td>
                                                             <input class="form-check-input" type="checkbox"
                                                                    id="withInternalInvestigator" value="internal"
-                                                                   name="withInternalInvestigator" @checked($assignment->searchHistory->withInternalInvestigator == 'internal')>
+                                                                   name="withInternalInvestigator" @checked(@$assignment->searchHistory->withInternalInvestigator == 'internal')>
                                                               <label>Internal</label>
                                                           </td>
                                                           <td>
                                                             <input class="form-check-input" type="checkbox"
                                                                    id="withExternalInvestigator" value="external"
-                                                                   name="withExternalInvestigator" @checked($assignment->searchHistory->withExternalInvestigator == 'external')>
+                                                                   name="withExternalInvestigator" @checked(@$assignment->searchHistory->withExternalInvestigator == 'external')>
                                                               <label>External</label>
                                                           </td>
 
@@ -435,10 +427,6 @@
             </div>
         </div>
     </div>
-
-
-
-
 </div>
 
 
@@ -728,7 +716,7 @@
         });
 
         $(document).on('click', '#confirmUpdateSearchModalBtn', function(){
-            $('#form-submit-btn').click();
+            $('#form-submit-btn').removeAttr('disabled').click();
             $('#confirmUpdateSearchModalCloseBtn').click();
             $('#fieldsUpdated').val('0');
             $('#callConfirmUpdateSearchModal').attr('disabled',true);
@@ -817,6 +805,7 @@
                 serviceTypeError.removeClass('d-none');
                 hasError = true;
             }
+            
             if (!withInternalInvestigator.is(':checked') && !withExternalInvestigator.is(':checked')) {
                 // Show error
                 searchInvestigatorsError.removeClass('d-none');

@@ -1,4 +1,4 @@
-    @if(isset($messages))
+@if(isset($messages))
     @forelse($messages->sortBy('created_at') as $message)
 
     @if($message->user_id == $authUserId)
@@ -56,19 +56,15 @@
     @endforelse
     @endif
 
-
-
     <div class="row mb-3 send-msg-box">
         @php
-        if($assignmentStatus[0] == 'INVITED')
-        $disabled = '';
-        else if($assignmentStatus[0] == 'ASSIGNED' && $hiredStatus[0] == 0)
         $disabled = 'disabled';
-        else if($assignmentStatus[0] == 'ASSIGNED' && $hiredStatus[0] == 1)
+
+        if(($userAssignmentStatus == 'INVITED' && $assignmentStatus[0] == 'INVITED') || ($userAssignmentStatus == 'OFFER RECEIVED') || ($userAssignmentStatus == 'INVITED' && $assignmentStatus[0] == 'OFFER REJECTED') || ($userAssignmentStatus == 'INVITED' && $assignmentStatus[0] == 'OFFER CANCELLED'))
         $disabled = '';
-        else
-        $disabled = 'disabled';
+
         @endphp
+
         <input type="hidden" value="{{$hiredUser[0]}}" class="hired-user">
         <div class="form-outline textarea-div col-md-11 pad-a-0">
             <textarea {{$disabled}} data-chat-id="{{$chat[0]}}" class="form-control" id="messageTextArea" placeholder="Type your message"></textarea>

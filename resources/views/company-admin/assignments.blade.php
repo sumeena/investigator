@@ -46,43 +46,47 @@
                         </div>
                         <div class="card-body">
                             <div class="table-responsive text-nowrap" id="assignment-container">
-                              <form method="get" action="{{ $assignmentsListAction }}" id="findAssignmentForm">
+                                <form method="get" action="{{ $assignmentsListAction }}" id="findAssignmentForm">
 
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <div class="mb-1">
-                                            <div class="card">
-                                                <h5 class="card-header pt-2 pb-0">Search</h5>
-                                                <div class="table-responsive text-nowrap">
-                                                    <table class="table hr_contact">
-                                                        <tbody>
-                                                        <tr>
-                                                            <td>
-                                                                <input type="text" class="form-control"
-                                                                       name="searchby" placeholder="Search by Assignment ID OR CLIENT ID OR CREATED BY"
-                                                                       value="<?php if(isset($_GET['searchby'])){ echo $_GET['searchby'];};?>"
-                                                                       id="searchby">
-                                                            </td>
-                                                            <td>
-                                                                <select class="form-select" name="status-select"
-                                                                        id="status-select">
-                                                                    <option value="">Select Status</option>
-                                                                        <option value="OPEN" <?php  if(isset($_GET['status-select']) && $_GET['status-select'] =="OPEN"){ echo "selected"; };?> >OPEN </option>
-                                                                        <option value="INVITED" <?php  if(isset($_GET['status-select']) && $_GET['status-select'] =="INVITED"){ echo "selected"; };?> >INVITED </option>
-                                                                        <option value="ASSIGNED" <?php  if(isset($_GET['status-select']) && $_GET['status-select'] =="ASSIGNED"){ echo "selected"; };?> >ASSIGNED </option>
-                                                                </select>
-                                                              </td>
-                                                              <td>
-                                                                  <input type="submit" value="Search" class="btn btn-primary"/>
-                                                                </td>
-                                                          </tr>
-                                                        </tbody>
-                                                    </table>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="mb-1">
+            <div class="card">
+                <h5 class="card-header pt-2 pb-0">Search</h5>
+                <div class="table-responsive text-nowrap">
+                    <table class="table hr_contact">
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <input type="text" class="form-control" name="searchby" placeholder="Search by Assignment ID OR CLIENT ID OR CREATED BY" value="<?php if (isset($_GET['searchby'])) {
+                                        echo $_GET['searchby'];
+                                    }; ?>" id="searchby">
+                                </td>
+                                <td>
+                                    <select class="form-select" name="status-select" id="status-select">
+                                        <option value="">Select Status</option>
+                                        <option value="OPEN" <?php if (isset($_GET['status-select']) && $_GET['status-select'] == "OPEN") {
+                                                                    echo "selected";
+                                                                }; ?>>OPEN </option>
+                                        <option value="INVITED" <?php if (isset($_GET['status-select']) && $_GET['status-select'] == "INVITED") {
+                                                                    echo "selected";
+                                                                }; ?>>INVITED </option>
+                                        <option value="ASSIGNED" <?php if (isset($_GET['status-select']) && $_GET['status-select'] == "ASSIGNED") {
+                                                                        echo "selected";
+                                                                    }; ?>>ASSIGNED </option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <input type="submit" value="Search" class="btn btn-primary" />
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
                                 </form>
                                 <table class="table" id="assignment-table">
@@ -114,30 +118,29 @@
                                             <td class="text-center">
                                                 @php
                                                 $pointer="pointer-events: none";
-                                                if($assignment->status == 'OPEN' || $assignment->status == 'INVITED')
+                                                $aHref = "javascript:void(0)";
+                                                if($assignment->status == 'OPEN' || $assignment->status == 'INVITED' || $assignment->status == 'OFFER REJECTED' || $assignment->status == 'OFFER CANCELLED') {
                                                     $pointer="";
+                                                    $aHref = route($assignmentEditAction, [$assignment->id]);
+                                                }
                                                 @endphp
-                                                @if($assignment->status == 'OPEN' || $assignment->status == 'INVITED')
-                                                  <a style="@php echo $pointer; @endphp" href="{{ route($assignmentEditAction, [$assignment->id]) }}"><i class="fas fa-pencil"></i></a> |
-                                                @else
-                                                  <a style="@php echo $pointer; @endphp" href="javascript:void(0)"><i class="fas fa-pencil"></i></a> |
-                                                @endif
-
-
+                                                
+                                                <a style="@php echo $pointer; @endphp" href="{{ $aHref }}"><i class="fas fa-pencil"></i></a> |
+                                               
                                                 <a href="{{ route($assignmentShowAction, [$assignment->id]) }}"><i class="fas fa-eye"></i></a> |
 
                                                 @php
                                                 $pointer="pointer-events: none";
                                                 if($assignment->status == 'OPEN')
-                                                    $pointer="";
+                                                $pointer="";
                                                 @endphp
                                                 @if($assignment->status == 'OPEN')
-                                                <a  href="javascript:void(0)" class="deleteAssignmentBtn" data-id="{{ $assignment->id }}">
+                                                <a href="javascript:void(0)" class="deleteAssignmentBtn" data-id="{{ $assignment->id }}">
                                                     <i class="fas fa-trash"></i>
                                                 </a> |
                                                 @else
                                                 <a style="@php echo $pointer; @endphp" href="javascript:void(0)">
-                                                    <i class="fas fa-trash" ></i>
+                                                    <i class="fas fa-trash"></i>
                                                 </a> |
                                                 @endif
 
@@ -466,7 +469,7 @@
 
             // confirm prompt
             if (confirm('Are you sure you want to delete this assignment?')) {
-            var assignmentId =  deleteBtn.data("id");
+                var assignmentId = deleteBtn.data("id");
                 $.ajax({
                     url: '{{ $assignmentsDeleteAction }}'.replace('assignmentIdPlaceholder', assignmentId),
                     type: 'DELETE', // Use DELETE method

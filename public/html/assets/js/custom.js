@@ -1,5 +1,5 @@
 $(document).ready(function(){
-  setInterval(function() { latestNotification() }, 2000);
+//   setInterval(function() { latestNotification() }, 2000);
 //latestNotification()
 
   resetPassword("#password");
@@ -188,10 +188,21 @@ $(document).ready(function(){
 
                 $('#notesTextArea').val(response.notes);
                 $('#notesTextArea').data('userid',userId);
+                var userAssignmentStatus = response.userAssignmentStatus;
 
                 /* $('.hire-user').html('<button data-user-id="'+userId+'" data-assignment-id="'+assignmentId+'" type="button" class="btn btn-outline-light btn-sm btn-hire-now">ASSIGN NOW</button>'); */
-                if(assignmentStatus == 'INVITED') {
-                    $('.hire-user').data('user-id',userId).data('assignment-id',assignmentId).removeClass('d-none').html('ASSIGN NOW');
+                if(userAssignmentStatus == 'INVITED' && assignmentStatus != "OFFER SENT") {
+                    console.log('here');
+                    $('.hire-user').data('user-id',userId).data('assignment-id',assignmentId).addClass('btn btn-outline-light btn-md m-l-20 btn-hire-now').removeClass('d-none').html('ASSIGN NOW');
+                }
+                else if(userAssignmentStatus == 'OFFER RECEIVED') {
+                    $('.hire-user').removeClass('d-none').removeClass('btn btn-outline-light btn-md m-l-20 btn-hire-now').html('<span class="label label-primary" style="background:#fff; padding: 8px; border: #7b7dff; border-radius: 3px; margin-left:20px">OFFER SENT</span>');
+                }
+                else if(userAssignmentStatus == 'OFFER REJECTED') {
+                    $('.hire-user').removeClass('d-none').removeClass('btn btn-outline-light btn-md m-l-20 btn-hire-now').html('<span class="label label-primary" style="background:#fff; padding: 8px; border: #7b7dff; border-radius: 3px; margin-left:20px">OFFER REJECTED</span>');
+                }
+                else if(userAssignmentStatus == 'OFFER CANCELLED') {
+                    $('.hire-user').removeClass('d-none').removeClass('btn btn-outline-light btn-md m-l-20 btn-hire-now').html('<span class="label label-primary" style="background:#fff; padding: 8px; border: #7b7dff; border-radius: 3px; margin-left:20px">OFFER CANCELLED</span>');
                 }
                 else {
                     var hiredUser = $('.hired-user').val();

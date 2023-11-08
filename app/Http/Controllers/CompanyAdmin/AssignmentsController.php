@@ -109,7 +109,6 @@ class AssignmentsController extends Controller
 
     public function edit(Assignment $assignment, Request $request)
     {
-
         $states          = State::all();
         $languageOptions = Language::all();
         $filtered        = false;
@@ -236,17 +235,20 @@ class AssignmentsController extends Controller
         if(count($hiredUser) <= 0)
         $hiredUser[0] = '';
 
-        $hiredStatus = AssignmentUser::where(['assignment_id' => $assignmentId, 'user_id' => $authUserId])->pluck('hired');
+        $assignmentUserDetails = AssignmentUser::where(['assignment_id' => $assignmentId, 'user_id' => $authUserId])->get();
+        $hiredStatus = $assignmentUserDetails[0]->hired;
+        $userAssignmentStatus = $assignmentUserDetails[0]->status;
 
         $notes = Assignment::where(['id' => $assignmentId])->pluck('notes');
 
         $assignmentStatus = Assignment::where('id',$assignmentId)->pluck('status');
 
-        $html = view('company-admin.assignment.show-response', compact('messages', 'hiredStatus', 'authUserId', 'chat', 'hiredUser', 'assignmentStatus'))->render();
+        $html = view('company-admin.assignment.show-response', compact('messages', 'hiredStatus', 'authUserId', 'chat', 'hiredUser', 'assignmentStatus', 'userAssignmentStatus'))->render();
 
         return response()->json([
             'data' => $html,
-            'notes' => $notes
+            'notes' => $notes,
+            'userAssignmentStatus' => $userAssignmentStatus
         ]);
     }
 
@@ -257,8 +259,9 @@ class AssignmentsController extends Controller
         $authUser = auth()->user();
         $authUserId = $request->user_id;
         $assignmentId = $request->assignment_id;
-        $assignmentUser = AssignmentUser::where(['assignment_id' => $assignmentId, 'user_id' => $authUserId])->update(['hired' => 1]);
-        Assignment::where('id' , $assignmentId)->update(array('status' => 'ASSIGNED'));
+        $assignmentUser = AssignmentUser::where(['assignment_id' => $assignmentId, 'user_id' => $authUserId])->update(['status' => 'OFFER RECEIVED']);
+        // Assignment::where('id' , $assignmentId)->update(array('status' => 'ASSIGNED'));
+        Assignment::where('id' , $assignmentId)->update(array('status' => 'OFFER SENT'));
         $assignment = Assignment::find($assignmentId);
         $login=route('login');
         $assignmentUserInfo = AssignmentUser::where(['assignment_id'=>$assignmentId])->get();
@@ -475,10 +478,10 @@ Please correct it as soon as you can.",
 
             $assignment = Assignment::find($request->assignment);
 
-                $storeAssignmentUser = AssignmentUser::updateOrCreate(['assignment_id' => $assignment->id, 'user_id' => $investigator->id],['assignment_id' => $assignment->id, 'user_id' => $investigator->id]);
+                $storeAssignmentUser = AssignmentUser::updateOrCreate(['assignment_id' => $assignment->id, 'user_id' => $investigator->id],['assignment_id' => $assignment->id, 'user_id' => $investigator->id, 'status' => 'INVITED']);
 
-                // Assignment::where('id',$assignment->id)->update(['status' => 'INVITED']);
-                Assignment::where('id',$assignment->id)->update(['status' => 'OFFER SENT']);
+                Assignment::where('id',$assignment->id)->update(['status' => 'INVITED']);
+                // Assignment::where('id',$assignment->id)->update(['status' => 'OFFER SENT']);
                 $login=route('login');
 
                 $company_name = '';
@@ -662,5 +665,17 @@ Please correct it as soon as you can.",
         return "Error: " . $e->getMessage();
     }
         return "sent";
+    }
+
+    /** Recall Assignment */
+
+    public function assignmentRecall($id) {
+        $assignmentDetails = Assignment::find($id);
+
+        Assignment::where('id',$id)->update(['status'=>'OFFER CANCELLED']);
+        AssignmentUser::where(['assignment_id'=>$assignmentDetails->id, 'status' => 'OFFER RECEIVED'])->update(['status'=> 'OFFER CANCELLED']);
+
+        return redirect()->route('company-admin.assignment.show',$id)->with('success', 'Assignment Recalled Successfully');
+
     }
 }
