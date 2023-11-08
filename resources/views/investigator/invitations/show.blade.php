@@ -29,10 +29,10 @@
                             </a>
                             @endif
 
-                            @if($assignmentUser->status == NULL || $assignmentUser->status == '')
-                                <a style="margin-right: 500px;" href="{{route('investigator.assignment.confirmation',[$assignmentUser->id,'reject'])}}" class="investigator-view-profile-link"><button type="button" class="btn btn-outline-light btn-sm">Reject</button></a>
+                            @if($assignmentUser->status == 'OFFER RECEIVED')
+                                <a style="margin-right: 500px;" href="{{route('investigator.assignment.confirmation',[$assignmentUser->id,'REJECTED'])}}" class="investigator-view-profile-link"><button type="button" class="btn btn-outline-light btn-sm">Reject</button></a>
 
-                                <a  href="{{route('investigator.assignment.confirmation',[$assignmentUser->id,'accept'])}}" class="investigator-view-profile-link"><button type="button" class="btn btn-outline-light btn-sm">Accept</button></a>
+                                <a  href="{{route('investigator.assignment.confirmation',[$assignmentUser->id,'ACCEPTED'])}}" class="investigator-view-profile-link"><button type="button" class="btn btn-outline-light btn-sm">Accept</button></a>
                             @endif
 
                         </h5>
@@ -83,10 +83,10 @@
                                 <b><label>Investigation Types:</label></b>
                             </div>
                             @php
-                            $investigationTypesArray = array(@$assignmentUser->assignment->searchHistory->surveillance, @$assignmentUser->assignment->searchHistory->statements, @$assignmentUser->assignment->searchHistory->misc);
+                                $investigationTypesArray = array(@$assignmentUser->assignment->searchHistory->surveillance, @$assignmentUser->assignment->searchHistory->statements, @$assignmentUser->assignment->searchHistory->misc);
 
-                            $investigationTypesArray = array_filter($investigationTypesArray);
-                            $investigationTypes = implode(',',$investigationTypesArray);
+                                $investigationTypesArray = array_filter($investigationTypesArray);
+                                $investigationTypes = implode(',',$investigationTypesArray);
                             @endphp
                             <div class="col-md-6">{{ @$investigationTypes ?? null ?: 'N/A' }}</div>
                         </div>
@@ -171,30 +171,16 @@
                                 <b><label>Job Status:</label></b>
                             </div>
                             @php
-
                                 $status = '';
-
-                                if($assignmentUser->assignment->status == 'OFFER SENT' && $assignmentUser->hired == 0 && ($assignmentUser->status == NULL || $assignmentUser->status == '') )
-                                {
-                                    $status = 'OFFER RECEIVED';
+                                if($assignmentUser->hired == 0 && ( $assignmentUser->assignment->status == 'INVITED')) {
+                                    $status = $assignmentUser->status;
                                 }
-                                else if($assignmentUser->hired == 0 && $assignmentUser->status == 'REJECTED')
-                                {
-                                    $status = 'OFFER '.$assignmentUser->status;
+                                else if($assignmentUser->hired == 0 && ($assignmentUser->status == 'OFFER RECEIVED' || $assignmentUser->status == 'OFFER REJECTED' || $assignmentUser->status == 'OFFER CANCELLED')) {
+                                    $status = $assignmentUser->status;
                                 }
-                                else if($assignmentUser->hired == 0 && $assignmentUser->status == 'CANCELLED')
-                                {
-                                    $status = 'OFFER '.$assignmentUser->status;
+                                else if($assignmentUser->hired == 1) {
+                                    $status = $assignmentUser->status;
                                 }
-                                else if($assignmentUser->hired == 1 && $assignmentUser->status == 'ACCEPTED' && $assignmentUser->assignment->status == 'ASSIGNED')
-                                {
-                                    $status = $assignmentUser->assignment->status;
-                                }
-                                else if($assignmentUser->hired == 0 && $assignmentUser->assignment->status == 'ASSIGNED' &&($assignmentUser->status == NULL || $assignmentUser->status == ''))
-                                {
-                                    $status = 'CLOSED';
-                                }
-                               
                             @endphp
                             <div class="col-md-6">{{ @$status ?? null ?: 'N/A' }}</div>
                         </div>
@@ -270,14 +256,9 @@
                         @endif
 
                         @php
-                        if($assignmentUser->assignment->status == 'INVITED')
-                        $disabled = '';
-                        else if($assignmentUser->assignment->status == 'ASSIGNED' && $assignmentUser->hired == 0)
                         $disabled = 'disabled';
-                        else if($assignmentUser->assignment->status == 'ASSIGNED' && $assignmentUser->hired == 1)
+                        if(($assignmentUser->status == 'INVITED' && $assignmentUser->assignment->status == 'INVITED') || ($assignmentUser->status == 'OFFER RECEIVED') || ($assignmentUser->status == 'INVITED' && $assignmentUser->assignment->status == 'OFFER REJECTED') || ($assignmentUser->status == 'INVITED' && $assignmentUser->assignment->status == 'OFFER CANCELLED'))
                         $disabled = '';
-                        else
-                        $disabled = 'disabled';
                         @endphp
 
                         <div class="row mb-3 send-msg-box">

@@ -65,7 +65,7 @@
                                         {
                                             $status = 'OFFER '.$invitation->status;
                                         }
-                                        else if($invitation->hired == 0 && $invitation->status == 'CANCELLED')
+                                        else if($invitation->hired == 0 && $invitation->status == 'OFFER CANCELLED')
                                         {
                                             $status = 'OFFER '.$invitation->status;
                                         }
@@ -79,7 +79,8 @@
                                         }
                                         @endphp
 
-                                        {{ @Str::upper($status) }}</td>
+                                        {{ Str::upper($invitation->status) }} </td>
+
                                         <!-- <td>{{ $invitation->created_at->diffForHumans() }}</td> -->
                                         <td>{{ $invitation->created_at->format('d-m-Y') }}</td>
                                         <td class="text-center">

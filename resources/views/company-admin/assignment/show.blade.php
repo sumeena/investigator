@@ -30,6 +30,12 @@
                     </div>
                     @endif
 
+                    @if(session('success') && session('recalled'))
+                    <div class="alert alert-success" role="alert">
+                        {{ session('success') }}
+                    </div>
+                    @endif
+
                     <div class="card profileData assignment-details">
                         <div class="row">
                             <div class="offset-md-9 col-md-3">
@@ -44,6 +50,11 @@
                             <div class="col-md-12 assignment-col">
                                 <h5 class="assignment-heading">
                                     Assignment ID: {{ @Str::upper($assignment->assignment_id) }}
+
+                                    @if($assignment->status == 'OFFER SENT')
+
+                                    <a href="{{route('company-admin.assignment.recall',[$assignment->id])}}" class="investigator-view-profile-link"><button type="button" class="btn btn-outline-light btn-sm">Recall Assignment</button></a>
+                                    @endif
                                 </h5>
                             </div>
 

@@ -367,6 +367,13 @@
                                                               </td>
 
                                                           </tr>
+                                                          <tr>
+                                                          <td colspan="100%">
+                                                              <span role="alert" class="text-danger small d-none" id="searchInvestigatorsTypeError">
+                                                                  Search Investigators is required, please select at least one!
+                                                              </span>
+                                                          </td>
+                                                      </tr>
                                                       </tbody>
                                                   </table>
                                               </div>
@@ -637,101 +644,30 @@
         }
 
         function saveSearchHistoryData() {
-
             // input selector
             const country = $('#country');
             const street = $('#autocomplete');
             const city = $('#locality');
             const state = $('#administrative_area_level_1');
-            const zip = $('#postal_code');
-            const surv = $('#surveillance');
-            const stat = $('#statements');
-            const misc = $('#misc');
-            const lang = $('#language-select');
-            const license = $('#license-select');
-            const lat = $('#lat');
-            const lng = $('#lng');
-            const availability = $('#availability');
-            const timepickerstart = $('#timepickerstart');
-            const timepickerend = $('#timepickerend');
             const assignmentID = $('#assignmentID');
             const distance = $('#distance');
-            const withInternalInvestigator = $('#withInternalInvestigator');
-            const withExternalInvestigator = $('#withExternalInvestigator');
 
-
-            // values
             const countryValue = country.val();
             const streetValue = street.val();
             const cityValue = city.val();
             const stateValue = state.val();
-            const zipValue = zip.val();
-            const survValue = surv.is(':checked');
-            const statValue = stat.is(':checked');
-            const miscValue = misc.is(':checked');
-            const languages = lang.val();
-            const licenseValue = license.val();
-            const latValue = lat.val();
-            const lngValue = lng.val();
-            const availabilityValue = availability.val();
-            const timepickerstartValue = timepickerstart.val();
-            const timepickerendValue = timepickerend.val();
-            const assignmentIDValue = assignmentID.val();
+
             const distanceValue = distance.val();
-            const withInternalInvestigatorValue = withInternalInvestigator.is(':checked');
-            const withExternalInvestigatorValue = withExternalInvestigator.is(':checked');
+            const assignmentIDValue = assignmentID.val();
 
-            const data = {
-                country : countryValue,
-                street  : streetValue,
-                city    : cityValue,
-                state   : stateValue,
-                zipcode : zipValue,
-                distance: distanceValue
-            };
+            var data = checkForValidation();
 
-            if (latValue && lngValue) {
-                data['lat'] = latValue;
-                data['lng'] = lngValue;
-            }
-
-            if (statValue) {
-                data['statements'] = 'statements';
-            }
-            if (withInternalInvestigatorValue) {
-                data['withInternalInvestigator'] = 'internal';
-            }
-            if (withExternalInvestigatorValue) {
-                data['withExternalInvestigator'] = 'external';
-            }
-            if (miscValue) {
-                data['misc'] = 'misc';
-            }
-
-            if (survValue) {
-                data['surveillance'] = 'surveillance';
-            }
-
-            if (languages && languages.length) {
-                data['languages'] = languages;
-            }
-
-            if (licenseValue) {
-                data['license'] = licenseValue;
-            }
-
-            if (availabilityValue) {
-                data['availability'] = availabilityValue;
-            }
-
-            if (timepickerstartValue) {
-                data['start_time'] = timepickerstartValue;
-            }
-
-            if (timepickerendValue) {
-                data['end_time'] = timepickerendValue;
-            }
-
+            data['country'] = countryValue;
+            data['street'] = streetValue;
+            data['city'] = cityValue;
+            data['state'] = stateValue;
+            data['distance'] = distanceValue;
+            
             if (assignmentIDValue) {
                 data['assignment_id'] = assignmentIDValue;
             }
@@ -744,6 +680,7 @@
                 data   : data,
                 success: function (response) {
                     success = true
+                    // console.log(response);
                 },
                 error  : function (xhr) {
                     console.log(xhr.responseText);
@@ -790,11 +727,15 @@
             });
 
             $('#find-investigator-form').on('submit', function (e) {
-
                 $(this).find('button#form-submit-btn').html('Searching...').attr('disabled', true);
                 e.preventDefault();
+                var data = checkForValidation();
+                const distance = $('#distance');
+                const distanceValue = distance.val();
+                data['distance'] = distanceValue;
+
                 // input selector
-                const zip = $('#postal_code');
+                /* const zip = $('#postal_code');
                 const surv = $('#surveillance');
                 const stat = $('#statements');
                 const misc = $('#misc');
@@ -805,7 +746,6 @@
                 const availability = $('#availability');
                 const timepickerstart = $('#timepickerstart');
                 const timepickerend = $('#timepickerend');
-                const distance = $('#distance');
                 const withInternalInvestigator = $('#withInternalInvestigator');
                 const withExternalInvestigator = $('#withExternalInvestigator');
 
@@ -821,7 +761,6 @@
                 const availabilityValue = availability.val();
                 const timepickerstartValue = timepickerstart.val();
                 const timepickerendValue = timepickerend.val();
-                const distanceValue = distance.val();
                 const withInternalInvestigatorValue = withInternalInvestigator.is(':checked');
                 const withExternalInvestigatorValue = withExternalInvestigator.is(':checked');
 
@@ -832,15 +771,16 @@
                 // error selector
                 const zipError = $('#zipcode-error');
                 const serviceTypeError = $('#service-type-error');
+                const searchInvestigatorsTypeError = $('#searchInvestigatorsTypeError');
                 let hasError = false;
 
                 // Hide error
                 zipError.addClass('d-none');
                 serviceTypeError.addClass('d-none');
+                searchInvestigatorsTypeError.addClass('d-none');
 
                 // Remove error class
                 zip.removeClass('is-invalid');
-
 
                 if (!zipValue) {
                     // Show error
@@ -854,7 +794,15 @@
 
                 if (!surv.is(':checked') && !stat.is(':checked') && !misc.is(':checked')) {
                     // Show error
+                    console.log('here');
+
                     serviceTypeError.removeClass('d-none');
+                    hasError = true;
+                }
+
+                if (!withExternalInvestigator.is(':checked') && !withInternalInvestigator.is(':checked')) {
+                    // Show error
+                    searchInvestigatorsTypeError.removeClass('d-none');
                     hasError = true;
                 }
 
@@ -865,6 +813,7 @@
                 // Hide error
                 zipError.addClass('d-none');
                 serviceTypeError.addClass('d-none');
+                searchInvestigatorsError.addClass('d-none');
 
                 // Remove error class
                 zip.removeClass('is-invalid');
@@ -915,9 +864,9 @@
                     data['end_time'] = timepickerendValue;
                 }
 
+                 */
 
-                data['distance'] = distanceValue;
-
+                // saveSearchHistoryData();
                 fetchData(data);
             });
 
@@ -1037,119 +986,11 @@
 
 
             $(document).on('click', '#callCreateAssignmentModal', function () {
-                // input selector
-                const zip = $('#postal_code');
-                const surv = $('#surveillance');
-                const stat = $('#statements');
-                const misc = $('#misc');
-                const lang = $('#language-select');
-                const license = $('#license-select');
-                const lat = $('#lat');
-                const lng = $('#lng');
-                const availability = $('#availability');
-                const timepickerstart = $('#timepickerstart');
-                const timepickerend = $('#timepickerend');
-
-                // values
-                const zipValue = zip.val();
-                const survValue = surv.is(':checked');
-                const statValue = stat.is(':checked');
-                const miscValue = misc.is(':checked');
-                const languages = lang.val();
-                const licenseValue = license.val();
-                const latValue = lat.val();
-                const lngValue = lng.val();
-                const availabilityValue = availability.val();
-                const timepickerstartValue = timepickerstart.val();
-                const timepickerendValue = timepickerend.val();
-
-                const data = {
-                    page: 1
-                };
-
-                // error selector
-                const zipError = $('#zipcode-error');
-                const serviceTypeError = $('#service-type-error');
-                let hasError = false;
-
-                // Hide error
-                zipError.addClass('d-none');
-                serviceTypeError.addClass('d-none');
-
-                // Remove error class
-                zip.removeClass('is-invalid');
-
-
-                if (!zipValue) {
-                    // Show error
-                    zipError.removeClass('d-none');
-
-                    // Add error class
-                    zip.addClass('is-invalid');
-
-                    hasError = true;
-                }
-
-                if (!surv.is(':checked') && !stat.is(':checked') && !misc.is(':checked')) {
-                    // Show error
-                    serviceTypeError.removeClass('d-none');
-                    hasError = true;
-                }
-
-                if (hasError) {
-                    return false;
-                }
-
-                // Hide error
-                zipError.addClass('d-none');
-                serviceTypeError.addClass('d-none');
-
-                // Remove error class
-                zip.removeClass('is-invalid');
-
-                // hide other errors
-                $('#zipcode-lat-lng-error').addClass('d-none');
-                $('#zipcode-lat-lng-loading').addClass('d-none');
-
-                if (latValue && lngValue) {
-                    data['lat'] = latValue;
-                    data['lng'] = lngValue;
-                }
-
-                if (statValue) {
-                    data['statements'] = 'statements';
-                }
-
-                if (miscValue) {
-                    data['misc'] = 'misc';
-                }
-
-                if (survValue) {
-                    data['surveillance'] = 'surveillance';
-                }
-
-                if (languages && languages.length) {
-                    data['languages'] = languages;
-                }
-
-                if (licenseValue) {
-                    data['license'] = licenseValue;
-                }
-
-                if (availabilityValue) {
-                    data['availability'] = availabilityValue;
-                }
-
-                if (timepickerstartValue) {
-                    data['start_time'] = timepickerstartValue;
-                }
-
-                if (timepickerendValue) {
-                    data['end_time'] = timepickerendValue;
-                }
-
+               var valid = checkForValidation();
+               if(valid) {
+                $(".custom-loader-overlay").hide();
                 $('#assignmentCreateModal').modal('show');
-
+               }
             });
 
             // Create Assignment
@@ -1217,8 +1058,6 @@
                 $('#fieldsUpdated').val('0');
                 $('#callConfirmUpdateSearchModal').attr('disabled', true);
             });
-
-
 
             // Send Invitation
             $('#inviteModalCloseBtn').on('click', function () {
@@ -1324,5 +1163,146 @@
                 }
             });
         }
+
+        function checkForValidation() {
+            // input selector
+            const zip = $('#postal_code');
+            const surv = $('#surveillance');
+            const stat = $('#statements');
+            const misc = $('#misc');
+            const lang = $('#language-select');
+            const license = $('#license-select');
+            const lat = $('#lat');
+            const lng = $('#lng');
+            const availability = $('#availability');
+            const timepickerstart = $('#timepickerstart');
+            const timepickerend = $('#timepickerend');
+            const withInternalInvestigator = $('#withInternalInvestigator');
+            const withExternalInvestigator = $('#withExternalInvestigator');
+
+            // values
+            const zipValue = zip.val();
+            const survValue = surv.is(':checked');
+            const statValue = stat.is(':checked');
+            const miscValue = misc.is(':checked');
+            const languages = lang.val();
+            const licenseValue = license.val();
+            const latValue = lat.val();
+            const lngValue = lng.val();
+            const availabilityValue = availability.val();
+            const timepickerstartValue = timepickerstart.val();
+            const timepickerendValue = timepickerend.val();
+            const withInternalInvestigatorValue = withInternalInvestigator.is(':checked');
+            const withExternalInvestigatorValue = withExternalInvestigator.is(':checked');
+                
+            const data = {
+                page: 1
+            };
+
+            // error selector
+            const zipError = $('#zipcode-error');
+            const serviceTypeError = $('#service-type-error');
+            const searchInvestigatorsError = $('#searchInvestigatorsTypeError');
+
+            let hasError = false;
+
+            // Hide error
+            zipError.addClass('d-none');
+            serviceTypeError.addClass('d-none');
+            searchInvestigatorsError.addClass('d-none');
+
+
+            // Remove error class
+            zip.removeClass('is-invalid');
+
+            if (!zipValue) {
+                // Show error
+                zipError.removeClass('d-none');
+
+                // Add error class
+                zip.addClass('is-invalid');
+
+                hasError = true;
+            }
+
+            if (!surv.is(':checked') && !stat.is(':checked') && !misc.is(':checked')) {
+                // Show error
+                serviceTypeError.removeClass('d-none');
+                hasError = true;
+            }
+
+            if (!withInternalInvestigator.is(':checked') && !withExternalInvestigator.is(':checked')) {
+                // Show error
+                searchInvestigatorsError.removeClass('d-none');
+                hasError = true;
+            }
+
+            if (hasError) {
+                return false;
+            }
+
+            $(".custom-loader-overlay").attr("style","display: flex !important;")
+            // Hide error
+            zipError.addClass('d-none');
+            serviceTypeError.addClass('d-none');
+            searchInvestigatorsError.addClass('d-none');
+
+            // Remove error class
+            zip.removeClass('is-invalid');
+
+            // hide other errors
+            $('#zipcode-lat-lng-error').addClass('d-none');
+            $('#zipcode-lat-lng-loading').addClass('d-none');
+
+            if (latValue && lngValue) {
+                data['lat'] = latValue;
+                data['lng'] = lngValue;
+            }
+
+            if (statValue) {
+                data['statements'] = 'statements';
+            }
+
+            if(zipValue) {
+                data['zipcode'] = zipValue;
+            }
+
+            if (withExternalInvestigatorValue) {
+                data['withExternalInvestigator'] = 'external';
+            }
+            if (withInternalInvestigatorValue) {
+                data['withInternalInvestigator'] = 'internal';
+            }
+
+            if (miscValue) {
+                data['misc'] = 'misc';
+            }
+
+            if (survValue) {
+                data['surveillance'] = 'surveillance';
+            }
+
+            if (languages && languages.length) {
+                data['languages'] = languages;
+            }
+
+            if (licenseValue) {
+                data['license'] = licenseValue;
+            }
+
+            if (availabilityValue) {
+                data['availability'] = availabilityValue;
+            }
+
+            if (timepickerstartValue) {
+                data['start_time'] = timepickerstartValue;
+            }
+
+            if (timepickerendValue) {
+                data['end_time'] = timepickerendValue;
+            }
+            return data;
+        }
+
     </script>
 @endpush

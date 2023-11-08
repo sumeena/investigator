@@ -197,11 +197,11 @@ Please correct it as soon as you can.",
 
     public function assignmentConfirmation($id, $status) {
       $assignmentUser = AssignmentUser::find($id);
-      $hired = ($status == 'accept' ? 1 : 0);
-      $assignmentStatus = ($status == 'accept' ? 'ASSIGNED' : 'OFFER REJECTED');
-      $updateAssignmentUser = AssignmentUser::where('id', $id)->update(['status'=> strtoupper($status.'ed'), 'hired' => $hired]);
+      $hired = ($status == 'ACCEPTED' ? 1 : 0);
+      $assignmentStatus = ($status == 'ACCEPTED' ? 'ASSIGNED' : 'OFFER REJECTED');
+      $updateAssignmentUser = AssignmentUser::where('id', $id)->update(['status'=> $assignmentStatus, 'hired' => $hired]);
       $updateAssignment = Assignment::where('id', $assignmentUser->assignment_id)->update(['status'=> $assignmentStatus]);
-      return redirect()->route('investigator.assignment.show',$id)->with('success', 'Assignment '. ucfirst($status).'ed');
+      return redirect()->route('investigator.assignment.show',$id)->with('success', 'Assignment '.$status);
     }
 
 }
