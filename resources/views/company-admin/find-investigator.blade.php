@@ -618,7 +618,6 @@
                 type   : 'GET',
                 data   : data,
                 success: function (response) {
-
                     saveSearchHistoryData();
                     $(".custom-loader-overlay").hide();
                     $('#data-container').html(response.data);
@@ -1053,7 +1052,7 @@
             });
 
             $(document).on('click', '#confirmUpdateSearchModalBtn', function () {
-                $('#form-submit-btn').click();
+                $('#form-submit-btn').removeAttr('disabled').click();
                 $('#confirmUpdateSearchModalCloseBtn').click();
                 $('#fieldsUpdated').val('0');
                 $('#callConfirmUpdateSearchModal').attr('disabled', true);
