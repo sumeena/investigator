@@ -18,6 +18,8 @@ class Settings extends Model
          'assignment_hired_or_closed_message',
          'new_message_on_message',
          'assignment_update_message',
+         'assignment_confirmation',
+         'assignment_confirmation_on_message'
          ];
         protected $guarded = ['id'];
 
