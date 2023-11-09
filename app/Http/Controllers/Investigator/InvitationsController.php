@@ -268,7 +268,7 @@ Please correct it as soon as you can.",
 
 
 
-      return redirect()->route('investigator.assignment.show',$id)->with('success', 'Assignment '.$status);
+      return redirect()->route('investigator.assignment.show',$id)->with('success', 'OFFER '.$status);
     }
 
 }
