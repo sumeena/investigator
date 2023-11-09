@@ -181,6 +181,10 @@
                                 else if($assignmentUser->hired == 1) {
                                     $status = $assignmentUser->status;
                                 }
+                                else if($assignmentUser->hired == 0 && $assignmentUser->assignment->status == 'ASSIGNED')
+                                {
+                                    $status = 'CLOSED';
+                                }
                             @endphp
                             <div class="col-md-6">{{ @$status ?? null ?: 'N/A' }}</div>
                         </div>

@@ -91,8 +91,11 @@
                                             <td class="text-center">
                                                 @php
                                                 $pointer="pointer-events: none";
-                                                if($assignment->status == 'OPEN' || $assignment->status == 'INVITED')
+                                                $aHref = "javascript:void(0)";
+                                                if($assignment->status == 'OPEN' || $assignment->status == 'INVITED' || $assignment->status == 'OFFER REJECTED' || $assignment->status == 'OFFER CANCELLED') {
                                                     $pointer="";
+                                                    $aHref = route($assignmentEditAction, [$assignment->id]);
+                                                }
                                                 @endphp
                                                 <a style="@php echo $pointer; @endphp" href="{{ route($assignmentEditAction, [$assignment->id]) }}"><i class="fas fa-pencil"></i></a> |
 
