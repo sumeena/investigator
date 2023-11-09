@@ -134,16 +134,9 @@
                                                 if($assignment->status == 'OPEN')
                                                 $pointer="";
                                                 @endphp
-                                                @if($assignment->status == 'OPEN')
-                                                <a href="javascript:void(0)" class="deleteAssignmentBtn" data-id="{{ $assignment->id }}">
+                                                <a style="@php echo $pointer; @endphp" href="javascript:void(0)" class="deleteAssignmentBtn" data-id="{{ $assignment->id }}">
                                                     <i class="fas fa-trash"></i>
                                                 </a> |
-                                                @else
-                                                <a style="@php echo $pointer; @endphp" href="javascript:void(0)">
-                                                    <i class="fas fa-trash"></i>
-                                                </a> |
-                                                @endif
-
                                                 <a class="callCloneAssignmentModal" data-assignment-id="{{ $assignment->id }}" data-assignment-url="{{ $assignmentCreateAction }}" data-client-id="{{ $assignment->client_id }}" href="javascript:void(0)"><i class="fa-solid fa-clone"></i></a>
                                             </td>
                                         </tr>

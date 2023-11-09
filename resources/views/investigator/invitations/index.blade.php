@@ -57,29 +57,23 @@
                                         <td>{{ @Str::upper($invitation->assignment->assignment_id) }}</td>
                                         <td>
                                         @php
-                                        if($invitation->assignment->status == 'OFFER SENT' && $invitation->hired == 0 && ($invitation->status == NULL || $invitation->status == '') )
-                                        {
-                                            $status = 'OFFER RECEIVED';
-                                        }
-                                        else if($invitation->hired == 0 && $invitation->status == 'REJECTED')
-                                        {
-                                            $status = 'OFFER '.$invitation->status;
-                                        }
-                                        else if($invitation->hired == 0 && $invitation->status == 'OFFER CANCELLED')
-                                        {
-                                            $status = 'OFFER '.$invitation->status;
-                                        }
-                                        else if($invitation->hired == 1 && $invitation->status == 'ACCEPTED' && $invitation->assignment->status == 'ASSIGNED')
-                                        {
-                                            $status = $invitation->assignment->status;
-                                        }
-                                        else if($invitation->hired == 0 && $invitation->assignment->status == 'ASSIGNED' &&($invitation->status == NULL || $invitation->status == ''))
-                                        {
-                                            $status = 'CLOSED';
-                                        }
+                                        $status = '';
+                                            if($invitation->hired == 0 && ( $invitation->assignment->status == 'INVITED')) {
+                                                $status = $invitation->status;
+                                            }
+                                            else if($invitation->hired == 0 && ($invitation->status == 'OFFER RECEIVED' || $invitation->status == 'OFFER REJECTED' || $invitation->status == 'OFFER CANCELLED')) {
+                                                $status = $invitation->status;
+                                            }
+                                            else if($invitation->hired == 1) {
+                                                $status = $invitation->status;
+                                            }
+                                            else if($invitation->hired == 0 && $invitation->assignment->status == 'ASSIGNED')
+                                            {
+                                                $status = 'CLOSED';
+                                            }
                                         @endphp
 
-                                        {{ Str::upper($invitation->status) }} </td>
+                                        {{ $status }} </td>
 
                                         <!-- <td>{{ $invitation->created_at->diffForHumans() }}</td> -->
                                         <td>{{ $invitation->created_at->format('d-m-Y') }}</td>
