@@ -175,7 +175,7 @@
                                 if($assignmentUser->hired == 0 && ( $assignmentUser->assignment->status == 'INVITED')) {
                                     $status = $assignmentUser->status;
                                 }
-                                else if($assignmentUser->hired == 0 && ($assignmentUser->status == 'OFFER RECEIVED' || $assignmentUser->status == 'OFFER REJECTED' || $assignmentUser->status == 'OFFER CANCELLED')) {
+                                else if($assignmentUser->hired == 0 && ($assignmentUser->status == 'OFFER RECEIVED' || $assignmentUser->status == 'OFFER REJECTED' || $assignmentUser->status == 'OFFER CANCELLED' || $assignmentUser->status == 'INVITED')) {
                                     $status = $assignmentUser->status;
                                 }
                                 else if($assignmentUser->hired == 1) {
