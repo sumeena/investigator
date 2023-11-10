@@ -41,6 +41,16 @@ Route::get('/', function () {
     return view('auth.login', compact('title'));
 });
 
+Route::get('/privacy-policy', function () {
+    $title = 'ILOGISTIC Portal | Privacy Policy';
+    return view('privacy-policy', compact('title'));
+});
+
+Route::get('/terms-and-conditions', function () {
+    $title = 'ILOGISTIC Portal | Terms & Conditions';
+    return view('terms-and-conditions', compact('title'));
+});
+
 Auth::routes();
 
 
