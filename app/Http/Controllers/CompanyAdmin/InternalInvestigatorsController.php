@@ -44,6 +44,8 @@ class InternalInvestigatorsController extends Controller
     public function store(InternalInvestigatorRequest $request)
     {
 
+        config(['mail.from.address' => 'admin@stagingwebsites.info']);
+
         $role = Role::where('role', 'investigator')->first();
         // check at least one service line is selected
         if (!$this->checkServiceLineIsChecked($request)) {
