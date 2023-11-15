@@ -10899,3 +10899,13 @@ a.text-dark:focus {
     border-color: #dee2e6;
   }
 }
+
+
+.services-icons {
+  color: #0cc867;
+}
+
+.our-services ul
+{
+  list-style-type: none !important;
+}
