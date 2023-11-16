@@ -70,6 +70,9 @@
 
     <main class="py-4">
         @yield('content')
+        <!-- Footer -->
+        @include('footer')
+        <!-- / Footer -->
     </main>
 </div>
 
