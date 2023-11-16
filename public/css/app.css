@@ -10900,6 +10900,13 @@ a.text-dark:focus {
   }
 }
 
+.footer-site {
+  background-color: #1c2126;
+  color : #fff;
+  padding: 15px;
+  width: 100%;
+  margin-left: 0px;
+}
 
 .services-icons {
   color: #0cc867;
