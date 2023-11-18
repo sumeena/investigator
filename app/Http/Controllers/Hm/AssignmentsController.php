@@ -370,16 +370,19 @@ class AssignmentsController extends Controller
         if(count($hiredUser) <= 0)
         $hiredUser[0] = '';
 
-        $hiredStatus = AssignmentUser::where(['assignment_id' => $assignmentId, 'user_id' => $authUserId])->pluck('hired');
+        $assignmentUserDetails = AssignmentUser::where(['assignment_id' => $assignmentId, 'user_id' => $authUserId])->get();
 
+        $hiredStatus = AssignmentUser::where(['assignment_id' => $assignmentId, 'user_id' => $authUserId])->pluck('hired');
+        $userAssignmentStatus = $assignmentUserDetails[0]->status;
         $notes = Assignment::where(['id' => $assignmentId])->pluck('notes');
 
         $assignmentStatus = Assignment::where('id',$assignmentId)->pluck('status');
-        $html = view('company-admin.assignment.show-response', compact('messages', 'hiredStatus', 'authUserId', 'chat', 'hiredUser', 'assignmentStatus'))->render();
+        $html = view('company-admin.assignment.show-response', compact('messages', 'hiredStatus', 'authUserId', 'chat', 'hiredUser', 'assignmentStatus', 'userAssignmentStatus'))->render();
 
         return response()->json([
             'data' => $html,
-            'notes' => $notes
+            'notes' => $notes,
+            'userAssignmentStatus' => $userAssignmentStatus
         ]);
     }
 
@@ -390,8 +393,11 @@ class AssignmentsController extends Controller
         $authUser = auth()->user();
         $authUserId = $request->user_id;
         $assignmentId = $request->assignment_id;
-        $assignmentUser = AssignmentUser::where(['assignment_id' => $assignmentId, 'user_id' => $authUserId])->update(['hired' => 1]); 
-        Assignment::where('id' , $assignmentId)->update(array('status' => 'ASSIGNED'));
+        $assignmentDetails = Assignment::find($assignmentId);
+        $offerSents = $assignmentDetails->offer_sent+1;
+        $assignmentUser = AssignmentUser::where(['assignment_id' => $assignmentId, 'user_id' => $authUserId])->update(['status' => 'OFFER RECEIVED']);
+        Assignment::where('id' , $assignmentId)->update(array('status' => 'OFFER SENT', 'offer_sent'=>$offerSents));
+
         $assignment = Assignment::find($assignmentId);
         $login=route('login');
         $assignmentUserInfo = AssignmentUser::where(['assignment_id'=>$assignmentId])->get();
@@ -416,7 +422,7 @@ class AssignmentsController extends Controller
         }
 
         $notificationDataHired = [
-           'title'        => 'Congratulations! You have been selected for a new assignment.',
+           'title'        => 'Congratulations! An offer is sent to you for a new assignment.',
            'login'        => ' to your account so view the details.',
            'assigmentId'  => 'Assigment ID: ' . Str::upper($assignment->assignment_id),
            'clientId'     => 'Client ID: ' . Str::upper($assignment->client_id),
@@ -687,7 +693,7 @@ class AssignmentsController extends Controller
             'status' => 'COMPLETED',
         ]);
         session()->flash('success', 'Assignment updated successfully');
-        return redirect()->route('company-admin.assignments-list');
+        return redirect()->route('hm.assignments-list');
     }
 
     public function softDeleteAssignment(Assignment $assignment) {
@@ -720,6 +726,29 @@ class AssignmentsController extends Controller
         return $e->getMessage();
     }
         return "sent";
+    }
+
+    /** Recall Assignment */
+
+    public function assignmentRecall($id,$user_id) {
+        $assignmentDetails = Assignment::find($id);
+        // Assignment::where('id',$id)->update(['status'=>'OFFER RECALLED']);
+        AssignmentUser::where(['assignment_id'=>$assignmentDetails->id, 'user_id' => $user_id])->update(['status'=> 'OFFER RECALLED']);
+
+        $checkForTotalOffersRecalled = AssignmentUser::where(['status'=>'OFFER RECALLED', 'assignment_id' => $id])->count();
+
+        $invitedCount = AssignmentUser::where(['status'=>'INVITED', 'assignment_id' => $id])->count();
+        $offerSentCount = AssignmentUser::where(['status'=>'OFFER RECEIVED', 'assignment_id' => $id])->count();
+
+        if($checkForTotalOffersRecalled == $assignmentDetails->offer_sent) {
+            Assignment::where('id', $id)->update(['status'=> 'OFFER RECALLED']);
+        }
+
+        if($invitedCount <= 0 && $offerSentCount <=0) {
+            Assignment::where('id', $id)->update(['status'=> 'OFFER RECALLED']);
+        }
+        return redirect()->route('hm.assignment.show',$id)->with('success', 'Offer Recalled Successfully');
+
     }
 
 }
