@@ -248,6 +248,13 @@ Route::group(['prefix' => 'hm', 'as' => 'hm.', 'middleware' => ['hm']], function
     Route::post('/assignment/send-user-msg', [HMAssignmentsController::class, 'sendMessage'])->name('assignment.send-msg');
     Route::post('/assignment/send-attachment', [HMAssignmentsController::class, 'sendAttachmentMessage'])->name('assignment.send-attachment');
 
+    Route::post('/assignment/save-notes', [HMAssignmentsController::class, 'saveAssignmentNotes'])->name('assignment.save-notes');
+    Route::get('/assignment/get-notes', [HMAssignmentsController::class, 'getAssignmentNotes'])->name('assignment.get-notes');
+
+    /** Recall Assignment */
+
+    Route::get('/assignment/{id}/{user_id}/recall', [HMAssignmentsController::class, 'assignmentRecall'])->name('assignment.recall');
+
     Route::get('/notification/latestNotification', [HmNotificationController::class, 'latestNotification'])->name('notification.latestNotification');
     Route::get('/notification', [HmNotificationController::class, 'index'])->name('notification.index');
     Route::get('/notification/{notification}/show', [HmNotificationController::class, 'show'])->name('notification.show');

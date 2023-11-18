@@ -196,47 +196,12 @@ $(document).ready(function(){
                 {
                     $('.hire-user').removeClass('d-none').removeClass('btn btn-outline-light btn-md m-l-20 btn-hire-now').html('<span class="label label-primary" style="background:#fff; padding: 8px; border: #7b7dff; border-radius: 3px; margin-left:20px">OFFER SENT</span>');
 
-                    $('.hire-user').append('<a href="/company-admin/assignment/'+assignmentId+'/'+userId+'/recall" class="investigator-view-profile-link"><button type="button" style="width:140px" class="btn btn-outline-light btn-sm">RECALL OFFER</button></a>');
+                    $('.hire-user').append('<a href="'+role+'assignment/'+assignmentId+'/'+userId+'/recall" class="investigator-view-profile-link"><button type="button" style="width:140px" class="btn btn-outline-light btn-sm">RECALL OFFER</button></a>');
                 }
                 else if(userAssignmentStatus == 'OFFER RECALLED' || userAssignmentStatus == 'OFFER REJECTED')
                 {
                     $('.hire-user').removeClass('d-none').removeClass('btn btn-outline-light btn-md m-l-20 btn-hire-now').html('<span class="label label-primary" style="background:#fff; padding: 8px; border: #7b7dff; border-radius: 3px; margin-left:20px">'+userAssignmentStatus+'</span>');
                 }
-                /* else if(userAssignmentStatus == 'OFFER RECEIVED') {
-                    $('.hire-user').removeClass('d-none').removeClass('btn btn-outline-light btn-md m-l-20 btn-hire-now').html('<span class="label label-primary" style="background:#fff; padding: 8px; border: #7b7dff; border-radius: 3px; margin-left:20px">OFFER SENT</span>');
-                }
-                else if(userAssignmentStatus == 'ASSIGNED')
-                {
-                    $('.hire-user').removeClass('d-none').removeClass('btn btn-outline-light btn-md m-l-20 btn-hire-now').html('<span class="label label-primary" style="background:#fff; padding: 8px; border: #7b7dff; border-radius: 3px; margin-left:20px">ASSIGNED</span>');
-                }
-                else if(userAssignmentStatus == 'OFFER CLOSED' )
-                {
-                    $('.hire-user').removeClass('d-none').removeClass('btn btn-outline-light btn-md m-l-20 btn-hire-now').html('<span class="label label-primary" style="background:#fff; padding: 8px; border: #7b7dff; border-radius: 3px; margin-left:20px">OFFER CLOSED</span>');
-                } */
-
-                /* $('.hire-user').html('<button data-user-id="'+userId+'" data-assignment-id="'+assignmentId+'" type="button" class="btn btn-outline-light btn-sm btn-hire-now">ASSIGN NOW</button>'); */
-                /* if(userAssignmentStatus == 'INVITED' && assignmentStatus != "OFFER SENT"  && assignmentStatus != "ASSIGNED") {
-                    $('.hire-user').data('user-id',userId).data('assignment-id',assignmentId).addClass('btn btn-outline-light btn-md m-l-20 btn-hire-now').removeClass('d-none').html('ASSIGN NOW');
-                }
-                else if(userAssignmentStatus == 'OFFER RECEIVED') {
-                    $('.hire-user').removeClass('d-none').removeClass('btn btn-outline-light btn-md m-l-20 btn-hire-now').html('<span class="label label-primary" style="background:#fff; padding: 8px; border: #7b7dff; border-radius: 3px; margin-left:20px">OFFER SENT</span>');
-                }
-                else if(userAssignmentStatus == 'OFFER REJECTED') {
-                    $('.hire-user').removeClass('d-none').removeClass('btn btn-outline-light btn-md m-l-20 btn-hire-now').html('<span class="label label-primary" style="background:#fff; padding: 8px; border: #7b7dff; border-radius: 3px; margin-left:20px">OFFER REJECTED</span>');
-                }
-                else if(userAssignmentStatus == 'OFFER RECALLED') {
-                    $('.hire-user').removeClass('d-none').removeClass('btn btn-outline-light btn-md m-l-20 btn-hire-now').html('<span class="label label-primary" style="background:#fff; padding: 8px; border: #7b7dff; border-radius: 3px; margin-left:20px">OFFER RECALLED</span>');
-                }
-                else {
-                    var hiredUser = $('.hired-user').val();
-                    if(hiredUser == userId) {
-                        $('.hire-user').removeClass('btn-hire-now btn-outline-light').addClass('btn-hired btn-light').removeClass('d-none').html('ASSIGNED');
-                        // $('.hire-user').html('<button type="button" class="btn btn-light btn-sm btn-hired">ASSIGNED</button>');
-                    }
-                    else
-                    $('.hire-user').addClass('d-none');
-                } */
-
             }
         })
 
@@ -245,14 +210,16 @@ $(document).ready(function(){
 
 
     $(document).on('keyup', '#notesTextArea', function(){
-        $('.confirm-div').html('<div class="col-md-1"><button type="button" class="btn btn-success btn-notes-check"><i class="fa fa-check fa-lg"></i></button></div> <div class="col-md-1"><button type="button" class="btn btn-danger btn-notes-cancel"><i class="fa fa-times fa-lg"></i></button></div>');
+        var role = $(this).data('role');
+        $('.confirm-div').html('<div class="col-md-1"><button type="button" class="btn btn-success btn-notes-check" data-role="'+role+'"><i class="fa fa-check fa-lg"></i></button></div> <div class="col-md-1"><button type="button" data-role="'+role+'" class="btn btn-danger btn-notes-cancel"><i class="fa fa-times fa-lg"></i></button></div>');
     });
 
     $(document).on('click', '.btn-notes-cancel', function() {
         var userId = $('#notesTextArea').data('userid');
         var assignmentId = $('#notesTextArea').data('assignmentid');
+        var userRole = $(this).data('role');
         $.ajax({
-            url : '/company-admin/assignment/get-notes',
+            url : userRole+'assignment/get-notes',
             method : 'GET',
             data : { assignment_id:assignmentId },
             success : function(data) {
@@ -266,10 +233,11 @@ $(document).ready(function(){
     $(document).on('click', '.btn-notes-check', function() {
         var notesTextArea = $(this).parents('.confirm-div').prev('div.row').children('div').children('textarea#notesTextArea');
         var notes =notesTextArea.val();
+        var userRole = $(this).data('role');
         // var notes_user_id =notesTextArea.data('userid');
         var notes_assignment_id = notesTextArea.data('assignmentid');
         $.ajax({
-            url : '/company-admin/assignment/save-notes',
+            url : userRole+'assignment/save-notes',
             method : 'POST',
             data : { notes:notes, assignment_id:notes_assignment_id },
             success : function(data) {
@@ -286,9 +254,9 @@ $(document).ready(function(){
         $(this).html('Assigning...').css('pointer-events','none');
         var userId = $(this).data('user-id');
         var assignmentId = $(this).data('assignment-id');
-
+        var role = $('.view-investigator-profile').data('role');
         $.ajax({
-            url: '/company-admin/assignment/hire-now',
+            url: role+'assignment/hire-now',
             method : 'POST',
             data : { user_id : userId, assignment_id: assignmentId },
             success : function(response) {
@@ -351,13 +319,6 @@ $(document).ready(function(){
             data: data,
             success: function(response) {
                 window.location.replace(response);
-                // window.location.href="/company-admin/assignments/"+response.assignmentID+"/edit";
-                /* $('#assignment-flash').text(response.message);
-                $('#assignment-flash').show();
-                fetchAssignmentData({
-                    page: 1
-                });
-                $('#assignmentCreateModal').modal('hide'); */
             },
             error: function(xhr) {
                 console.log(xhr.responseText);

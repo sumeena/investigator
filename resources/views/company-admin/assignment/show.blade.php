@@ -39,7 +39,7 @@
                     <div class="card profileData assignment-details">
                         <div class="row">
                             <div class="offset-md-9 col-md-3">
-                                <a href="/company-admin/assignments-list" class="investigator-view-profile-link">
+                                <a href="{{$viewProfile}}assignments-list" class="investigator-view-profile-link">
                                     <button type="button" class="btn btn-outline-primary btn-md btn-back">Back</button>
                                 </a>
                             </div>
@@ -198,7 +198,7 @@
                                 if(@$assignment->status == 'COMPLETED')
                                 $disabled = 'disabled';
                                 @endphp
-                                <textarea rows="5" data-assignmentid="{{ $assignment->id }}" {{$disabled}} class="form-control" id="notesTextArea" name="notes" placeholder="Type notes here..">{{$assignment->notes}}</textarea>
+                                <textarea rows="5" data-role="{{$viewProfile}}" data-assignmentid="{{ $assignment->id }}" {{$disabled}} class="form-control" id="notesTextArea" name="notes" placeholder="Type notes here..">{{$assignment->notes}}</textarea>
                             </div>
                         </div>
 
@@ -246,7 +246,7 @@
                                                 Messages
                                                 <a href="" data-role="{{$viewProfile}}" target="_blank" class="btn btn-outline-light btn-md m-l-20 view-investigator-profile">View Profile</a>
 
-                                                <a href="javascript:void(0)" class="btn btn-outline-light btn-md m-l-20 hire-user btn-hire-now"></a>
+                                                <a data-role="{{$viewProfile}}" href="javascript:void(0)" class="btn btn-outline-light btn-md m-l-20 hire-user btn-hire-now"></a>
                                             </h5>
                                         </div>
                                     </div>
