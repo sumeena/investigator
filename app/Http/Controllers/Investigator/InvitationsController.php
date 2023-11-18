@@ -190,7 +190,7 @@ Please correct it as soon as you can.",
               )
           );
         } catch (\Exception $e) {
-        // Handle exceptions or errors
+      // Handle exceptions or errors
         return "Error: " . $e->getMessage();
     }
         return "sent";
@@ -198,12 +198,30 @@ Please correct it as soon as you can.",
 
 
     public function assignmentConfirmation($id, $status) {
+      
       $assignmentUser = AssignmentUser::find($id);
       $assignmentDetails = Assignment::find($assignmentUser->assignment_id);
       $hired = ($status == 'ACCEPTED' ? 1 : 0);
       $assignmentStatus = ($status == 'ACCEPTED' ? 'ASSIGNED' : 'OFFER REJECTED');
       $updateAssignmentUser = AssignmentUser::where('id', $id)->update(['status'=> $assignmentStatus, 'hired' => $hired]);
-      $updateAssignment = Assignment::where('id', $assignmentUser->assignment_id)->update(['status'=> $assignmentStatus]);
+      
+      $checkForTotalOffersRejected = AssignmentUser::where(['status'=>'OFFER REJECTED', 'assignment_id' => $assignmentUser->assignment_id])->count();
+
+      if($checkForTotalOffersRejected == $assignmentDetails->offer_sent) {
+        Assignment::where('id', $assignmentUser->assignment_id)->update(['status'=> $assignmentStatus]);
+      }
+
+      if($hired == 1)
+      AssignmentUser::where('assignment_id',$assignmentUser->assignment_id)->update(['status'=>'OFFER CLOSED']);
+
+      $invitedCount = AssignmentUser::where(['status'=>'INVITED', 'assignment_id' => $id])->count();
+      $offerSentCount = AssignmentUser::where(['status'=>'OFFER RECEIVED', 'assignment_id' => $id])->count();
+
+      if($invitedCount <= 0 && $offerSentCount <=0) {
+        Assignment::where('id', $id)->update(['status'=> 'OFFER REJECTED']);
+      }
+    
+      // $updateAssignment = Assignment::where('id', $assignmentUser->assignment_id)->update(['status'=> $assignmentStatus]);
 
       $notificationData = [
         'user_id'      => $assignmentDetails->user_id,
@@ -213,14 +231,12 @@ Please correct it as soon as you can.",
         'url'          => route('company-admin.assignment.show', $assignmentDetails->id),
     ];
 
-
      Notification::create($notificationData);
      $settings = Settings::where('user_id', $assignmentDetails->user_id)->paginate(1);
 
      if($settings->count() > 0){
        $userDetails = User::where('id', $assignmentDetails->user_id)->paginate(1);
-       if($settings[0]->new_message == 1 ){
-
+       if($settings[0]->new_message == 1 ) {
 
          $notificationData = [
            'first_name' => $userDetails[0]->first_name,
@@ -229,7 +245,6 @@ Please correct it as soon as you can.",
             'login'        => ' to your account so view the details.',
             'loginUrl'        => route('login'),
             'thanks'        => 'Ilogistics Team',
-
          ];
 
          if(!empty($userDetails[0]->email)){
@@ -259,14 +274,6 @@ Please correct it as soon as you can.",
          }
        }
      }
-
-
-
-
-
-
-
-
 
       return redirect()->route('investigator.assignment.show',$id)->with('success', 'OFFER '.$status);
     }

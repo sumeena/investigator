@@ -10,7 +10,7 @@
                         <div class="col">
                             <h5 class="">
                                 Investigator Profile
-                                <a href="javascript:history.back()" class="text-white float-end">
+                                <a href="/company-admin/internal-investigators" class="text-white float-end">
                                     Back
                                 </a>
                             </h5>

@@ -145,8 +145,6 @@ $(document).ready(function(){
 
         $('.custom-loader-overlay').attr("style", "display: flex !important");
 
-
-
         $.ajax({
             url : action,
             method : 'POST',
@@ -190,8 +188,34 @@ $(document).ready(function(){
                 $('#notesTextArea').data('userid',userId);
                 var userAssignmentStatus = response.userAssignmentStatus;
 
+                if(userAssignmentStatus == 'INVITED')
+                {
+                    $('.hire-user').data('user-id',userId).data('assignment-id',assignmentId).addClass('btn btn-outline-light btn-md m-l-20 btn-hire-now').removeClass('d-none').html('ASSIGN NOW');
+                }
+                else if(userAssignmentStatus == 'OFFER RECEIVED')
+                {
+                    $('.hire-user').removeClass('d-none').removeClass('btn btn-outline-light btn-md m-l-20 btn-hire-now').html('<span class="label label-primary" style="background:#fff; padding: 8px; border: #7b7dff; border-radius: 3px; margin-left:20px">OFFER SENT</span>');
+
+                    $('.hire-user').append('<a href="/company-admin/assignment/'+assignmentId+'/'+userId+'/recall" class="investigator-view-profile-link"><button type="button" style="width:140px" class="btn btn-outline-light btn-sm">RECALL OFFER</button></a>');
+                }
+                else if(userAssignmentStatus == 'OFFER RECALLED' || userAssignmentStatus == 'OFFER REJECTED')
+                {
+                    $('.hire-user').removeClass('d-none').removeClass('btn btn-outline-light btn-md m-l-20 btn-hire-now').html('<span class="label label-primary" style="background:#fff; padding: 8px; border: #7b7dff; border-radius: 3px; margin-left:20px">'+userAssignmentStatus+'</span>');
+                }
+                /* else if(userAssignmentStatus == 'OFFER RECEIVED') {
+                    $('.hire-user').removeClass('d-none').removeClass('btn btn-outline-light btn-md m-l-20 btn-hire-now').html('<span class="label label-primary" style="background:#fff; padding: 8px; border: #7b7dff; border-radius: 3px; margin-left:20px">OFFER SENT</span>');
+                }
+                else if(userAssignmentStatus == 'ASSIGNED')
+                {
+                    $('.hire-user').removeClass('d-none').removeClass('btn btn-outline-light btn-md m-l-20 btn-hire-now').html('<span class="label label-primary" style="background:#fff; padding: 8px; border: #7b7dff; border-radius: 3px; margin-left:20px">ASSIGNED</span>');
+                }
+                else if(userAssignmentStatus == 'OFFER CLOSED' )
+                {
+                    $('.hire-user').removeClass('d-none').removeClass('btn btn-outline-light btn-md m-l-20 btn-hire-now').html('<span class="label label-primary" style="background:#fff; padding: 8px; border: #7b7dff; border-radius: 3px; margin-left:20px">OFFER CLOSED</span>');
+                } */
+
                 /* $('.hire-user').html('<button data-user-id="'+userId+'" data-assignment-id="'+assignmentId+'" type="button" class="btn btn-outline-light btn-sm btn-hire-now">ASSIGN NOW</button>'); */
-                if(userAssignmentStatus == 'INVITED' && assignmentStatus != "OFFER SENT"  && assignmentStatus != "ASSIGNED") {
+                /* if(userAssignmentStatus == 'INVITED' && assignmentStatus != "OFFER SENT"  && assignmentStatus != "ASSIGNED") {
                     $('.hire-user').data('user-id',userId).data('assignment-id',assignmentId).addClass('btn btn-outline-light btn-md m-l-20 btn-hire-now').removeClass('d-none').html('ASSIGN NOW');
                 }
                 else if(userAssignmentStatus == 'OFFER RECEIVED') {
@@ -200,8 +224,8 @@ $(document).ready(function(){
                 else if(userAssignmentStatus == 'OFFER REJECTED') {
                     $('.hire-user').removeClass('d-none').removeClass('btn btn-outline-light btn-md m-l-20 btn-hire-now').html('<span class="label label-primary" style="background:#fff; padding: 8px; border: #7b7dff; border-radius: 3px; margin-left:20px">OFFER REJECTED</span>');
                 }
-                else if(userAssignmentStatus == 'OFFER CANCELLED') {
-                    $('.hire-user').removeClass('d-none').removeClass('btn btn-outline-light btn-md m-l-20 btn-hire-now').html('<span class="label label-primary" style="background:#fff; padding: 8px; border: #7b7dff; border-radius: 3px; margin-left:20px">OFFER CANCELLED</span>');
+                else if(userAssignmentStatus == 'OFFER RECALLED') {
+                    $('.hire-user').removeClass('d-none').removeClass('btn btn-outline-light btn-md m-l-20 btn-hire-now').html('<span class="label label-primary" style="background:#fff; padding: 8px; border: #7b7dff; border-radius: 3px; margin-left:20px">OFFER RECALLED</span>');
                 }
                 else {
                     var hiredUser = $('.hired-user').val();
@@ -211,7 +235,7 @@ $(document).ready(function(){
                     }
                     else
                     $('.hire-user').addClass('d-none');
-                }
+                } */
 
             }
         })

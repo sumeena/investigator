@@ -119,7 +119,7 @@
                                                 @php
                                                 $pointer="pointer-events: none";
                                                 $aHref = "javascript:void(0)";
-                                                if($assignment->status == 'OPEN' || $assignment->status == 'INVITED' || $assignment->status == 'OFFER REJECTED' || $assignment->status == 'OFFER CANCELLED') {
+                                                if($assignment->status == 'OPEN' || $assignment->status == 'INVITED' || $assignment->status == 'OFFER REJECTED' || $assignment->status == 'OFFER RECALLED') {
                                                     $pointer="";
                                                     $aHref = route($assignmentEditAction, [$assignment->id]);
                                                 }
