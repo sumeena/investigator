@@ -399,4 +399,5 @@ input:checked + .slider:before {
 
 .m-t-3 {
   margin-top: 3em;
+  margin-left: 0.5em;
 }
