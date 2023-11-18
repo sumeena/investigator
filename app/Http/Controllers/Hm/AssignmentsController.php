@@ -390,7 +390,7 @@ class AssignmentsController extends Controller
         $authUser = auth()->user();
         $authUserId = $request->user_id;
         $assignmentId = $request->assignment_id;
-        $assignmentUser = AssignmentUser::where(['assignment_id' => $assignmentId, 'user_id' => $authUserId])->update(['hired' => 1]);
+        $assignmentUser = AssignmentUser::where(['assignment_id' => $assignmentId, 'user_id' => $authUserId])->update(['hired' => 1]); 
         Assignment::where('id' , $assignmentId)->update(array('status' => 'ASSIGNED'));
         $assignment = Assignment::find($assignmentId);
         $login=route('login');

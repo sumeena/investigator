@@ -27,6 +27,7 @@ use Illuminate\Support\Str;
 use Illuminate\Testing\Assert;
 use Illuminate\Validation\Rules\Exists;
 use App\Mail\NewMassageMail;
+use PhpParser\Node\Expr\Assign;
 use Twilio\Rest\Client;
 
 class AssignmentsController extends Controller
@@ -259,9 +260,11 @@ class AssignmentsController extends Controller
         $authUser = auth()->user();
         $authUserId = $request->user_id;
         $assignmentId = $request->assignment_id;
+        $assignmentDetails = Assignment::find($assignmentId);
+        $offerSents = $assignmentDetails->offer_sent+1;
         $assignmentUser = AssignmentUser::where(['assignment_id' => $assignmentId, 'user_id' => $authUserId])->update(['status' => 'OFFER RECEIVED']);
         // Assignment::where('id' , $assignmentId)->update(array('status' => 'ASSIGNED'));
-        Assignment::where('id' , $assignmentId)->update(array('status' => 'OFFER SENT'));
+        Assignment::where('id' , $assignmentId)->update(array('status' => 'OFFER SENT', 'offer_sent'=>$offerSents));
         $assignment = Assignment::find($assignmentId);
         $login=route('login');
         $assignmentUserInfo = AssignmentUser::where(['assignment_id'=>$assignmentId])->get();
@@ -669,13 +672,24 @@ Please correct it as soon as you can.",
 
     /** Recall Assignment */
 
-    public function assignmentRecall($id) {
+    public function assignmentRecall($id,$user_id) {
         $assignmentDetails = Assignment::find($id);
+        // Assignment::where('id',$id)->update(['status'=>'OFFER RECALLED']);
+        AssignmentUser::where(['assignment_id'=>$assignmentDetails->id, 'user_id' => $user_id])->update(['status'=> 'OFFER RECALLED']);
 
-        Assignment::where('id',$id)->update(['status'=>'OFFER CANCELLED']);
-        AssignmentUser::where(['assignment_id'=>$assignmentDetails->id, 'status' => 'OFFER RECEIVED'])->update(['status'=> 'OFFER CANCELLED']);
+        $checkForTotalOffersRecalled = AssignmentUser::where(['status'=>'OFFER RECALLED', 'assignment_id' => $id])->count();
 
-        return redirect()->route('company-admin.assignment.show',$id)->with('success', 'Assignment Recalled Successfully');
+        $invitedCount = AssignmentUser::where(['status'=>'INVITED', 'assignment_id' => $id])->count();
+        $offerSentCount = AssignmentUser::where(['status'=>'OFFER RECEIVED', 'assignment_id' => $id])->count();
+
+        if($checkForTotalOffersRecalled == $assignmentDetails->offer_sent) {
+            Assignment::where('id', $id)->update(['status'=> 'OFFER RECALLED']);
+        }
+
+        if($invitedCount <= 0 && $offerSentCount <=0) {
+            Assignment::where('id', $id)->update(['status'=> 'OFFER RECALLED']);
+        }
+        return redirect()->route('company-admin.assignment.show',$id)->with('success', 'Offer Recalled Successfully');
 
     }
 }

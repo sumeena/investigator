@@ -19,7 +19,7 @@
                         <h5 class="">
                             Assignment ID: {{ @Str::upper($assignmentUser->assignment->assignment_id) }}
 
-                            <a href="javascript:history.back()" class="investigator-view-profile-link">
+                            <a href="/investigator/assignments-listing" class="investigator-view-profile-link">
                                 <button type="button" class="pull-right btn btn-outline-light btn-sm">Back</button>
                             </a>
 
@@ -175,7 +175,7 @@
                                 if($assignmentUser->hired == 0 && ( $assignmentUser->assignment->status == 'INVITED')) {
                                     $status = $assignmentUser->status;
                                 }
-                                else if($assignmentUser->hired == 0 && ($assignmentUser->status == 'OFFER RECEIVED' || $assignmentUser->status == 'OFFER REJECTED' || $assignmentUser->status == 'OFFER CANCELLED' || $assignmentUser->status == 'INVITED')) {
+                                else if($assignmentUser->hired == 0 && ($assignmentUser->status == 'OFFER RECEIVED' || $assignmentUser->status == 'OFFER REJECTED' || $assignmentUser->status == 'OFFER RECALLED' || $assignmentUser->status == 'INVITED')) {
                                     $status = $assignmentUser->status;
                                 }
                                 else if($assignmentUser->hired == 1) {
@@ -260,9 +260,9 @@
                         @endif
 
                         @php
-                        $disabled = 'disabled';
-                        if(($assignmentUser->status == 'INVITED' && $assignmentUser->assignment->status == 'INVITED') || ($assignmentUser->status == 'OFFER RECEIVED') || ($assignmentUser->status == 'INVITED' && $assignmentUser->assignment->status == 'OFFER REJECTED') || ($assignmentUser->status == 'INVITED' && $assignmentUser->assignment->status == 'OFFER CANCELLED') || ($assignmentUser->status == 'ASSIGNED' && $assignmentUser->assignment->status == 'ASSIGNED'))
-                        $disabled = '';
+                            $disabled = '';
+                            if($assignmentUser->status == 'ASSIGNED')
+                            $disabled = '';
                         @endphp
 
                         <div class="row mb-3 send-msg-box">
