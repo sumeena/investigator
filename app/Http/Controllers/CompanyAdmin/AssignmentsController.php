@@ -289,7 +289,7 @@ class AssignmentsController extends Controller
         }
 
         $notificationDataHired = [
-           'title'        => 'Congratulations! You have been selected for a new assignment.',
+           'title'        => 'Congratulations! An offer is sent to you for a new assignment.',
            'login'        => ' to your account so view the details.',
            'assigmentId'  => 'Assigment ID: ' . Str::upper($assignment->assignment_id),
            'clientId'     => 'Client ID: ' . Str::upper($assignment->client_id),
