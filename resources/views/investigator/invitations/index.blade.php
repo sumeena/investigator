@@ -61,7 +61,7 @@
                                             if($invitation->hired == 0 && ( $invitation->assignment->status == 'INVITED')) {
                                                 $status = $invitation->status;
                                             }
-                                            else if($invitation->hired == 0 && ($invitation->status == 'OFFER RECEIVED' || $invitation->status == 'OFFER REJECTED' || $invitation->status == 'OFFER CANCELLED' || $invitation->status == 'INVITED')) {
+                                            else if($invitation->hired == 0 && ($invitation->status == 'OFFER RECEIVED' || $invitation->status == 'OFFER REJECTED' || $invitation->status == 'OFFER RECALLED' || $invitation->status == 'INVITED')) {
                                                 $status = $invitation->status;
                                             }
                                             else if($invitation->hired == 1) {

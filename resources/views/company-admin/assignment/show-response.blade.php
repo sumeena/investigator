@@ -58,11 +58,9 @@
 
     <div class="row mb-3 send-msg-box">
         @php
-        $disabled = 'disabled';
-
-        if(($userAssignmentStatus == 'INVITED' && $assignmentStatus[0] == 'INVITED') || ($userAssignmentStatus == 'OFFER RECEIVED') || ($userAssignmentStatus == 'INVITED' && $assignmentStatus[0] == 'OFFER REJECTED') || ($userAssignmentStatus == 'INVITED' && $assignmentStatus[0] == 'OFFER CANCELLED') || ($userAssignmentStatus == 'ASSIGNED' && $assignmentStatus[0] == 'ASSIGNED'))
-        $disabled = '';
-
+            $disabled = '';
+            if($userAssignmentStatus == 'ASSIGNED')
+            $disabled = '';
         @endphp
 
         <input type="hidden" value="{{$hiredUser[0]}}" class="hired-user">

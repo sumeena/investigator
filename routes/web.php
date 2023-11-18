@@ -155,7 +155,7 @@ Route::group(['prefix' => 'company-admin', 'as' => 'company-admin.', 'middleware
 
     /** Recall Assignment */
 
-    Route::get('/assignment/{id}/recall', [AssignmentsController::class, 'assignmentRecall'])->name('assignment.recall');
+    Route::get('/assignment/{id}/{user_id}/recall', [AssignmentsController::class, 'assignmentRecall'])->name('assignment.recall');
 
     // send msg from assignment
     Route::post('/assignment/send-user-msg', [AssignmentsController::class, 'sendMessage'])->name('assignment.send-msg');

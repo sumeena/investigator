@@ -39,7 +39,7 @@
                     <div class="card profileData assignment-details">
                         <div class="row">
                             <div class="offset-md-9 col-md-3">
-                                <a href="javascript:history.back()" class="investigator-view-profile-link">
+                                <a href="/company-admin/assignments-list" class="investigator-view-profile-link">
                                     <button type="button" class="btn btn-outline-primary btn-md btn-back">Back</button>
                                 </a>
                             </div>
@@ -50,11 +50,6 @@
                             <div class="col-md-12 assignment-col">
                                 <h5 class="assignment-heading">
                                     Assignment ID: {{ @Str::upper($assignment->assignment_id) }}
-
-                                    @if($assignment->status == 'OFFER SENT')
-
-                                    <a href="{{route('company-admin.assignment.recall',[$assignment->id])}}" class="investigator-view-profile-link"><button type="button" class="btn btn-outline-light btn-sm">Recall Assignment</button></a>
-                                    @endif
                                 </h5>
                             </div>
 
@@ -224,7 +219,6 @@
         <div class="card col-xs-12 assignmentMain p-0">
                         @if($usersCount > 0)
                         <div class="row m-0">
-
                             <div class="col-md-2 pad-a-0">
                                 <div class="card profileData">
                                     @foreach($assignment->users as $user)
@@ -238,7 +232,6 @@
                                 </div>
                             </div>
 
-
                             <div class=" {{ $usersCount > 0 ? 'col-md-10' : 'col-md-12' }} py-3">
                                 @if(session('success'))
                                 <div class="alert alert-success" role="alert">
@@ -247,7 +240,6 @@
                                 @endif
 
                                 <div class="card profileData assignment-details">
-
                                     <div class="row pt-3 message-heading d-none">
                                         <div class="col col-md-12">
                                             <h5 class="">
@@ -255,7 +247,6 @@
                                                 <a href="" data-role="{{$viewProfile}}" target="_blank" class="btn btn-outline-light btn-md m-l-20 view-investigator-profile">View Profile</a>
 
                                                 <a href="javascript:void(0)" class="btn btn-outline-light btn-md m-l-20 hire-user btn-hire-now"></a>
-
                                             </h5>
                                         </div>
                                     </div>
@@ -267,9 +258,7 @@
                                         </div>
 
                                     </div>
-
-
-
+                                    
                                 </div>
 
                             </div>
