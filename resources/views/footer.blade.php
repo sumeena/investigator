@@ -1,5 +1,6 @@
 <div class="container">
-    <div class="row justify-content-center footer-site">
+    @include('disclaimer')
+<div class="row justify-content-center footer-site footer-border-top">
         <div class="col-md-12">
             <footer class="content-footer footer bg-footer-theme">
                 <div class="container-xxl d-flex flex-wrap justify-content-between py-2 flex-md-row flex-column">

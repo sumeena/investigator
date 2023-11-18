@@ -1,0 +1,5 @@
+    <div class="row justify-content-center footer-site m-t-3">
+        <div class="col-md-12">
+            <p><small><i>Disclaimer : iLogistics calendar app use and transfer of information received from Google APIs to any other app will adhere to <a href="https://developers.google.com/terms/api-services-user-data-policy#additional_requirements_for_specific_api_scopes" target="_blank">Google API Services User Data Policy</a>, including the Limited Use requirements. However this is the only website where this information is being used and will be used. The access to your google calendar is solely for the purpose of enhancing your chances of showing up in search results for the companies looking to hire. You can contact todd@ilogisticsinc.com should you have any questions.</i></small></p>
+        </div>
+    </div>
