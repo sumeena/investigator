@@ -952,7 +952,6 @@ class InvestigatorController extends Controller
         }
         $calEventsArray = '';
         $calendarEvents = '[';
-
         foreach ($events as $event) {
 
             if (isset($event->when->start_time) && isset($event->when->end_time)) {
@@ -966,12 +965,27 @@ class InvestigatorController extends Controller
                                         'start_time' => date('H:i:s', $event->when->start_time),
                                         'end_time'   => date('H:i:s', $event->when->end_time));
 
-            } else {
-                $calendarEvents .= json_encode(['title' => $event->title, 'start' => $event->when->date]) . ',';
+            } elseif (isset($event->when->start_date) && isset($event->when->end_date))  {
+                $start_time=strtotime("".$event->when->start_date."") + 3600;
+                $end_time=strtotime("".$event->when->end_date."") + 3600*23.9;
+                $calendarEvents .= json_encode(['title' => $event->title, 'start' => $start_time * 1000,
+                                                'end'   => $end_time * 1000]) . ',';
 
                 $calEventsArray = array('user_id'  => $userId, 'calendar_id' => $calendarId, 'event_id' => $event->id,
-                                        'title'    => $event->title, 'start_date' => $event->when->date,
-                                        'end_date' => $event->when->date);
+                                        'title'    => $event->title, 'start_date' => $event->when->start_date,
+                                        'end_date' => $event->when->end_date,
+                                        'start_time' => date('H:i:s', $start_time),
+                                        'end_time'   => date('H:i:s', $end_time));
+
+            }else{
+              $calendarEvents .= json_encode(['title' => $event->title, 'start' => $event->when->date]) . ',';
+              $start_time=strtotime("".$event->when->date."") + 3600;
+              $end_time=strtotime("".$event->when->date."") + 3600*23.9;
+              $calEventsArray = array('user_id'  => $userId, 'calendar_id' => $calendarId, 'event_id' => $event->id,
+                                      'title'    => $event->title, 'start_date' => $event->when->date,
+                                      'end_date' => $event->when->date,
+                                      'start_time' => date('H:i:s', $start_time),
+                                      'end_time'   => date('H:i:s', $end_time));
 
             }
             CalendarEvents::updateOrCreate(['event_id' => $event->id], $calEventsArray);
