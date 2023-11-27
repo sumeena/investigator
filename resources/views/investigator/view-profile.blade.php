@@ -21,13 +21,13 @@
                                 </a>
 
                                 @if(!$googleAuthDeatils)
-                                    <button type="button" data-toggle="modal" data-target="#sync-calendar" class="text-white float-end btn btn-outline-primary btn-sm mt-n1 mr-10">Sync Calendar</button>
+                                    <button type="button" data-toggle="modal" data-target="#sync-calendar" class="text-white float-end btn btn-outline-primary btn-sm mt-n1 mr-10">Connect with Google calendar</button>
                                 @else
                                     <button type="button" data-toggle="modal" data-target="#disconnect-calendar" class="text-white float-end btn btn-outline-primary btn-sm mt-n1 mr-10">Disconnect Calendar</button>
                                 @endif
                             </h5>
 
-                          
+
                         </div>
                     </div>
                     <div class="row mx-0 py-1 px-3">

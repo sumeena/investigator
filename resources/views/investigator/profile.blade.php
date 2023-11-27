@@ -8,7 +8,7 @@
                     <h5 class="mb-0">Investigator's Profile</h5>
                     @if(!$googleAuthDeatils)
                         @if($user->is_investigator_profile_submitted == '1')
-                            <button type="button" data-toggle="modal" data-target="#sync-calendar" class="float-end btn btn-outline-primary btn-sm mt-n1 mr-10">Sync Calendar</button>
+                            <button type="button" data-toggle="modal" data-target="#sync-calendar" class="float-end btn btn-outline-primary btn-sm mt-n1 mr-10">Connect with Google calendar</button>
                         @endif
                     @else
                     <button type="button" data-toggle="modal" data-target="#disconnect-calendar" class="float-end btn btn-outline-primary btn-sm mt-n1 mr-10">Disconnect Calendar</button>

@@ -69,15 +69,17 @@ class AssignmentsController extends Controller
 
     public function store(Request $request)
     {
+
         $request->validate([
             'assignment_id' => 'bail|required|string|max:255|unique:assignments',
             'client_id'     => 'bail|required|string|max:255',
         ]);
-
+        $notes = Assignment::where('id',$request->old_assignment_id)->pluck('notes');
         $storeAssignment = Assignment::create([
             'user_id'       => auth()->id(),
             'assignment_id' => $request->assignment_id,
             'client_id'     => $request->client_id,
+            'notes'         => $notes[0],
         ]);
 
         if(isset($request->type) && $request->type == 'clone') {

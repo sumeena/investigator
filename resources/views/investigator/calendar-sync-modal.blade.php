@@ -12,6 +12,8 @@
           <form action="/investigator/sync-calendar" method="post">
             @csrf
             <div class="mb-3">
+
+              <img width ="140px" src="{{ asset('html/google_calendar_icon.png') }}" alt="Google calendar">
               <input type="submit" name="google" value="Google" class="btn btn-primary">
               <!-- <input type="submit" name="exchange" value="Exchange" class="btn btn-primary"> -->
             </div>
