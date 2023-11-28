@@ -74,12 +74,19 @@ class AssignmentsController extends Controller
             'assignment_id' => 'bail|required|string|max:255|unique:assignments',
             'client_id'     => 'bail|required|string|max:255',
         ]);
-        $notes = Assignment::where('id',$request->old_assignment_id)->pluck('notes');
+        $note="";
+        if(isset($request->old_assignment_id)){
+          $notes = Assignment::where('id',$request->old_assignment_id)->pluck('notes');
+          if(!empty($notes)){
+            $note=$notes[0];
+          }
+        }
+
         $storeAssignment = Assignment::create([
             'user_id'       => auth()->id(),
             'assignment_id' => $request->assignment_id,
             'client_id'     => $request->client_id,
-            'notes'         => $notes[0],
+            'notes'         => $note,
         ]);
 
         if(isset($request->type) && $request->type == 'clone') {
