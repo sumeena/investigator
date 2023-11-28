@@ -227,8 +227,27 @@ class User extends Authenticatable
             $companyId = CompanyUser::where('user_id', $user->id)->orWhere('parent_id', $user->id)->select('parent_id')->first()->parent_id;
         }
 
-        $investigatorsWithoutEvents = self::investigatorsWithoutEvents($request->all());
-        //echo "<pre>"; print_r($investigatorsWithoutEvents); echo "</pre>";
+
+        $requests = $request->all();
+        $availabilityDates = explode(',',$requests['availability']);
+        $availabilityStartTime = explode(',',$requests['start_time']);
+        $availabilityEndTime = explode(',',$request['end_time']);
+        $availabilityDayType = explode(',',$request['dayType']);
+        $totalInvestigatorsWithoutEvents =array();
+        foreach ($availabilityDates as $key => $value) {
+          $availabilityDate=array();
+        //  echo $availabilityStartTime[$key];
+          $availabilityDate['availability'] = $availabilityDates[$key];
+          $availabilityDate['start_time'] = trim($availabilityStartTime[$key]);
+          $availabilityDate['end_time']   = trim($availabilityEndTime[$key]);
+
+          $totalInvestigatorsWithoutEvents[] = self::investigatorsWithoutEvents($availabilityDate);
+        }
+
+        //$investigatorsWithoutEvents = self::investigatorsWithoutEvents($request->all());
+        $investigatorsWithoutEvents = array_intersect($totalInvestigatorsWithoutEvents[0], ...$totalInvestigatorsWithoutEvents);
+        //echo "<pre>"; print_r($investigatorsWithoutEvents); echo "</pre>";die;
+
         $distance                   = $request->distance;
         $withInternalInvestigator = $request->withInternalInvestigator;
         $withExternalInvestigator = $request->withExternalInvestigator;

@@ -39,7 +39,7 @@
                             $searchEditAction = route('hm.update-investigator-search-history');
                         }
                     @endphp
-                    
+
                     <form method="get" action="{{ $action }}" id="find-investigator-form">
 
                         <div class="row">
@@ -210,99 +210,8 @@
                                 </div>
                             </div>
 
-                            @php
-                                if(@$assignment->searchHistory->availability){
-                                $availability = explode(',',@$assignment->searchHistory->availability);
-                                $minDate = explode('-', $availability[0]);
-                                $timeAvailability = explode('-', $availability[1]);
-                            }
-                            @endphp
-
-                            <div class="col-md-6">
-                                <div class="mb-1">
-                                    <div class="card">
-                                        <h5 class="card-header pt-2 pb-0">Availability (Date)</h5>
-                                        <table class="table"> <!-- hr_contact -->
-                                            <tbody>
-                                                <tr>
-                                                    <td>
-
-                                                        <input type="text" class="form-control caseAvailabilityField" data-min-date="{{@$minDate[0]}}" name="e_datetimes" placeholder="Availability (Date)" value="{{@$availability[0]}}" id="e-availability" />
-
-                                                        <span role="alert" class="text-danger small d-none" id="availability-error"> Availability is required! </span>
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
 
 
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="mb-1">
-                                    <div class="card">
-                                        <h5 class="card-header pt-2 pb-0">Availability (Start Time)</h5>
-                                        <table class="table"> <!-- hr_contact -->
-                                            <tbody>
-                                                <tr>
-                                                    <td>
-                                                        <input type="text" class="form-control availabilityTimeField e-timepickerstart" data-start-time="{{@$timeAvailability[0]}}" name="start_time" placeholder="Availability (Time)" id="timepickerstart" value="{{@$timeAvailability[0]}}" />
-
-                                                        <span role="alert" class="text-danger small d-none" id="time-error"> Time is required! </span>
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-
-
-                            <div class="col-md-6">
-                                <div class="mb-1">
-                                    <div class="card">
-                                        <h5 class="card-header pt-2 pb-0">Availability (End Time)</h5>
-                                        <table class="table"> <!-- hr_contact -->
-                                            <tbody>
-                                                <tr>
-                                                    <td>
-                                                        <input type="text" class="form-control availabilityTimeField e-timepickerend" name="end_time" data-end-time="{{@$timeAvailability[1]}}" value="{{@$timeAvailability[1]}}" placeholder="Availability (Time)" id="timepickerend" />
-
-                                                        <span role="alert" class="text-danger small d-none" id="time-error"> Time is required! </span>
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="mb-1">
-                                    <div class="card">
-                                        <div class="table-responsive">
-
-                                            <input type="hidden" id="assignmentID" value="{{@$assignment->id}}">
-                                            <input type="hidden" id="searchHistoryID" value="{{@$assignment->searchHistory->id}}">
-
-                                            <input type="hidden" id="fieldsUpdated" value="0">
-
-                                            <button type="button" data-target="#confirmUpdateSearchModal" data-toggle="modal" class="btn btn-primary hr_investigator_search" disabled id="callConfirmUpdateSearchModal"> Search </button>
-
-                                            <button type="submit" class="btn btn-primary hr_investigator_search d-none" id="form-submit-btn">
-                                                Search
-                                            </button>
-
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
                             <div class="col-md-6">
                                 <div class="mb-1 mt-2">
                                   <div class="card">
@@ -338,7 +247,152 @@
                                       </div>
                                 </div>
                             </div>
+
+
                         </div>
+                      <div class="daysRow" >
+                        <?php
+                          $availabilitys=array();
+                            if(@$assignment->searchHistory->availability){
+                                 $availabilitys = unserialize(@$assignment->searchHistory->availability);
+                            }
+                            //echo "<pre>"; print_r($availabilitys); echo "</pre>";
+                        ?>
+                          @php
+                          $iterationNumber = 0;
+                          @endphp
+                          @foreach($availabilitys as $availability)
+
+                            @push('scripts')
+                                <script>
+                                    timepicker('{{ $loop->iteration }}');
+                                </script>
+                            @endpush
+                          <?php $minDate = explode('-', $availability[0]); ?>
+
+
+                               <div class="dayRow">
+                                  <div class="mb-1">
+                                        <h5 class="card-header pt-2 pb-0 heading"  >Day {{ $loop->iteration }}</h5>
+                                  </div>
+                                    <div class="row">
+                                      <div class="col-md-6">
+                                          <div class="mb-1">
+                                              <div class="card">
+                                                  <h5 class="card-header pt-2 pb-0">Availability (Date)</h5>
+                                                  <table class="table"> <!-- hr_contact -->
+                                                      <tbody>
+                                                          <tr>
+                                                              <td>
+
+                                                                  <input type="text" class="form-control availabilitydateepicker caseAvailabilityField" data-min-date="{{@$minDate[0]}}" name="e_datetimes[{{ $loop->iteration }}]" placeholder="Availability (Date)" value="{{@$availability[0]}}" id="e-availability" />
+
+                                                                  <span role="alert" class="text-danger small d-none" id="availability-error"> Availability is required! </span>
+                                                              </td>
+                                                          </tr>
+                                                      </tbody>
+                                                  </table>
+                                              </div>
+                                          </div>
+                                      </div>
+                                      <div class="col-md-4">
+                                          <div class="mb-1">
+                                              <div class="card">
+                                                  <h5 class="card-header pt-2 pb-0">Availability (Day Type)</h5>
+                                                  <table class="table"> <!-- hr_contact -->
+                                                      <tbody>
+                                                      <tr>
+                                                          <td>
+                                                            <select class="form-select timeperiod" onchange="reCalculateTime(this)" name="timeperiod[{{ $loop->iteration }}]" id="timeperiod{{ $loop->iteration }}">
+                                                              <option value="1" @selected($availability[1] == 1)>Half Day </option>
+                                                              <option value="2" @selected($availability[1] == 2)>Full Day</option>
+                                                            </select>
+                                                          </td>
+                                                      </tr>
+                                                      </tbody>
+                                                  </table>
+                                              </div>
+                                          </div>
+                                      </div>
+                                      <div class="col-md-2">
+                                        <button class="btn btn-md btn-primary customButton" onclick="addNewSection(this)" type="button">
+                                          Add new Row
+                                        </button>
+                                      </div>
+                                    </div>
+                                  <div class="row AvailabilityRow" id="{{ $loop->iteration }}">
+                                    <div class="col-md-6">
+                                        <div class="mb-1">
+                                            <div class="card">
+                                                <h5 class="card-header pt-2 pb-0">Availability (Start Time)</h5>
+                                                <table class="table"> <!-- hr_contact -->
+                                                    <tbody>
+                                                        <tr>
+                                                            <td>
+                                                                <input type="text" class="form-control availabilityTimeField edit-timepickerstart timepickerstart{{ $loop->iteration }} e-timepickerstart{{ $loop->iteration }}" data-start-time="{{trim(@$availability[2])}}" name="start_time[{{ $loop->iteration }}]" placeholder="Availability (Time)" id="timepickerstart" value="{{@$availability[2]}}" />
+
+                                                                <span role="alert" class="text-danger small d-none" id="time-error"> Time is required! </span>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="col-md-4">
+                                        <div class="mb-1">
+                                            <div class="card">
+                                                <h5 class="card-header pt-2 pb-0">Availability (End Time)</h5>
+                                                <table class="table"> <!-- hr_contact -->
+                                                    <tbody>
+                                                        <tr>
+                                                            <td>
+                                                                <input type="text" disabled class="form-control availabilityTimeField e-timepickerend availabilityTimepickerend" name="end_time[{{ $loop->iteration }}]" data-end-time="{{@$availability[3]}}" value="{{@$availability[3]}}" placeholder="Availability (Time)" id="timepickerend" />
+                                                                <span role="alert" class="text-danger small d-none" id="time-error"> Time is required! </span>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                            <button class="btn btn-danger remove customButton <?php if($loop->iteration == 1){ echo "disabled"; }?>" onclick="removeSection(this)" type="button">
+                                              Remove
+                                            </button>
+                                    </div>
+                                  </div>
+                              </div>
+                              @php
+                                  $iterationNumber = $loop->iteration; // Assign the value to another variable
+                              @endphp
+                          @endforeach
+
+                      </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-1">
+                                    <div class="card">
+                                        <div class="table-responsive">
+
+                                            <input type="hidden" id="assignmentID" value="{{@$assignment->id}}">
+                                            <input type="hidden" id="searchHistoryID" value="{{@$assignment->searchHistory->id}}">
+
+                                            <input type="hidden" id="fieldsUpdated" value="0">
+
+                                            <button type="button" data-dayscount="{{ $iterationNumber }}" data-target="#confirmUpdateSearchModal" data-toggle="modal" class="btn btn-primary hr_investigator_search" disabled id="callConfirmUpdateSearchModal"> Search </button>
+
+                                            <button type="submit" class="btn btn-primary hr_investigator_search d-none" id="form-submit-btn">
+                                                Search
+                                            </button>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                          </div>
                     </form>
                 </div>
             </div>
@@ -557,7 +611,27 @@
 
     function saveSearchHistoryData() {
 
-        // input selector
+
+        var availabilitys = [];
+        $('.availabilitydateepicker').each(function() {
+            availabilitys.push($(this).val());
+        });
+        const availabilitysCheck =availabilitys.join(', ');
+        var editTimepickerstart = [];
+        $('.edit-timepickerstart').each(function() {
+            editTimepickerstart.push($(this).val());
+        });
+        const EditTimepickerstartCheck =editTimepickerstart.join(', ');
+        var editTimepickerend = [];
+        $('.e-timepickerend').each(function() {
+            editTimepickerend.push($(this).val());
+        });
+        const EditTimepickerendCheck =editTimepickerend.join(', ');
+        var editTimeperiod = [];
+        $('.timeperiod').each(function() {
+            editTimeperiod.push($(this).val());
+        });
+        const EditTimeperiodCheck =editTimeperiod.join(', ');
         const country = $('#country');
         const street = $('#autocomplete');
         const city = $('#locality');
@@ -570,9 +644,7 @@
         const license = $('#license-select');
         const lat = $('#lat');
         const lng = $('#lng');
-        const availability = $('#e-availability');
-        const timepickerstart = $('#timepickerstart');
-        const timepickerend = $('#timepickerend');
+
         const assignmentID = $('#assignmentID');
         const searchHistoryID = $('#searchHistoryID');
         const distance = $('#distance');
@@ -593,9 +665,7 @@
         const licenseValue = license.val();
         const latValue = lat.val();
         const lngValue = lng.val();
-        const availabilityValue = availability.val();
-        const timepickerstartValue = timepickerstart.val();
-        const timepickerendValue = timepickerend.val();
+
         const assignmentIDValue = assignmentID.val();
         const searchHistoryIDValue = searchHistoryID.val();
         const distanceValue = distance.val();
@@ -642,16 +712,19 @@
             data['license'] = licenseValue;
         }
 
-        if (availabilityValue) {
-            data['availability'] = availabilityValue;
+        if (availabilitysCheck) {
+            data['availability'] = availabilitysCheck;
         }
 
-        if (timepickerstartValue) {
-            data['start_time'] = timepickerstartValue;
+        if (EditTimepickerstartCheck) {
+            data['start_time'] = EditTimepickerstartCheck;
         }
 
-        if (timepickerendValue) {
-            data['end_time'] = timepickerendValue;
+        if (EditTimepickerendCheck) {
+            data['end_time'] = EditTimepickerendCheck;
+        }
+        if (EditTimeperiodCheck) {
+            data['dayType'] = EditTimeperiodCheck;
         }
 
         if (assignmentIDValue) {
@@ -737,6 +810,28 @@
             e.preventDefault();
 
             // input selector
+
+            var availabilitys = [];
+            $('.availabilitydateepicker').each(function() {
+                availabilitys.push($(this).val());
+            });
+            const availabilitysCheck =availabilitys.join(', ');
+            var editTimepickerstart = [];
+            $('.edit-timepickerstart').each(function() {
+                editTimepickerstart.push($(this).val());
+            });
+            const EditTimepickerstartCheck =editTimepickerstart.join(', ');
+            var editTimepickerend = [];
+            $('.e-timepickerend').each(function() {
+                editTimepickerend.push($(this).val());
+            });
+            const EditTimepickerendCheck =editTimepickerend.join(', ');
+            var editTimeperiod = [];
+            $('.timeperiod').each(function() {
+                editTimeperiod.push($(this).val());
+            });
+            const EditTimeperiodCheck =editTimeperiod.join(', ');
+
             const zip = $('#postal_code');
             const surv = $('#surveillance');
             const stat = $('#statements');
@@ -745,9 +840,7 @@
             const license = $('#license-select');
             const lat = $('#lat');
             const lng = $('#lng');
-            const availability = $('#e-availability');
-            const timepickerstart = $('#timepickerstart');
-            const timepickerend = $('#timepickerend');
+
             const assignmentID = $('#assignmentID');
             const distance = $('#distance');
             const withInternalInvestigator = $('#withInternalInvestigator');
@@ -762,9 +855,6 @@
             const licenseValue = license.val();
             const latValue = lat.val();
             const lngValue = lng.val();
-            const availabilityValue = availability.val();
-            const timepickerstartValue = timepickerstart.val();
-            const timepickerendValue = timepickerend.val();
             const assignmentIDValue = assignmentID.val();
             const distanceValue = distance.val();
             const withInternalInvestigatorValue = withInternalInvestigator.is(':checked');
@@ -805,7 +895,7 @@
                 serviceTypeError.removeClass('d-none');
                 hasError = true;
             }
-            
+
             if (!withInternalInvestigator.is(':checked') && !withExternalInvestigator.is(':checked')) {
                 // Show error
                 searchInvestigatorsError.removeClass('d-none');
@@ -859,16 +949,19 @@
                 data['license'] = licenseValue;
             }
 
-            if (availabilityValue) {
-                data['availability'] = availabilityValue;
+            if (availabilitysCheck) {
+                data['availability'] = availabilitysCheck;
             }
 
-            if (timepickerstartValue) {
-                data['start_time'] = timepickerstartValue;
+            if (EditTimepickerstartCheck) {
+                data['start_time'] = EditTimepickerstartCheck;
             }
 
-            if (timepickerendValue) {
-                data['end_time'] = timepickerendValue;
+            if (EditTimepickerendCheck) {
+                data['end_time'] = EditTimepickerendCheck;
+            }
+            if (EditTimeperiodCheck) {
+                data['dayType'] = EditTimeperiodCheck;
             }
 
             data['assignment_id'] = assignmentIDValue;
