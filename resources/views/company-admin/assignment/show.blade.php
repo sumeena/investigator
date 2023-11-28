@@ -151,27 +151,36 @@
                             </div>
 
                             <div class="col-md-4">
+                              <?php
+                                $availabilitys=array();
+                                  if(@$assignment->searchHistory->availability){
+                                       $availabilitys = unserialize(@$assignment->searchHistory->availability);
+                                  }
+                                //  echo "<pre>"; print_r($availabilitys); echo "</pre>";
+                              ?>
+                              @foreach($availabilitys as $availability)
                                 <div class="row">
                                     <div class="col-md-6">
-                                        <b><label>Availability (Date):</label></b>
+                                        <b><label>Availability (Date day {{ $loop->iteration }}):</label></b>
                                     </div>
-                                    @php
-                                    $availabilityDate = explode(',', @$assignment->searchHistory->availability);
-                                    @endphp
-                                    <div class="col-md-6">{{ @$availabilityDate[0] ?? null ?: 'N/A' }}</div>
+                                    <div class="col-md-6">{{ @$availability[0] ?? null ?: 'N/A' }}</div>
+
                                 </div>
+                                @endforeach
                             </div>
 
                         </div>
 
                         <div class="row mx-0 py-1 px-3">
                             <div class="col-md-4">
+                              @foreach($availabilitys as $availability)
                                 <div class="row">
                                     <div class="col-md-6">
-                                        <b><label>Availability (Time):</label></b>
+                                        <b><label>Availability (Time day {{ $loop->iteration }}):</label></b>
                                     </div>
-                                    <div class="col-md-6">{{ @$availabilityDate[1] ?? null ?: 'N/A' }}</div>
+                                    <div class="col-md-6">{{ @$availability[2]  ?? null ?: 'N/A' }} - {{ @$availability[3]  ?? null ?: 'N/A' }}</div>
                                 </div>
+                                @endforeach
                             </div>
 
                             <div class="col-md-4">
@@ -258,7 +267,7 @@
                                         </div>
 
                                     </div>
-                                    
+
                                 </div>
 
                             </div>
