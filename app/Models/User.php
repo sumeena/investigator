@@ -228,6 +228,7 @@ class User extends Authenticatable
         }
 
         $investigatorsWithoutEvents = self::investigatorsWithoutEvents($request->all());
+        //echo "<pre>"; print_r($investigatorsWithoutEvents); echo "</pre>";
         $distance                   = $request->distance;
         $withInternalInvestigator = $request->withInternalInvestigator;
         $withExternalInvestigator = $request->withExternalInvestigator;
@@ -295,56 +296,52 @@ class User extends Authenticatable
     public static function investigatorsWithoutEvents($data)
     {
 
-        $dateRange = $data['availability'];
-        $dateRange = explode('-', $dateRange);
+            $dateRange = $data['availability'];
+            $dateRange = explode('-', $dateRange);
 
-        $searchStartDate = Carbon::parse(trim($dateRange[0]))->format('Y-m-d');
-        $searchEndDate   = Carbon::parse(trim($dateRange[1]))->format('Y-m-d');
+            $searchStartDate = Carbon::parse(trim($dateRange[0]))->format('Y-m-d');
+            $searchEndDate   = Carbon::parse(trim($dateRange[1]))->format('Y-m-d');
+            $eventDetails = CalendarEvents::whereBetween('start_date', [$searchStartDate,
+                                                                        $searchEndDate])->select('user_id', 'id', 'start_date', 'end_date', 'start_time', 'end_time')->orderBy('start_date', 'ASC')->get()->toArray();
 
-        $eventDetails = CalendarEvents::whereBetween('start_date', [$searchStartDate,
-                                                                    $searchEndDate])->select('user_id', 'id', 'start_date', 'end_date', 'start_time', 'end_time')->get()->toArray();
-
-        $events = [];
-        $users  = User::where('role', User::INVESTIGATOR)->pluck('id')->toArray();
-        foreach ($eventDetails as $eventDetail) {
-            $events[] = ['user_id'    => $eventDetail['user_id'],
-                         'start_date' => $eventDetail['start_date'] . ' ' . $eventDetail['start_time'],
-                         'end_date'   => $eventDetail['end_date'] . ' ' . $eventDetail['end_time']];
-        }
-
-        $start_date = strtotime($searchStartDate);
-        $end_date   = strtotime($searchEndDate);
-
-        $data['start_time'] = $searchStartDate . ' ' . str_replace(' ', '', $data['start_time']);
-        $data['end_time']   = $searchEndDate . ' ' . str_replace(' ', '', $data['end_time']);
-        $start_time         = strtotime(Carbon::parse($data['start_time']));
-        $end_time           = strtotime(Carbon::parse($data['end_time']));
-
-        $users_without_events = array_filter($users, function ($user) use ($events, $start_date, $end_date, $start_time, $end_time) {
-            $usersWithEvents = array();
-            for ($date = $start_date; $date <= $end_date; $date = strtotime("+1 day", $date)) {
-
-                $start_of_range = strtotime(date("Y-m-d", $date) . " " . date("h:i A", $start_time));
-                $end_of_range   = strtotime(date("Y-m-d", $date) . " " . date("h:i A", $end_time));
-
-                $usersWithEvents = self::hasOverlappingEvents($events, $start_of_range, $end_of_range, $user);
+            $events = [];
+            $users  = User::where('role', User::INVESTIGATOR)->pluck('id')->toArray();
+            foreach ($eventDetails as $eventDetail) {
+                $events[] = ['user_id'    => $eventDetail['user_id'],
+                             'start_date' => $eventDetail['start_date'] . ' ' . $eventDetail['start_time'],
+                             'end_date'   => $eventDetail['end_date'] . ' ' . $eventDetail['end_time']];
             }
-            return !in_array($user, $usersWithEvents);
-        });
+            $start_date = strtotime(Carbon::parse($searchStartDate));
+            $end_date   = strtotime(Carbon::parse($searchEndDate));
+            $data['start_time'] = $searchStartDate . ' ' . str_replace(' ', '', $data['start_time']);
+            $data['end_time']   = $searchEndDate . ' ' . str_replace(' ', '', $data['end_time']);
+            $start_time         = strtotime(Carbon::parse($data['start_time']));
 
+            $end_time           = strtotime(Carbon::parse($data['end_time']));
+            $usersWithEvents = array();
+            $users_without_events = array_filter($users, function ($user) use ($events, $start_date, $end_date, $start_time, $end_time,$usersWithEvents) {
 
-        return array_values($users_without_events);
+            for ($date = $start_date; $date <= $end_date; $date = strtotime("+1 day", $date)) {
+                $start_of_range = strtotime(Carbon::parse(date("Y-m-d", $date) . " " . date("H:i", $start_time)));
+                $end_of_range   = strtotime(Carbon::parse(date("Y-m-d", $date) . " " . date("H:i", $end_time)));
+                $usersWithEvent = self::hasOverlappingEvents($events, $start_of_range, $end_of_range, $user);
+                 if(!in_array($user, $usersWithEvent)){
+                   $usersWithEvents[]=$user;
+                 }
+            }
+            return $usersWithEvents;
+          });
+          return array_values($users_without_events);
     }
 
     public static function hasOverlappingEvents($events, $start_date_time, $end_date_time, $user)
     {
         $userIds = array();
         foreach ($events as $event) {
-            $event_start = strtotime($event["start_date"]);
-            $event_end   = strtotime($event["end_date"]);
+            $event_start = strtotime(Carbon::parse($event["start_date"]));
+            $event_end   = strtotime(Carbon::parse($event["end_date"]));
             if ($event_start <= $end_date_time && $event_end >= $start_date_time) {
                 $userIds[] = $event['user_id'];
-
             }
         }
         return $userIds;
