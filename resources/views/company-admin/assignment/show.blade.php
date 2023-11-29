@@ -149,40 +149,6 @@
                                     <div class="col-md-6">{{ @$assignment->searchHistory->license->name ?? null ?: 'N/A' }}</div>
                                 </div>
                             </div>
-
-                            <div class="col-md-4">
-                              <?php
-                                $availabilitys=array();
-                                  if(@$assignment->searchHistory->availability){
-                                       $availabilitys = unserialize(@$assignment->searchHistory->availability);
-                                  }
-                                //  echo "<pre>"; print_r($availabilitys); echo "</pre>";
-                              ?>
-                              @foreach($availabilitys as $availability)
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <b><label>Availability (Date day {{ $loop->iteration }}):</label></b>
-                                    </div>
-                                    <div class="col-md-6">{{ @$availability[0] ?? null ?: 'N/A' }}</div>
-
-                                </div>
-                                @endforeach
-                            </div>
-
-                        </div>
-
-                        <div class="row mx-0 py-1 px-3">
-                            <div class="col-md-4">
-                              @foreach($availabilitys as $availability)
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <b><label>Availability (Time day {{ $loop->iteration }}):</label></b>
-                                    </div>
-                                    <div class="col-md-6">{{ @$availability[2]  ?? null ?: 'N/A' }} - {{ @$availability[3]  ?? null ?: 'N/A' }}</div>
-                                </div>
-                                @endforeach
-                            </div>
-
                             <div class="col-md-4">
                                 <div class="row">
                                     <div class="col-md-6">
@@ -191,6 +157,30 @@
                                     <div class="col-md-6 job-status">{{ @$assignment->status ?? null ?: 'N/A' }}</div>
                                 </div>
                             </div>
+
+
+                        </div>
+
+                        <div class="row mx-0 py-1 px-3">
+                          <b style="padding: 10px 0px 8px 10px;"><label>Availability</label></b>
+                          <div class="col-md-6">
+                            <?php
+                              $availabilitys=array();
+                                if(@$assignment->searchHistory->availability){
+                                     $availabilitys = unserialize(@$assignment->searchHistory->availability);
+                                }
+                              //  echo "<pre>"; print_r($availabilitys); echo "</pre>";
+                            ?>
+                            @foreach($availabilitys as $availability)
+                              <div class="row">
+                                  <div class="col-md-4">
+                                      <b><label>Day {{ $loop->iteration }}:</label></b>
+                                  </div>
+                                  <div class="col-md-8">{{ @$availability[0]  ?? null ?: 'N/A' }}&nbsp;&nbsp;|&nbsp;&nbsp;{{ @$availability[2]  ?? null ?: 'N/A' }}&nbsp;&nbsp;-&nbsp;&nbsp;{{ @$availability[3]  ?? null ?: 'N/A' }}</div>
+
+                              </div>
+                              @endforeach
+                          </div>
                         </div>
 
                         <div class="row pt-3">
