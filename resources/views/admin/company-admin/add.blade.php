@@ -60,13 +60,14 @@
                         </div>
                         <input type="hidden" name="id" value="{{ isset($companyAdmin) && !empty($companyAdmin) ? $companyAdmin->id : '' }}">
                         <div class="mb-2">
+
                             @if (isset($companyAdmin) && !empty($companyAdmin->id))
-                                <label class="form-label" for="basic-default-message">Company Admin</label>
+                                <label class="form-label" for="basic-default-message">Company Website</label>
                                 @if (!empty($companyAdmin?->parentCompany))
-                                    <input type="text" class="form-control" value="{{ $companyAdmin?->parentCompany->company->first_name . ' ' . $companyAdmin?->parentCompany->company->last_name . ' -- ' . $companyAdmin?->parentCompany->company?->website }}" disabled>
+                                    <input type="text" class="form-control" value="{{ $companyAdmin?->parentCompany->company?->website }}" disabled>
                                     <input type="hidden" class="form-control" name="company_admin" value="{{ $companyAdmin?->parentCompany?->company?->id }}">
                                 @else
-                                    <input type="text" class="form-control" value="{{ $companyAdmin?->first_name . ' ' . $companyAdmin?->last_name . ' -- ' . $companyAdmin?->website }}" disabled>
+                                    <input type="text" class="form-control" value="{{ $companyAdmin?->website }}" disabled>
                                     <input type="hidden" class="form-control" name="company_admin" value="{{ $companyAdmin?->id }}">
                                 @endif
                             @else
