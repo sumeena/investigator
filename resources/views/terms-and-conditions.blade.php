@@ -14,7 +14,7 @@
                     <p>Welcome to iLogistics Inc!</p>
 
                     <p>
-                        These terms and conditions outline the rules and regulations for the use of iLogistics Inc’s Website, located at https://ilogisticsinc.net/.
+                        These terms and conditions outline the rules and regulations for the use of iLogistics Inc’s Website, located at https://ilogisticsinc.com/.
                     </p>
 
                     <p>
@@ -27,7 +27,7 @@
 
                     <h4>Cookies</h4>
                     <p>
-                        We employ the use of cookies. By accessing https://ilogisticsinc.net/, you agreed to use cookies in agreement with the iLogistics Inc's Privacy Policy.
+                        We employ the use of cookies. By accessing https://ilogisticsinc.com/, you agreed to use cookies in agreement with the iLogistics Inc's Privacy Policy.
                     </p>
 
                     <p>
@@ -36,15 +36,15 @@
 
                     <h4>License</h4>
                     <p>
-                        Unless otherwise stated, iLogistics Inc and/or its licensors own the intellectual property rights for all material on https://ilogisticsinc.net/. All intellectual property rights are reserved. You may access this from https://ilogisticsinc.net/ for your own personal use subjected to restrictions set in these terms and conditions.
+                        Unless otherwise stated, iLogistics Inc and/or its licensors own the intellectual property rights for all material on https://ilogisticsinc.com/. All intellectual property rights are reserved. You may access this from https://ilogisticsinc.com/ for your own personal use subjected to restrictions set in these terms and conditions.
                     </p>
                     <p>You must not:</p>
 
                     <ul>
-                        <li>Republish material from https://ilogisticsinc.net/</li>
-                        <li>Sell, rent or sub-license material from https://ilogisticsinc.net/</li>
-                        <li>Reproduce, duplicate or copy material from https://ilogisticsinc.net/</li>
-                        <li>Redistribute content from https://ilogisticsinc.net/</li>
+                        <li>Republish material from https://ilogisticsinc.com/</li>
+                        <li>Sell, rent or sub-license material from https://ilogisticsinc.com/</li>
+                        <li>Reproduce, duplicate or copy material from https://ilogisticsinc.com/</li>
+                        <li>Redistribute content from https://ilogisticsinc.com/</li>
                     </ul>
 
                     <p>This Agreement shall begin on the date hereof.</p>
@@ -102,7 +102,7 @@
                     </ul>
 
                     <p>We will approve link requests from these organizations if we decide that: (a) the link would not make us look unfavorably to ourselves or to our accredited businesses; (b) the organization does not have any negative records with us; (c) the benefit to us from the visibility of the hyperlink compensates the absence of iLogistics Inc; and (d) the link is in the context of general resource information.</p>
-                    
+
                     <p>These organizations may link to our home page so long as the link: (a) is not in any way deceptive; (b) does not falsely imply sponsorship, endorsement or approval of the linking party and its products or services; and (c) fits within the context of the linking party's site.</p>
 
                     <p>If you are one of the organizations listed in paragraph 2 above and are interested in linking to our website, you must inform us by sending an e-mail to iLogistics Inc. Please include your name, your organization name, contact information as well as the URL of your site, a list of any URLs from which you intend to link to our Website, and a list of the URLs on our site to which you would like to link. Wait 2-3 weeks for a response.</p>
@@ -116,7 +116,7 @@
                     </ul>
 
                     <p>No use of iLogistics Inc's logo or other artwork will be allowed for linking absent a trademark license agreement.</p>
-                    
+
                     <h4>iFrames</h4>
 
                     <p>Without prior approval and written permission, you may not create frames around our Webpages that alter in any way the visual presentation or appearance of our Website.</p>

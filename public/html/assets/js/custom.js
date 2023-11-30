@@ -1,7 +1,7 @@
 $(document).ready(function(){
 //   setInterval(function() { latestNotification() }, 2000);
 //latestNotification()
-
+  timepicker()
   resetPassword("#password");
   resetPassword("#new-password");
     if($('.users-list').length > 0) {
@@ -86,25 +86,25 @@ $(document).ready(function(){
 
 
 
-      var eMinDate = $('input[name="e_datetimes"]').data('min-date');
-      var etimeStart = $('.e-timepickerstart').data('start-time');
-      var etimeEnd = $('.e-timepickerend').data('end-time');
-
-      $('input[name="e_datetimes"]').daterangepicker({
-        minDate: eMinDate,
-        opens: 'left'
-      });
-
-      var startTimeOptions = { twentyFour: true, now : etimeStart };
-      var endTimeOptions = { twentyFour: true, now : etimeEnd };
-
-      $('.timepickerstart, .e-timepickerstart').wickedpicker(startTimeOptions);
-      $('.timepickerend, .e-timepickerend').wickedpicker(endTimeOptions);
-
-      $('input[name="datetimes"]').daterangepicker({
-        minDate:moment().format('MM/DD/YYYY'),
-        opens: 'left'
-      });
+      // var eMinDate = $('input[name="e_datetimes"]').data('min-date');
+      // var etimeStart = $('.e-timepickerstart').data('start-time');
+      // var etimeEnd = $('.e-timepickerend').data('end-time');
+      //
+      // $('input[name="e_datetimes"]').daterangepicker({
+      //   minDate: eMinDate,
+      //   opens: 'left'
+      // });
+      //
+      // var startTimeOptions = { twentyFour: true, now : etimeStart };
+      // var endTimeOptions = { twentyFour: true, now : etimeEnd };
+      //
+      // $('.timepickerstart, .e-timepickerstart').wickedpicker(startTimeOptions);
+      // $('.timepickerend, .e-timepickerend').wickedpicker(endTimeOptions);
+      //
+      // $('input[name="datetimes"]').daterangepicker({
+      //   minDate:moment().format('MM/DD/YYYY'),
+      //   opens: 'left'
+      // });
 
 
     $(document).on('click', '.close-calendars-list-modal',function() {
@@ -249,6 +249,18 @@ $(document).ready(function(){
         })
     });
 
+    $(document).on('click', '.availabilityTimeField', function() {
+      var parentid=$(this).parent().parent().parent().parent().parent().parent().parent().parent().attr("id");
+
+      // var parentLastid= $(".wickedpicker__close").attr("id");
+      // if(parentLastid  !="1"){
+      //     $("#"+parentLastid).click();
+      // }
+
+      $(".wickedpicker__close").attr("id",parentid);
+
+
+    })
 
     $(document).on('click', '.btn-hire-now', function() {
         $(this).html('Assigning...').css('pointer-events','none');
@@ -336,163 +348,252 @@ $(document).ready(function(){
 
 
 
-function latestNotification() {
-  //'investigator'
-  var role = $(".badge.bg-primary").attr("rel");
-  if(role == "investigator"){
-      var sendUrl= '/investigator/notifications/latestNotification';
-  }else if(role == "company-admin") {
-    var sendUrl= '/company-admin/notification/latestNotification';
-  }else {
-      var sendUrl= '/hm/notification/latestNotification';
-  }
-
-    $.ajax({
-        url: ''+sendUrl+'',
-        method : 'GET',
-        success : function(response) {
-             $('.badge.bg-primary').text(response);
-           }
-    })
-  }
-function checkGoogleAccessToken() {
-    $.ajax({
-        url : "/investigator/checkToken",
-        success : function(data) {
-            // console.log(data);
-        }
-    });
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-
-    var calendarEl = document.getElementById('calendar');
-    if(calendarEl) {
-        var calendar = new FullCalendar.Calendar(calendarEl, {
-            initialView: 'dayGridMonth',
-        });
-        calendar.render();
+  function latestNotification() {
+    //'investigator'
+    var role = $(".badge.bg-primary").attr("rel");
+    if(role == "investigator"){
+        var sendUrl= '/investigator/notifications/latestNotification';
+    }else if(role == "company-admin") {
+      var sendUrl= '/company-admin/notification/latestNotification';
+    }else {
+        var sendUrl= '/hm/notification/latestNotification';
     }
 
+      $.ajax({
+          url: ''+sendUrl+'',
+          method : 'GET',
+          success : function(response) {
+               $('.badge.bg-primary').text(response);
+             }
+      })
+    }
+  function checkGoogleAccessToken() {
+      $.ajax({
+          url : "/investigator/checkToken",
+          success : function(data) {
+              // console.log(data);
+          }
+      });
+  }
 
-    var currentURL = window.location.href;
-    var checkURL = currentURL.includes('/investigator/');
+  document.addEventListener('DOMContentLoaded', function() {
 
-    if(checkURL)
-    fetchEvents();
-
-    $('.sync-btn').click(function(e) {
-        e.preventDefault();
-        var selectedCalendar = $('.select-calendar').val();
-
-        $.ajax({
-            url: '/investigator/calendar/fetch-events',
-            data: {
-                calendar_id: selectedCalendar
-            },
-            method: 'POST',
-            success: function(data) {
-                $('#calendars-list').modal('hide');
-                $('.update-calender-button').removeClass('d-none');
-                var events = JSON.parse(data);
-
-                var source = {
-                    events: events
-                };
-
-                var calendarEl = document.getElementById('calendar');
-                var calendar = new FullCalendar.Calendar(calendarEl, {
-                    initialView: 'dayGridMonth',
-                    events: source,
-                    dayMaxEvents: 3
-                });
-                calendar.render();
+      var calendarEl = document.getElementById('calendar');
+      if(calendarEl) {
+          var calendar = new FullCalendar.Calendar(calendarEl, {
+              initialView: 'dayGridMonth',
+          });
+          calendar.render();
+      }
 
 
-            }
-        });
+      var currentURL = window.location.href;
+      var checkURL = currentURL.includes('/investigator/');
 
-    });
+      if(checkURL)
+      fetchEvents();
 
-    $('.update-calendar-yes-btn').click(function() {
-        $.ajax({
-            url : 'remove-events',
-            method : 'delete',
-            success : function(data) {
-                location.reload();
-            }
-        })
-    });
+      $('.sync-btn').click(function(e) {
+          e.preventDefault();
+          var selectedCalendar = $('.select-calendar').val();
+            $('.custom-loader-overlay').attr("style", "display: flex !important");
+          $.ajax({
+              url: '/investigator/calendar/fetch-events',
+              data: {
+                  calendar_id: selectedCalendar
+              },
+              method: 'POST',
+              success: function(data) {
+                  $('.custom-loader-overlay').hide();
+                  $('#calendars-list').modal('hide');
+                  $('.update-calender-button').removeClass('d-none');
+                  var events = JSON.parse(data);
 
-});
+                  var source = {
+                      events: events
+                  };
 
-
-function resetPassword(selected) {
-  $(""+selected+"").on("input", function () {
-      let password = $(this).val();
-      // Validate minimum length
-      let minLengthValid = password.length >= 10;
-
-      // Validate presence of at least 1 capital letter, 1 number, 1 lowercase letter, and 1 special character
-      let capitalLetterValid    = /[A-Z]/.test(password);
-      let numberValid           = /[0-9]/.test(password);
-      let lowercaseLetterValid  = /[a-z]/.test(password);
-      let specialCharacterValid = /[@$!%*?&]/.test(password);
-      let allConditionsValid    = capitalLetterValid && numberValid && lowercaseLetterValid && specialCharacterValid;
-      let errorBagsEle = $(document).find(".password-error-bags");
-      let errorBagTypes = [];
-      // for min length
-      if (minLengthValid)
-          errorBagTypes.push("length");
-      else
-          removeErrorSuccess("length");
-          //removeItem(errorBagTypes, 'length');
-
-      // for atleast single number
-      if (numberValid)
-          errorBagTypes.push("number");
-      else
-          removeErrorSuccess("number");
+                  var calendarEl = document.getElementById('calendar');
+                  var calendar = new FullCalendar.Calendar(calendarEl, {
+                      initialView: 'dayGridMonth',
+                      events: source,
+                      dayMaxEvents: 3
+                  });
+                  calendar.render();
 
 
-      // for lower case
-      if (lowercaseLetterValid)
-          errorBagTypes.push("lowercase");
-      else
-          removeErrorSuccess("lowercase");
+              }
+          });
 
-      // for upper case
-      if (capitalLetterValid)
-          errorBagTypes.push("uppercase");
-      else
-          removeErrorSuccess("uppercase");
+      });
 
-      // for special symbols
-      if (specialCharacterValid)
-          errorBagTypes.push("special_character");
-      else
-          removeErrorSuccess("special_character");
+      $('.update-calendar-yes-btn').click(function() {
+        $('.custom-loader-overlay').attr("style", "display: flex !important");
+          $.ajax({
+              url : 'remove-events',
+              method : 'delete',
+              success : function(data) {
 
-      if (errorBagTypes.length > 0){
-          $.each(errorBagTypes, function(key,errType) {
-              errorBagsEle.find('li[type="'+errType+'"]').removeClass('text-danger').addClass('text-success');
+                $('#update-calendar .close').click();
+                $('.custom-loader-overlay').hide();
+                  location.reload();
+              }
           })
-      }
+      });
 
-      // Display error messages
-      if (!minLengthValid || !allConditionsValid) {
-          $("#password-error").html(`<strong>Password is invalid, please follow the instructions below!</strong>`);
-          $("#password-error").removeClass("hide");
-          $(this).addClass("is-invalid");
-
-      } else {
-          $("#password-error").text("");
-          $("#password-error").addClass("hide");
-          $(this).removeClass("is-invalid");
-      }
   });
-}
-function fetchEvents() {
+
+
+  function reCalculateTime(row) {
+        var rowObject = $(row);
+        var timeperiodElement=rowObject.attr("id").match(/\d+/);;
+        dayType(timeperiodElement);
+  }
+  $(document).on('click', '.wickedpicker__controls__control-up', function() {
+      dayType($(".wickedpicker__close").attr("id"));
+  });
+  $(document).on('click', '.wickedpicker__controls__control-down', function() {
+      dayType($(".wickedpicker__close").attr("id"));
+  });
+
+
+  function removeSection(row) {
+    var rowObject = $(row);
+    var rowclass = rowObject.parent().parent().parent().remove();
+  }
+    var rowCount =  $('#callConfirmUpdateSearchModal').data('dayscount');
+
+  function addNewSection(row) {
+      var rowObject = $(row);
+      rowCount++;
+      var newRowClass = rowCount;
+      var rowclass = rowObject.parent().parent().parent().parent().attr("class");
+      var newRow = rowObject.closest('.dayRow').clone().addClass('dayRow' + newRowClass);
+      newRow.find('#timepickerstart').addClass("timepickerstart" + newRowClass);
+      newRow.find('#timepickerstart').removeClass("timepickerstart");
+      newRow.find('.availabilitydateepicker').addClass("availabilitydateepicker" + newRowClass);
+      newRow.find('.heading').text("Day "+newRowClass);
+      newRow.find('.AvailabilityRow').attr("id",newRowClass);
+      newRow.find('.timeperiod').attr("id","timeperiod"+newRowClass);
+      newRow.find('.availabilitydateepicker').attr("name", "datetimes[" + newRowClass + "]");
+      newRow.find('.timeperiod').attr("name", "timeperiod[" + newRowClass + "]");
+      newRow.find('#timepickerstart').attr("name", "start_time[" + newRowClass + "]");
+      newRow.find('#timepickerend').attr("name", "end_time[" + newRowClass + "]");
+      newRow.find('.remove').removeClass("disabled");
+      $('.daysRow').append(newRow);
+      timepicker(newRowClass);
+
+  }
+
+  function padZero(number) {
+      return (number < 10 ? '0' : '') + number;
+  }
+
+  function dayType(id = "") {
+    var timePeriod=$('#timeperiod'+id).val();
+    var timeHours=$('.wickedpicker__controls__control--hours').text();
+    var timeMinutes=$('.wickedpicker__controls__control--minutes').text();
+    var time = "";
+    if (timePeriod == 1) {
+        time = 4;
+    }
+    if (timePeriod == 2) {
+        time = 8;
+    }
+    var hours = parseInt(timeHours);
+    var minutes = parseInt(timeMinutes);
+    hours = (hours + parseInt(time)) % 24;
+    var newTime = padZero(hours) + ':' + padZero(minutes);
+    $("#"+id+" .availabilityTimepickerend").val(newTime)
+  }
+
+  function timepicker(count = "") {
+    var eMinDate = $('input[name="e_datetimes"]').data('min-date');
+    var etimeStart = $('.e-timepickerstart'+ count).data('start-time');
+    var etimeEnd = $('.e-timepickerend').data('end-time');
+
+    $('.availabilitydateepicker'+ count).daterangepicker({
+      minDate: eMinDate,
+      opens: 'left'
+    });
+
+    var startTimeOptions = { twentyFour: true, now : etimeStart };
+     var endTimeOptions = { twentyFour: true, now : etimeEnd };
+
+    $('.timepickerstart' + count).wickedpicker(startTimeOptions);
+    $('.timepickerend' + count).wickedpicker(endTimeOptions);
+
+    $('.availabilitydateepicker'+ count).daterangepicker({
+      minDate:moment().format('MM/DD/YYYY'),
+      opens: 'left'
+    });
+  }
+  function resetPassword(selected) {
+    $(""+selected+"").on("input", function () {
+        let password = $(this).val();
+        // Validate minimum length
+        let minLengthValid = password.length >= 10;
+
+        // Validate presence of at least 1 capital letter, 1 number, 1 lowercase letter, and 1 special character
+        let capitalLetterValid    = /[A-Z]/.test(password);
+        let numberValid           = /[0-9]/.test(password);
+        let lowercaseLetterValid  = /[a-z]/.test(password);
+        let specialCharacterValid = /[@$!%*?&]/.test(password);
+        let allConditionsValid    = capitalLetterValid && numberValid && lowercaseLetterValid && specialCharacterValid;
+        let errorBagsEle = $(document).find(".password-error-bags");
+        let errorBagTypes = [];
+        // for min length
+        if (minLengthValid)
+            errorBagTypes.push("length");
+        else
+            removeErrorSuccess("length");
+            //removeItem(errorBagTypes, 'length');
+
+        // for atleast single number
+        if (numberValid)
+            errorBagTypes.push("number");
+        else
+            removeErrorSuccess("number");
+
+
+        // for lower case
+        if (lowercaseLetterValid)
+            errorBagTypes.push("lowercase");
+        else
+            removeErrorSuccess("lowercase");
+
+        // for upper case
+        if (capitalLetterValid)
+            errorBagTypes.push("uppercase");
+        else
+            removeErrorSuccess("uppercase");
+
+        // for special symbols
+        if (specialCharacterValid)
+            errorBagTypes.push("special_character");
+        else
+            removeErrorSuccess("special_character");
+
+        if (errorBagTypes.length > 0){
+            $.each(errorBagTypes, function(key,errType) {
+                errorBagsEle.find('li[type="'+errType+'"]').removeClass('text-danger').addClass('text-success');
+            })
+        }
+
+        // Display error messages
+        if (!minLengthValid || !allConditionsValid) {
+            $("#password-error").html(`<strong>Password is invalid, please follow the instructions below!</strong>`);
+            $("#password-error").removeClass("hide");
+            $(this).addClass("is-invalid");
+
+        } else {
+            $("#password-error").text("");
+            $("#password-error").addClass("hide");
+            $(this).removeClass("is-invalid");
+        }
+    });
+  }
+  function fetchEvents() {
     $.ajax({
         url: '/investigator/calendar/fetch-events-onload',
         method: 'GET',

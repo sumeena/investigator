@@ -401,3 +401,8 @@ input:checked + .slider:before {
   margin-top: 3em;
   margin-left: 0.5em;
 }
+.customButton{
+  text-align: center;
+  position: relative;
+  top: 34px;
+}

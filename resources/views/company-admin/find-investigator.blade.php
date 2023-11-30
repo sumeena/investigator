@@ -211,6 +211,7 @@
                                     </div>
                                 </div>
                             </div>
+
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="mb-1">
@@ -237,83 +238,150 @@
                                         </div>
                                     </div>
                                 </div>
-
-
-                                <div class="col-md-6">
-                                    <div class="mb-1">
+                                  <div class="col-md-6">
+                                      <div class="mb-1 mt-2">
                                         <div class="card">
-                                            <h5 class="card-header pt-2 pb-0">Availability (Date)</h5>
-                                            <table class="table"> <!-- hr_contact -->
-                                                <tbody>
-                                                <tr>
-                                                    <td>
+                                                <h5 class="card-header pt-2 pb-0">Search Investigators</h5>
+                                                <div class="table-responsive text-nowrap">
+                                                    <table class="table hr_contact">
+                                                        <tbody>
+                                                            <tr>
+                                                                <td>
+                                                                  <input class="form-check-input" type="checkbox"
+                                                                         id="withInternalInvestigator" value="internal"
+                                                                         name="withInternalInvestigator" @checked(old('withInternalInvestigator', $request->get('withInternalInvestigator')))>
+                                                                    <label>Internal</label>
+                                                                </td>
+                                                                <td>
+                                                                  <input class="form-check-input" type="checkbox"
+                                                                         id="withExternalInvestigator" value="external"
+                                                                         name="withExternalInvestigator" @checked(old('withExternalInvestigator', $request->get('withExternalInvestigator')))>
+                                                                    <label>External</label>
+                                                                </td>
 
-                                                        <input type="text" class="form-control caseAvailabilityField"
-                                                               name="datetimes" placeholder="Availability (Date)"
-                                                               value="<?php echo date('m/d/Y'); ?>" id="availability"/>
+                                                            </tr>
+                                                            <tr>
+                                                            <td colspan="100%">
+                                                                <span role="alert" class="text-danger small d-none" id="searchInvestigatorsTypeError">
+                                                                    Search Investigators is required, please select at least one!
+                                                                </span>
+                                                            </td>
+                                                        </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                      </div>
+                                  </div>
 
-                                                        <span role="alert" class="text-danger small d-none"
-                                                              id="availability-error"> Availability is required! </span>
-                                                    </td>
-                                                </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
+                              </div>
+                            <div class="daysRow">
+                              <div class="dayRow">
+
+                                  <div class="mb-1">
+                                        <h5 class="card-header pt-2 pb-0 heading"  >Day 1</h5>
+                                  </div>
+                                  <div class="row">
+                                      <div class="col-md-6">
+                                          <div class="mb-1">
+                                              <div class="card">
+                                                  <h5 class="card-header pt-2 pb-0">Availability (Date)</h5>
+                                                  <table class="table"> <!-- hr_contact -->
+                                                      <tbody>
+                                                      <tr>
+                                                          <td>
+
+                                                              <input type="text" class="form-control availabilitydateepicker caseAvailabilityField"
+                                                                     name="datetimes[]" placeholder="Availability (Date)"
+                                                                     value="<?php echo date('m/d/Y'); ?>" id="availability"/>
+
+                                                              <span role="alert" class="text-danger small d-none"
+                                                                    id="availability-error"> Availability is required! </span>
+                                                          </td>
+                                                      </tr>
+                                                      </tbody>
+                                                  </table>
+                                              </div>
+                                          </div>
+                                      </div>
+                                      <div class="col-md-4">
+                                          <div class="mb-1">
+                                              <div class="card">
+                                                  <h5 class="card-header pt-2 pb-0">Availability (Day Type)</h5>
+                                                  <table class="table"> <!-- hr_contact -->
+                                                      <tbody>
+                                                      <tr>
+                                                          <td>
+                                                            <select class="form-select timeperiod" onchange="reCalculateTime(this)" name="timeperiod[]" id="timeperiod1"><option value="1">Half Day </option><option value="2">Full Day</option></select>
+                                                          </td>
+                                                      </tr>
+                                                      </tbody>
+                                                  </table>
+                                              </div>
+                                          </div>
+                                      </div>
+                                      <div class="col-md-2">
+                                        <button class="btn btn-md btn-primary customButton" onclick="addNewSection(this)" type="button">
+                                          Add new Row
+                                        </button>
+                                      </div>
+
                                     </div>
-                                </div>
-                            </div>
+                                  <div class="row AvailabilityRow" id="1">
+                                      <div class="col-md-6">
+                                          <div class="mb-1">
+                                              <div class="card">
+                                                  <h5 class="card-header pt-2 pb-0">Availability (Start Time)</h5>
+                                                  <table class="table"> <!-- hr_contact -->
+                                                      <tbody>
+                                                      <tr>
+                                                          <td>
+                                                              <input type="text"
+                                                                     class="form-control availabilityTimepickerstart availabilityTimeField timepickerstart"
+                                                                     name="start_time[]" placeholder="Availability (Time)"
+                                                                     id="timepickerstart"/>
 
+                                                              <span role="alert" class="text-danger small d-none"
+                                                                    id="time-error"> Time is required! </span>
+                                                          </td>
+                                                      </tr>
+                                                      </tbody>
+                                                  </table>
+                                              </div>
+                                          </div>
+                                      </div>
+                                      <div class="col-md-4">
+                                          <div class="mb-1">
+                                              <div class="card">
+                                                  <h5 class="card-header pt-2 pb-0">Availability (End Time)</h5>
+                                                  <table class="table"> <!-- hr_contact -->
+                                                      <tbody>
+                                                      <tr>
+                                                          <td>
+                                                              <input disabled type="text"
+                                                                     class="form-control availabilityTimepickerend availabilityTimeField timepickerend"
+                                                                     name="end_time[]" placeholder="Availability (Time)"
+                                                                     id="timepickerend"/>
 
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="mb-1">
-                                        <div class="card">
-                                            <h5 class="card-header pt-2 pb-0">Availability (Start Time)</h5>
-                                            <table class="table"> <!-- hr_contact -->
-                                                <tbody>
-                                                <tr>
-                                                    <td>
-                                                        <input type="text"
-                                                               class="form-control availabilityTimeField timepickerstart"
-                                                               name="start_time" placeholder="Availability (Time)"
-                                                               id="timepickerstart"/>
+                                                              <span role="alert" class="text-danger small d-none"
+                                                                    id="time-error"> Time is required! </span>
+                                                          </td>
+                                                      </tr>
+                                                      </tbody>
+                                                  </table>
+                                              </div>
 
-                                                        <span role="alert" class="text-danger small d-none"
-                                                              id="time-error"> Time is required! </span>
-                                                    </td>
-                                                </tr>
-                                                </tbody>
-                                            </table>
+                                          </div>
                                         </div>
-                                    </div>
-                                </div>
+                                      <div class="col-md-2">
+                                              <button class="btn btn-danger remove customButton disabled" onclick="removeSection(this)" type="button">
+                                                Remove
+                                              </button>
+                                      </div>
 
-
-                                <div class="col-md-6">
-                                    <div class="mb-1">
-                                        <div class="card">
-                                            <h5 class="card-header pt-2 pb-0">Availability (End Time)</h5>
-                                            <table class="table"> <!-- hr_contact -->
-                                                <tbody>
-                                                <tr>
-                                                    <td>
-                                                        <input type="text"
-                                                               class="form-control availabilityTimeField timepickerend"
-                                                               name="end_time" placeholder="Availability (Time)"
-                                                               id="timepickerend"/>
-
-                                                        <span role="alert" class="text-danger small d-none"
-                                                              id="time-error"> Time is required! </span>
-                                                    </td>
-                                                </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                </div>
-
-                            </div>
-
+                                  </div>
+                              </div>
+                          </div>
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="mb-1">
@@ -331,6 +399,7 @@
 
                                                 <button type="button" data-target="#confirmUpdateSearchModal"
                                                         data-toggle="modal"
+                                                        data-dayscount="1"
                                                         class="btn btn-primary hr_investigator_search d-none"
                                                         id="callConfirmUpdateSearchModal"> Search
                                                 </button>
@@ -345,42 +414,7 @@
                                     </div>
                                 </div>
 
-                                <div class="col-md-6">
-                                    <div class="mb-1 mt-2">
-                                      <div class="card">
-                                              <h5 class="card-header pt-2 pb-0">Search Investigators</h5>
-                                              <div class="table-responsive text-nowrap">
-                                                  <table class="table hr_contact">
-                                                      <tbody>
-                                                          <tr>
-                                                              <td>
-                                                                <input class="form-check-input" type="checkbox"
-                                                                       id="withInternalInvestigator" value="internal"
-                                                                       name="withInternalInvestigator" @checked(old('withInternalInvestigator', $request->get('withInternalInvestigator')))>
-                                                                  <label>Internal</label>
-                                                              </td>
-                                                              <td>
-                                                                <input class="form-check-input" type="checkbox"
-                                                                       id="withExternalInvestigator" value="external"
-                                                                       name="withExternalInvestigator" @checked(old('withExternalInvestigator', $request->get('withExternalInvestigator')))>
-                                                                  <label>External</label>
-                                                              </td>
-
-                                                          </tr>
-                                                          <tr>
-                                                          <td colspan="100%">
-                                                              <span role="alert" class="text-danger small d-none" id="searchInvestigatorsTypeError">
-                                                                  Search Investigators is required, please select at least one!
-                                                              </span>
-                                                          </td>
-                                                      </tr>
-                                                      </tbody>
-                                                  </table>
-                                              </div>
-                                          </div>
-                                    </div>
-                                </div>
-                            </div>
+                              </div>
                         </form>
                     </div>
                 </div>
@@ -666,7 +700,7 @@
             data['city'] = cityValue;
             data['state'] = stateValue;
             data['distance'] = distanceValue;
-            
+
             if (assignmentIDValue) {
                 data['assignment_id'] = assignmentIDValue;
             }
@@ -732,6 +766,7 @@
                 const distance = $('#distance');
                 const distanceValue = distance.val();
                 data['distance'] = distanceValue;
+
 
                 // input selector
                 /* const zip = $('#postal_code');
@@ -975,6 +1010,8 @@
                 $('#assignmentCreateModal').modal('show');
             });
 
+
+
             $('#createModalCloseBtn').on('click', function () {
                 $('#assignmentCreateModal').modal('hide');
             });
@@ -1165,6 +1202,26 @@
 
         function checkForValidation() {
             // input selector
+            var availabilitys = [];
+            $('.availabilitydateepicker').each(function() {
+                availabilitys.push($(this).val());
+            });
+            const availabilitysCheck =availabilitys.join(', ');
+            var addTimepickerstart = [];
+            $('.availabilityTimepickerstart').each(function() {
+                addTimepickerstart.push($(this).val());
+            });
+            const addTimepickerstartCheck =addTimepickerstart.join(', ');
+            var addTimepickerend = [];
+            $('.availabilityTimepickerend').each(function() {
+                addTimepickerend.push($(this).val());
+            });
+            const addTimepickerendCheck =addTimepickerend.join(', ');
+            var addTimeperiod = [];
+            $('.timeperiod').each(function() {
+                addTimeperiod.push($(this).val());
+            });
+            const addTimeperiodCheck =addTimeperiod.join(', ');
             const zip = $('#postal_code');
             const surv = $('#surveillance');
             const stat = $('#statements');
@@ -1173,9 +1230,6 @@
             const license = $('#license-select');
             const lat = $('#lat');
             const lng = $('#lng');
-            const availability = $('#availability');
-            const timepickerstart = $('#timepickerstart');
-            const timepickerend = $('#timepickerend');
             const withInternalInvestigator = $('#withInternalInvestigator');
             const withExternalInvestigator = $('#withExternalInvestigator');
 
@@ -1188,12 +1242,9 @@
             const licenseValue = license.val();
             const latValue = lat.val();
             const lngValue = lng.val();
-            const availabilityValue = availability.val();
-            const timepickerstartValue = timepickerstart.val();
-            const timepickerendValue = timepickerend.val();
             const withInternalInvestigatorValue = withInternalInvestigator.is(':checked');
             const withExternalInvestigatorValue = withExternalInvestigator.is(':checked');
-                
+
             const data = {
                 page: 1
             };
@@ -1289,16 +1340,19 @@
                 data['license'] = licenseValue;
             }
 
-            if (availabilityValue) {
-                data['availability'] = availabilityValue;
+            if (availabilitysCheck) {
+                data['availability'] = availabilitysCheck;
             }
 
-            if (timepickerstartValue) {
-                data['start_time'] = timepickerstartValue;
+            if (addTimepickerstartCheck) {
+                data['start_time'] = addTimepickerstartCheck;
             }
 
-            if (timepickerendValue) {
-                data['end_time'] = timepickerendValue;
+            if (addTimepickerendCheck) {
+                data['end_time'] = addTimepickerendCheck;
+            }
+            if (addTimeperiodCheck) {
+                data['dayType'] = addTimeperiodCheck;
             }
             return data;
         }

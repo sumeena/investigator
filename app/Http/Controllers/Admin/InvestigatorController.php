@@ -9,6 +9,7 @@ use App\Models\Language;
 use App\Models\Role;
 use App\Models\State;
 use App\Models\User;
+use App\Models\CompanyAdminProfile;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\Admin\Investigator\InvestigatorRequest;
 use App\Http\Requests\Admin\Investigator\PasswordRequest;
@@ -22,8 +23,17 @@ class InvestigatorController extends Controller
         $investigators = User::whereHas('userRole', function ($q) {
             $q->where('role', 'investigator');
         })->paginate(20);
+        $companyProfile=array();
+        foreach ($investigators as $key => $value)  {
+          if ($value->company_profile_id !== null) {
+              $companyProfile[$key]=$this->checkCompanyProfile($value->company_profile_id);
+          }else{
+              $companyProfile[$key]=$this->checkCompanyProfile(0);
+          }
 
-        return view('admin.investigator.index', compact('investigators'));
+        }
+
+        return view('admin.investigator.index', compact('investigators','companyProfile'));
     }
 
     public function view()
@@ -149,6 +159,15 @@ class InvestigatorController extends Controller
     {
         if(auth()->user()->investigatorType != 'internal'){
           return "Contractor";
+        }
+    }
+    public function checkCompanyProfile($id)
+    {
+        if(!empty($id) && $id != 0){
+          $companyUser = CompanyAdminProfile::find($id);
+          return $companyUser->company_name;
+        }else{
+          return "";
         }
     }
 }

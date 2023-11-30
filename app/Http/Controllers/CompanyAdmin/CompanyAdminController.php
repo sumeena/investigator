@@ -268,8 +268,16 @@ class CompanyAdminController extends Controller
 
     public function saveInvestigatorSearchHistory(Request $request)
     {
-
-        $availability = $request->availability.','.$request->start_time.' - '.$request->end_time;
+        $availabilityDate = explode(',',$request->availability);
+        $availabilityStartTime = explode(',',$request->start_time);
+        $availabilityEndTime = explode(',',$request->end_time);
+        $availabilityDayType = explode(',',$request->dayType);
+        $availability=array();
+        foreach ($availabilityDate as $key => $value) {
+            $availability[]=array($availabilityDate[$key],$availabilityDayType[$key],trim($availabilityStartTime[$key]),$availabilityEndTime[$key]);
+        }
+        $availability = serialize($availability);
+        //$availability = $request->availability.','.$request->start_time.' - '.$request->end_time;
         InvestigatorSearchHistory::updateOrCreate([
             'user_id'      => auth()->id(),
             'assignment_id'=> $request->assignment_id],[
@@ -300,7 +308,16 @@ class CompanyAdminController extends Controller
 
     public function updateInvestigatorSearchHistory(Request $request)
     {
-        $availability = $request->availability.','.$request->start_time.' - '.$request->end_time;
+        $availabilityDate = explode(',',$request->availability);
+        $availabilityStartTime = explode(',',$request->start_time);
+        $availabilityEndTime = explode(',',$request->end_time);
+        $availabilityDayType = explode(',',$request->dayType);
+        $availability=array();
+        foreach ($availabilityDate as $key => $value) {
+            $availability[]=array($availabilityDate[$key],$availabilityDayType[$key],trim($availabilityStartTime[$key]),$availabilityEndTime[$key]);
+        }
+        $availability = serialize($availability);
+        //$availability = $request->availability.','.$request->start_time.' - '.$request->end_time;
         InvestigatorSearchHistory::where('id',$request->search_history_id)->update([
             'user_id'      => auth()->id(),
             'street'       => $request->street,
