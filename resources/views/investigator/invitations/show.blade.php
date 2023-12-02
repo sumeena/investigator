@@ -30,9 +30,9 @@
                             @endif
 
                             @if($assignmentUser->status == 'OFFER RECEIVED')
-                                <a style="margin-right: 500px;" href="{{route('investigator.assignment.confirmation',[$assignmentUser->id,'REJECTED'])}}" class="investigator-view-profile-link"><button type="button" class="btn btn-outline-light btn-sm">Reject</button></a>
+                                <a style="margin-right: 500px;" href="{{route('investigator.assignment.confirmation',[$assignmentUser->id,'REJECTED'])}}" class="assignment_rejected investigator-view-profile-link"><button type="button" class="btn btn-outline-light btn-sm">Reject</button></a>
 
-                                <a  href="{{route('investigator.assignment.confirmation',[$assignmentUser->id,'ACCEPTED'])}}" class="investigator-view-profile-link"><button type="button" class="btn btn-outline-light btn-sm">Accept</button></a>
+                                <a  href="{{route('investigator.assignment.confirmation',[$assignmentUser->id,'ACCEPTED'])}}" class="assignment_accepted investigator-view-profile-link"><button type="button" class="btn btn-outline-light btn-sm">Accept</button></a>
                             @endif
 
                         </h5>
