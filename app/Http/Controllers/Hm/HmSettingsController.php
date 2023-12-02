@@ -36,6 +36,8 @@ class HmSettingsController extends Controller
           'new_message_on_message'     => $request->new_message_on_message,
           'assignment_update_message'     => $request->assignment_update_message,
           'user_role'     => auth()->user()->userRole->role,
+          'assignment_confirmation' => $request->assignment_confirmation,
+          'assignment_confirmation_on_message' => $request->assignment_confirmation_on_message
       ];
         $user     = Settings::updateOrCreate([
             'id' => $request->id

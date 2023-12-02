@@ -11,9 +11,12 @@ use App\Models\ChatMessage;
 use App\Models\InvestigatorSearchHistory;
 // use App\Models\Invitation;
 use App\Models\Notification;
+use App\Models\CompanyAdminProfile;
 use App\Models\Language;
 use App\Models\Media;
 use App\Mail\NewMassageMail;
+use App\Mail\HireJob;
+use App\Mail\CloseJob;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -22,6 +25,7 @@ use App\Models\Settings;
 use Illuminate\Support\Facades\Mail;
 use PhpParser\Node\Expr\Assign;
 use Twilio\Rest\Client;
+use Illuminate\Support\Str;
 
 class InvitationsController extends Controller
 {
@@ -198,13 +202,15 @@ Please correct it as soon as you can.",
 
 
     public function assignmentConfirmation($id, $status) {
+
       
       $assignmentUser = AssignmentUser::find($id);
       $assignmentDetails = Assignment::find($assignmentUser->assignment_id);
+
       $hired = ($status == 'ACCEPTED' ? 1 : 0);
       $assignmentStatus = ($status == 'ACCEPTED' ? 'ASSIGNED' : 'OFFER REJECTED');
       $updateAssignmentUser = AssignmentUser::where('id', $id)->update(['status'=> $assignmentStatus, 'hired' => $hired]);
-      
+
       $checkForTotalOffersRejected = AssignmentUser::where(['status'=>'OFFER REJECTED', 'assignment_id' => $assignmentUser->assignment_id])->count();
 
       if($checkForTotalOffersRejected == $assignmentDetails->offer_sent) {
@@ -220,9 +226,9 @@ Please correct it as soon as you can.",
       if($invitedCount <= 0 && $offerSentCount <=0) {
         Assignment::where('id', $id)->update(['status'=> 'OFFER REJECTED']);
       }
-    
-      // $updateAssignment = Assignment::where('id', $assignmentUser->assignment_id)->update(['status'=> $assignmentStatus]);
 
+      // $updateAssignment = Assignment::where('id', $assignmentUser->assignment_id)->update(['status'=> $assignmentStatus]);
+      $assignmentUserInfo = AssignmentUser::where(['assignment_id'=>$assignmentUser->assignment_id])->get();
       $notificationData = [
         'user_id'      => $assignmentDetails->user_id,
         'from_user_id' =>  auth()->id(),
@@ -236,11 +242,10 @@ Please correct it as soon as you can.",
 
      if($settings->count() > 0){
        $userDetails = User::where('id', $assignmentDetails->user_id)->paginate(1);
-       if($settings[0]->new_message == 1 ) {
+       if($settings[0]->assignment_confirmation == 1 ) {
 
-         $notificationData = [
-           'first_name' => $userDetails[0]->first_name,
-           'last_name' =>$userDetails[0]->last_name,
+         $mailNotification = [
+           'subject' =>$assignmentUser->user->first_name.' '.$assignmentUser->user->last_name.' have '.$status.' your offer on assignment '.$assignmentDetails->assignment_id.'',
             'title'        => $assignmentUser->user->first_name.' '.$assignmentUser->user->last_name.' have '.$status.' your offer on assignment '.$assignmentDetails->assignment_id.'',
             'login'        => ' to your account so view the details.',
             'loginUrl'        => route('login'),
@@ -248,7 +253,7 @@ Please correct it as soon as you can.",
          ];
 
          if(!empty($userDetails[0]->email)){
-           Mail::to($userDetails[0]->email)->send(new NewMassageMail($notificationData));
+           Mail::to($userDetails[0]->email)->send(new CloseJob($mailNotification));
          }
        }
 
@@ -273,6 +278,46 @@ Please correct it as soon as you can.",
               }
          }
        }
+     }
+     if($hired ==1){
+
+         $userDetails = User::where('id', $assignmentDetails->user_id)->first();
+         $login=route('login');
+         $companyAdminProfile = CompanyAdminProfile::where('id', $userDetails->company_profile_id)->first();
+         $company_name="";
+         if($companyAdminProfile->company_name != null){
+            $company_name=$companyAdminProfile->company_name;
+         }
+
+         $notificationDataHired = [
+            'title'        => 'Congratulations! You have been selected for a new assignment.',
+           'login'        => ' to your account so view the details.',
+           'assigmentId'  => 'Assigment ID: ' . Str::upper($assignmentDetails->assignment_id),
+           'clientId'     => 'Client ID: ' . Str::upper($assignmentDetails->client_id),
+           'loginUrl'        => $login,
+           'companyName'  => 'Company Name: ' .$company_name,
+           'thanks'        => 'Ilogistics Team',
+         ];
+         $notificationDataClosed = [
+            'title'        => ' The assignment you were invited on has been closed.',
+            'login'        => ' to your account so view the details.',
+            'loginUrl'        => route('login'),
+            'thanks'        => 'Ilogistics Team',
+
+         ];
+         foreach ($assignmentUserInfo as $item) {
+           $investigatorUser = User::find($item->user_id);
+           $itemSettings = Settings::where('user_id', $item->user_id)->paginate(1);
+           if($itemSettings->count() > 0){
+             if($itemSettings[0]->assignment_hired_or_closed == 1 ) {
+               if($item->hired == 1){
+                  Mail::to($investigatorUser->email)->send(new HireJob($notificationDataHired));
+               }else{
+                  Mail::to($investigatorUser->email)->send(new CloseJob($notificationDataClosed));
+               }
+             }
+           }
+         }
      }
 
       return redirect()->route('investigator.assignment.show',$id)->with('success', 'OFFER '.$status);

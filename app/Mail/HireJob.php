@@ -32,9 +32,16 @@ class HireJob extends Mailable
      */
     public function envelope()
     {
-        return new Envelope(
-            subject: 'Congratulations! You have been selected for a new assignment ',
-        );
+      if (isset($this->data['subject'])) {
+          return new Envelope(
+              subject: ''.$this->data['subject'].'',
+          );
+        }else {
+          return new Envelope(
+              subject: 'Congratulations! You have been selected for a new assignment ',
+          );
+      }
+
     }
 
     /**

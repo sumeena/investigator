@@ -266,58 +266,50 @@ class AssignmentsController extends Controller
     /** hire investigator */
 
     public function hireInvestigator(Request $request) {
-        $authUser = auth()->user();
-        $authUserId = $request->user_id;
-        $assignmentId = $request->assignment_id;
-        $assignmentDetails = Assignment::find($assignmentId);
-        $offerSents = $assignmentDetails->offer_sent+1;
-        $assignmentUser = AssignmentUser::where(['assignment_id' => $assignmentId, 'user_id' => $authUserId])->update(['status' => 'OFFER RECEIVED']);
-        // Assignment::where('id' , $assignmentId)->update(array('status' => 'ASSIGNED'));
-        Assignment::where('id' , $assignmentId)->update(array('status' => 'OFFER SENT', 'offer_sent'=>$offerSents));
-        $assignment = Assignment::find($assignmentId);
-        $login=route('login');
-        $assignmentUserInfo = AssignmentUser::where(['assignment_id'=>$assignmentId])->get();
 
-        $notificationDataClosed = [
-           'title'        => 'The assignment you were invited on has been closed.',
-           'login'        => ' to your account so view the details.',
-           'loginUrl'        => route('login'),
-           'thanks'        => 'Ilogistics Team',
+            $authUser = auth()->user();
+            $authUserId = $request->user_id;
+            $assignmentId = $request->assignment_id;
+            $assignmentDetails = Assignment::find($assignmentId);
+            $offerSents = $assignmentDetails->offer_sent+1;
+            $assignmentUser = AssignmentUser::where(['assignment_id' => $assignmentId, 'user_id' => $authUserId])->update(['status' => 'OFFER RECEIVED']);
+            // Assignment::where('id' , $assignmentId)->update(array('status' => 'ASSIGNED'));
+            Assignment::where('id' , $assignmentId)->update(array('status' => 'OFFER SENT', 'offer_sent'=>$offerSents));
+            $assignment = Assignment::find($assignmentId);
+            $login=route('login');
+            $assignmentUserInfo = AssignmentUser::where(['assignment_id'=>$assignmentId])->get();
 
-        ];
+            $company_name = '';
 
-        $company_name = '';
+            if($authUser->CompanyAdminProfile != null)
+            {
+                $company_name = $authUser->CompanyAdminProfile->company_name;
+            }
+            if($authUser->parentCompany != null)
+            {
+                $company_name = $authUser->parentCompany->company->CompanyAdminProfile?->company_name;
+            }
 
-        if($authUser->CompanyAdminProfile != null)
-        {
-            $company_name = $authUser->CompanyAdminProfile->company_name;
-        }
-        if($authUser->parentCompany != null)
-        {
-            $company_name = $authUser->parentCompany->company->CompanyAdminProfile?->company_name;
-        }
+            $notificationDataOffer = [
+                'subject'        => 'Congratulations! An offer is sent to you for a new assignment.',
+               'title'        => 'Congratulations! An offer is sent to you for a new assignment.',
+               'login'        => ' to your account so view the details.',
+               'assigmentId'  => 'Assigment ID: ' . Str::upper($assignment->assignment_id),
+               'clientId'     => 'Client ID: ' . Str::upper($assignment->client_id),
+               'loginUrl'        => $login,
+               'companyName'  => 'Company Name: ' .$company_name,
+               'thanks'        => 'Ilogistics Team',
+             ];
 
-        $notificationDataHired = [
-           'title'        => 'Congratulations! An offer is sent to you for a new assignment.',
-           'login'        => ' to your account so view the details.',
-           'assigmentId'  => 'Assigment ID: ' . Str::upper($assignment->assignment_id),
-           'clientId'     => 'Client ID: ' . Str::upper($assignment->client_id),
-           'loginUrl'        => $login,
-           'companyName'  => 'Company Name: ' .$company_name,
-           'thanks'        => 'Ilogistics Team',
-         ];
 
-         foreach ($assignmentUserInfo as $item) {
-             $investigatorUser = User::find($item->user_id);
+             $investigatorUser = User::find($authUserId);
+             $settings = Settings::where('user_id', $authUserId)->paginate(1);
 
-             if($item->hired == 1){
-                Mail::to($investigatorUser->email)->send(new HireJob($notificationDataHired));
-             }else{
-                Mail::to($investigatorUser->email)->send(new CloseJob($notificationDataClosed));
-             }
-             $settings = Settings::where('user_id', $item->id)->paginate(1);
 
              if($settings->count() > 0){
+               if($settings[0]->assignment_hired_or_closed == 1 ){
+                 Mail::to($investigatorUser->email)->send(new HireJob($notificationDataOffer));
+               }
                   if($settings[0]->assignment_hired_or_closed_message == 1 ){
                     if(!empty($investigatorUser->phone)){
                         $sendSms=$this->sendSms($investigatorUser->phone,$assignment->assignment_id);
@@ -329,8 +321,10 @@ class AssignmentsController extends Controller
                          }
                     }
                   }
+
+
              }
-         }
+
          session()->flash('success', 'Assignment assigned successfully');
 
     }

@@ -34,6 +34,12 @@
                                                        <span class="slider round"></span>
                                                      </label>
                                          </li>
+                                         <li class="list-group-item">Assignment status updates
+                                             <label class="switch ">
+                                                 <input name="assignment_confirmation" type="checkbox" value="1" class="primary" {{isset($settings->assignment_confirmation) ? 'checked':'' }}>
+                                                 <span class="slider round"></span>
+                                             </label>
+                                         </li>
                                     </ul>
                                 </div>
                             </div>
@@ -52,6 +58,12 @@
                                                        <input name="new_message_on_message" type="checkbox" value="1" class="primary" {{isset($settings->new_message_on_message) ? 'checked':'' }}>
                                                        <span class="slider round"></span>
                                                      </label>
+                                         </li>
+                                         <li class="list-group-item">Assignment status updates
+                                             <label class="switch ">
+                                                 <input name="assignment_confirmation_on_message" type="checkbox" value="1" class="primary" {{isset($settings->assignment_confirmation_on_message) ? 'checked':'' }}>
+                                                 <span class="slider round"></span>
+                                             </label>
                                          </li>
                                     </ul>
                                 </div>

@@ -35,7 +35,7 @@
                                         </label>
                                     </li>
 
-                                    <li class="list-group-item">Acceptence or Rejection of assignments
+                                    <li class="list-group-item">Assignment status updates
                                         <label class="switch ">
                                             <input name="assignment_confirmation" type="checkbox" value="1" class="primary" {{isset($settings->assignment_confirmation) ? 'checked':'' }}>
                                             <span class="slider round"></span>
@@ -60,7 +60,7 @@
                                             <span class="slider round"></span>
                                         </label>
                                     </li>
-                                    <li class="list-group-item">Acceptence or Rejection of assignments
+                                    <li class="list-group-item">Assignment status updates
                                         <label class="switch ">
                                             <input name="assignment_confirmation_on_message" type="checkbox" value="1" class="primary" {{isset($settings->assignment_confirmation_on_message) ? 'checked':'' }}>
                                             <span class="slider round"></span>
