@@ -32,9 +32,16 @@ class CloseJob extends Mailable
      */
     public function envelope()
     {
+      if (isset($this->data['subject'])) {
+          return new Envelope(
+              subject: ''.$this->data['subject'].'',
+          );
+        }else {
         return new Envelope(
             subject: 'The assignment you were invited on has been closed',
         );
+      }
+
     }
 
     /**

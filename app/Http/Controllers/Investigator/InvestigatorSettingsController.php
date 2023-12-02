@@ -25,7 +25,7 @@ class InvestigatorSettingsController extends Controller
     }
   public function store(Request $request)
     {
-      //+echo "<pre>"; print_r($_POST); die;
+      
       $settingsData = [
           'user_id'       => auth()->id(),
           'assignment_invite' => $request->assignment_invite,

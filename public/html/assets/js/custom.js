@@ -13,6 +13,12 @@ $(document).ready(function(){
     $(document).on('click', '.attachment-button', function() {
         $('.attachment').click();
     });
+    $(document).on('click', '.assignment_accepted', function() {
+        $('.custom-loader-overlay').attr("style", "display: flex !important");
+    });
+    $(document).on('click', '.assignment_rejected', function() {
+        $('.custom-loader-overlay').attr("style", "display: flex !important");
+    });
 
     $(document).on('change', '.attachment', function(e) {
 
@@ -267,11 +273,13 @@ $(document).ready(function(){
         var userId = $(this).data('user-id');
         var assignmentId = $(this).data('assignment-id');
         var role = $('.view-investigator-profile').data('role');
+        $('.custom-loader-overlay').attr("style", "display: flex !important");
         $.ajax({
             url: role+'assignment/hire-now',
             method : 'POST',
             data : { user_id : userId, assignment_id: assignmentId },
             success : function(response) {
+              $('.custom-loader-overlay').hide();
                 location.reload();
                 /* $('.hire-user').html('<button data-user-id="'+userId+'" data-assignment-id="'+assignmentId+'" type="button" class="btn btn-light btn-sm btn-hired">Hired</button>');
                 $('.job-status').html('HIRED'); */

@@ -34,7 +34,7 @@ class NewMassageMail extends Mailable
     {
         if(isset($this->data['phoneupdate']) && $this->data['phoneupdate'] == "update"){
           return new Envelope(
-              subject: 'Please update your Phone',
+              subject: 'Please update your Phone Number',
           );
         }else {
           return new Envelope(
