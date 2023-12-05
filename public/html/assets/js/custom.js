@@ -204,7 +204,7 @@ $(document).ready(function(){
 
                     $('.hire-user').append('<a href="'+role+'assignment/'+assignmentId+'/'+userId+'/recall" class="investigator-view-profile-link"><button type="button" style="width:140px" class="btn btn-outline-light btn-sm">RECALL OFFER</button></a>');
                 }
-                else if(userAssignmentStatus == 'OFFER RECALLED' || userAssignmentStatus == 'OFFER REJECTED')
+                else
                 {
                     $('.hire-user').removeClass('d-none').removeClass('btn btn-outline-light btn-md m-l-20 btn-hire-now').html('<span class="label label-primary" style="background:#fff; padding: 8px; border: #7b7dff; border-radius: 3px; margin-left:20px">'+userAssignmentStatus+'</span>');
                 }

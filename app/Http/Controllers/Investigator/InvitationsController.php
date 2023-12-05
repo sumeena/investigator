@@ -210,16 +210,18 @@ Please correct it as soon as you can.",
       $hired = ($status == 'ACCEPTED' ? 1 : 0);
       $assignmentStatus = ($status == 'ACCEPTED' ? 'ASSIGNED' : 'OFFER REJECTED');
       $updateAssignmentUser = AssignmentUser::where('id', $id)->update(['status'=> $assignmentStatus, 'hired' => $hired]);
-
       $checkForTotalOffersRejected = AssignmentUser::where(['status'=>'OFFER REJECTED', 'assignment_id' => $assignmentUser->assignment_id])->count();
 
       if($checkForTotalOffersRejected == $assignmentDetails->offer_sent) {
-        Assignment::where('id', $assignmentUser->assignment_id)->update(['status'=> $assignmentStatus]);
+        Assignment::where('id', $assignmentUser->assignment_id)->update(['status'=> 'INVITED']);
       }
 
-      if($hired == 1)
-      AssignmentUser::where('assignment_id',$assignmentUser->assignment_id)->update(['status'=>'OFFER CLOSED']);
+      if($hired == 1){
+      AssignmentUser::where(['assignment_id' => $assignmentUser->assignment_id,'status' => 'INVITED'])->update(['status'=>'OFFER CLOSED']);
 
+      Assignment::where('id', $assignmentUser->assignment_id)->update(['status'=> $assignmentStatus]);
+
+      }
       $invitedCount = AssignmentUser::where(['status'=>'INVITED', 'assignment_id' => $id])->count();
       $offerSentCount = AssignmentUser::where(['status'=>'OFFER RECEIVED', 'assignment_id' => $id])->count();
 
