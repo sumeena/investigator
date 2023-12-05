@@ -676,10 +676,11 @@ Please correct it as soon as you can.",
     /** Recall Assignment */
 
     public function assignmentRecall($id,$user_id) {
+
         $assignmentDetails = Assignment::find($id);
         // Assignment::where('id',$id)->update(['status'=>'OFFER RECALLED']);
         AssignmentUser::where(['assignment_id'=>$assignmentDetails->id, 'user_id' => $user_id])->update(['status'=> 'OFFER RECALLED']);
-
+        
         $checkForTotalOffersRecalled = AssignmentUser::where(['status'=>'OFFER RECALLED', 'assignment_id' => $id])->count();
 
         $invitedCount = AssignmentUser::where(['status'=>'INVITED', 'assignment_id' => $id])->count();
@@ -692,7 +693,11 @@ Please correct it as soon as you can.",
         if($invitedCount <= 0 && $offerSentCount <=0) {
             Assignment::where('id', $id)->update(['status'=> 'OFFER RECALLED']);
         }
-        return redirect()->route('company-admin.assignment.show',$id)->with('success', 'Offer Recalled Successfully');
 
+        if($invitedCount > 0 && $offerSentCount <=0) {
+            Assignment::where('id', $id)->update(['status'=> 'INVITED']);
+        }
+
+        return redirect()->route('company-admin.assignment.show',$id)->with('success', 'Offer Recalled Successfully');
     }
 }
