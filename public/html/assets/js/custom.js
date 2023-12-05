@@ -207,10 +207,10 @@ $(document).ready(function(){
                 else
                 {
                     var style = '';
-                    if(userAssignmentStatus == 'OFFER REJECTED')
-                        style = '#d9534f';
-                    else
+                    if(userAssignmentStatus == 'ASSIGNED')
                         style = '#5cb85c';
+                    else
+                        style = '#d9534f';
 
                     $('.hire-user').removeClass('d-none').removeClass('btn btn-outline-light btn-md m-l-20 btn-hire-now').html('<span class="label label-success" style="background: '+style+';padding: 4px;border: '+style+';margin-left: 20px;color: #fff; cursor:default">'+userAssignmentStatus+'</span>');
                 }
