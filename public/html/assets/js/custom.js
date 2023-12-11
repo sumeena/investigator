@@ -474,6 +474,8 @@ $(document).ready(function(){
   function removeSection(row) {
     var rowObject = $(row);
     var rowclass = rowObject.parent().parent().parent().remove();
+    $('#fieldsUpdated').val('1');
+    $('#callConfirmUpdateSearchModal').removeAttr('disabled');
   }
     var rowCount =  $('#callConfirmUpdateSearchModal').data('dayscount');
 
