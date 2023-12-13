@@ -32,16 +32,15 @@ class InvestigatorController extends Controller
     function __construct()
     {
         $this->base_url = URL::to('/');
-
     }
 
     public function index()
     {
-      $user = auth()->user();
+        $user = auth()->user();
 
-      $invitationsCount = AssignmentUser::where('user_id', auth()->id())->with(['assignment', 'user', 'assignment.author.CompanyAdminProfile'])->orderBy('created_at','desc')->count();
+        $invitationsCount = AssignmentUser::where('user_id', auth()->id())->with(['assignment', 'user', 'assignment.author.CompanyAdminProfile'])->orderBy('created_at', 'desc')->count();
 
-        return view('investigator.index',compact('invitationsCount'));
+        return view('investigator.index', compact('invitationsCount'));
     }
 
     public function viewProfile()
@@ -609,7 +608,6 @@ class InvestigatorController extends Controller
     public function investigatorPasswordUpdate(PasswordRequest $request)
     { //update password for investigator
 
-
         $user_id = Auth::user()->id;
         $user    = User::find($user_id);
         $user->update([
@@ -624,7 +622,6 @@ class InvestigatorController extends Controller
 
     public function investigatorSyncCalendar(Request $request)
     {
-
         if (isset($request->google)) {
             $this->googleOauth2Callback();
         }
@@ -682,12 +679,7 @@ class InvestigatorController extends Controller
             curl_close($ch);
             $responseArray = json_decode($response);
 
-            GoogleAuthUsers::updateOrCreate(['user_id' => $userId], ['access_token'  => $responseArray->access_token,
-                                                                     'expires_in'    => date("Y-m-d H:i:s", strtotime("+$responseArray->expires_in seconds")),
-                                                                     'refresh_token' => $responseArray->refresh_token,
-                                                                     'scope'         => $responseArray->scope,
-                                                                     'token_type'    => $responseArray->token_type,
-                                                                     'id_token'      => $responseArray->id_token]);
+            GoogleAuthUsers::updateOrCreate(['user_id' => $userId], ['access_token' => $responseArray->access_token, 'expires_in' => date("Y-m-d H:i:s", strtotime("+$responseArray->expires_in seconds")), 'refresh_token' => $responseArray->refresh_token, 'scope' => $responseArray->scope, 'token_type' => $responseArray->token_type, 'id_token'      => $responseArray->id_token]);
         } else if (GoogleAuthUsers::where('user_id', $userId)->exists() && strtotime($userInfo[0]->expires_in) < strtotime(date('Y-m-d H:i:s'))) {
             $access_token  = $userInfo[0]->access_token;
             $refresh_token = $userInfo[0]->refresh_token;
@@ -715,12 +707,9 @@ class InvestigatorController extends Controller
                 curl_close($ch);
 
                 $responseArray = json_decode($response);
-                GoogleAuthUsers::updateOrCreate(['user_id' => $userId], ['access_token' => $responseArray->access_token,
-                                                                         'expires_in'   => date("Y-m-d H:i:s", strtotime("+$responseArray->expires_in seconds")),
-                                                                         'id_token'     => $responseArray->id_token]);
+                GoogleAuthUsers::updateOrCreate(['user_id' => $userId], ['access_token' => $responseArray->access_token, 'expires_in'   => date("Y-m-d H:i:s", strtotime("+$responseArray->expires_in seconds")), 'id_token'     => $responseArray->id_token]);
             }
         }
-
         header('Location: ' . $this->base_url . '/investigator/calendar');
         exit;
     }
@@ -746,6 +735,7 @@ class InvestigatorController extends Controller
             $ch = curl_init();
 
             curl_setopt($ch, CURLOPT_URL, 'https://www.googleapis.com/oauth2/v2/userinfo?access_token=' . $userInfo[0]->access_token);
+
 
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
             curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
@@ -812,18 +802,22 @@ class InvestigatorController extends Controller
             $nylasResponse = curl_exec($curl);
             curl_close($curl);
             $nylasResponseArray = json_decode($nylasResponse);
-            NylasUsers::updateOrCreate(['user_id'  => $userId,
-                                        'provider' => 'gmail'], ['nylas_id'          => $nylasResponseArray->id,
-                                                                 'access_token'      => $nylasResponseArray->access_token,
-                                                                 'account_id'        => $nylasResponseArray->account_id,
-                                                                 'billing_state'     => $nylasResponseArray->billing_state,
-                                                                 'email_address'     => $nylasResponseArray->email_address,
-                                                                 'linked_at'         => $nylasResponseArray->linked_at,
-                                                                 'name'              => $nylasResponseArray->name,
-                                                                 'object'            => $nylasResponseArray->object,
-                                                                 'organization_unit' => $nylasResponseArray->organization_unit,
-                                                                 'provider'          => $nylasResponseArray->provider,
-                                                                 'sync_state'        => $nylasResponseArray->sync_state]);
+            NylasUsers::updateOrCreate([
+                'user_id'  => $userId,
+                'provider' => 'gmail'
+            ], [
+                'nylas_id'          => $nylasResponseArray->id,
+                'access_token'      => $nylasResponseArray->access_token,
+                'account_id'        => $nylasResponseArray->account_id,
+                'billing_state'     => $nylasResponseArray->billing_state,
+                'email_address'     => $nylasResponseArray->email_address,
+                'linked_at'         => $nylasResponseArray->linked_at,
+                'name'              => $nylasResponseArray->name,
+                'object'            => $nylasResponseArray->object,
+                'organization_unit' => $nylasResponseArray->organization_unit,
+                'provider'          => $nylasResponseArray->provider,
+                'sync_state'        => $nylasResponseArray->sync_state
+            ]);
 
             $curl = curl_init();
             curl_setopt_array($curl, array(
@@ -844,7 +838,6 @@ class InvestigatorController extends Controller
             curl_close($curl);
             $responseArr['calendars'] = json_decode($response);
             $profile['calendars']     = $responseArr['calendars'];
-
         }
 
         $profile['user'] = Auth::user();
@@ -857,10 +850,11 @@ class InvestigatorController extends Controller
     /** Check google access token expiry */
     public function checkTokenExpiry()
     {
-
         $userId   = Auth::user()->id;
         $userInfo = GoogleAuthUsers::where('user_id', $userId)->get();
+
         if (GoogleAuthUsers::where('user_id', $userId)->exists() && strtotime($userInfo[0]->expires_in) < strtotime(date('Y-m-d H:i:s'))) {
+
             $access_token  = $userInfo[0]->access_token;
             $refresh_token = $userInfo[0]->refresh_token;
             // Check if the access token already expired
@@ -870,7 +864,6 @@ class InvestigatorController extends Controller
             $error_response = curl_exec($ch);
             $array          = json_decode($error_response);
 
-            // print_r($array);
             if (isset($array->error)) {
                 // Generate new Access Token using old Refresh Token
                 $ch = curl_init();
@@ -889,9 +882,11 @@ class InvestigatorController extends Controller
                 curl_close($ch);
 
                 $responseArray = json_decode($response);
-                $updateGoogleAccessToken = GoogleAuthUsers::updateOrCreate(['user_id' => $userId], ['access_token' => $responseArray->access_token,
-                                                                                                    'expires_in'   => date("Y-m-d H:i:s", strtotime("+$responseArray->expires_in seconds")),
-                                                                                                    'id_token'     => $responseArray->id_token]);
+                    $updateGoogleAccessToken = GoogleAuthUsers::updateOrCreate(['user_id' => $userId], [
+                        'access_token' => $responseArray->access_token,
+                        'expires_in'   => date("Y-m-d H:i:s", strtotime("+$responseArray->expires_in seconds")),
+                        // 'id_token'     => $responseArray->id_token
+                    ]);
             }
         }
     }
@@ -955,38 +950,45 @@ class InvestigatorController extends Controller
         foreach ($events as $event) {
 
             if (isset($event->when->start_time) && isset($event->when->end_time)) {
-                $calendarEvents .= json_encode(['title' => $event->title, 'start' => $event->when->start_time * 1000,
-                                                'end'   => $event->when->end_time * 1000]) . ',';
+                $calendarEvents .= json_encode([
+                    'title' => $event->title, 'start' => $event->when->start_time * 1000,
+                    'end'   => $event->when->end_time * 1000
+                ]) . ',';
 
-                $calEventsArray = array('user_id'    => $userId, 'calendar_id' => $calendarId, 'event_id' => $event->id,
-                                        'title'      => $event->title,
-                                        'start_date' => date('Y-m-d', $event->when->start_time),
-                                        'end_date'   => date('Y-m-d', $event->when->end_time),
-                                        'start_time' => date('H:i:s', $event->when->start_time),
-                                        'end_time'   => date('H:i:s', $event->when->end_time));
+                $calEventsArray = array(
+                    'user_id'    => $userId, 'calendar_id' => $calendarId, 'event_id' => $event->id,
+                    'title'      => $event->title,
+                    'start_date' => date('Y-m-d', $event->when->start_time),
+                    'end_date'   => date('Y-m-d', $event->when->end_time),
+                    'start_time' => date('H:i:s', $event->when->start_time),
+                    'end_time'   => date('H:i:s', $event->when->end_time)
+                );
+            } elseif (isset($event->when->start_date) && isset($event->when->end_date)) {
+                $start_time = strtotime("" . $event->when->start_date . "") + 3600;
+                $end_time = strtotime("" . $event->when->end_date . "") + 3600 * 23.9;
+                $calendarEvents .= json_encode([
+                    'title' => $event->title, 'start' => $start_time * 1000,
+                    'end'   => $end_time * 1000
+                ]) . ',';
 
-            } elseif (isset($event->when->start_date) && isset($event->when->end_date))  {
-                $start_time=strtotime("".$event->when->start_date."") + 3600;
-                $end_time=strtotime("".$event->when->end_date."") + 3600*23.9;
-                $calendarEvents .= json_encode(['title' => $event->title, 'start' => $start_time * 1000,
-                                                'end'   => $end_time * 1000]) . ',';
-
-                $calEventsArray = array('user_id'  => $userId, 'calendar_id' => $calendarId, 'event_id' => $event->id,
-                                        'title'    => $event->title, 'start_date' => $event->when->start_date,
-                                        'end_date' => $event->when->end_date,
-                                        'start_time' => date('H:i:s', $start_time),
-                                        'end_time'   => date('H:i:s', $end_time));
-
-            }else{
-              $calendarEvents .= json_encode(['title' => $event->title, 'start' => $event->when->date]) . ',';
-              $start_time=strtotime("".$event->when->date."") + 3600;
-              $end_time=strtotime("".$event->when->date."") + 3600*23.9;
-              $calEventsArray = array('user_id'  => $userId, 'calendar_id' => $calendarId, 'event_id' => $event->id,
-                                      'title'    => $event->title, 'start_date' => $event->when->date,
-                                      'end_date' => $event->when->date,
-                                      'start_time' => date('H:i:s', $start_time),
-                                      'end_time'   => date('H:i:s', $end_time));
-
+                $calEventsArray = array(
+                    'user_id'  => $userId, 'calendar_id' => $calendarId, 'event_id' => $event->id,
+                    'title'    => $event->title, 'start_date' => $event->when->start_date,
+                    'end_date' => $event->when->end_date,
+                    'start_time' => date('H:i:s', $start_time),
+                    'end_time'   => date('H:i:s', $end_time)
+                );
+            } else {
+                $calendarEvents .= json_encode(['title' => $event->title, 'start' => $event->when->date]) . ',';
+                $start_time = strtotime("" . $event->when->date . "") + 3600;
+                $end_time = strtotime("" . $event->when->date . "") + 3600 * 23.9;
+                $calEventsArray = array(
+                    'user_id'  => $userId, 'calendar_id' => $calendarId, 'event_id' => $event->id,
+                    'title'    => $event->title, 'start_date' => $event->when->date,
+                    'end_date' => $event->when->date,
+                    'start_time' => date('H:i:s', $start_time),
+                    'end_time'   => date('H:i:s', $end_time)
+                );
             }
             CalendarEvents::updateOrCreate(['event_id' => $event->id], $calEventsArray);
             $calEventsArray = '';
@@ -1030,9 +1032,8 @@ class InvestigatorController extends Controller
     }
     public static function checkInvestigatorType()
     {
-        if(auth()->user()->investigatorType != 'internal'){
-          return "Contractor";
+        if (auth()->user()->investigatorType != 'internal') {
+            return "Contractor";
         }
     }
-
 }
