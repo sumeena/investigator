@@ -715,7 +715,7 @@ class AssignmentsController extends Controller
         $client = new Client($account_sid, $auth_token);
          try {
           $client->messages->create(
-              '+91'.$number, // Recipient's phone number
+              '+1'.$number, // Recipient's phone number
               array(
                   'from' => $twilio_number,
                   'body' => 'You have received new message on assignment '.$assignmentId.''
