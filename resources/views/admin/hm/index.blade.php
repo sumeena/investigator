@@ -32,7 +32,9 @@
                             <td>{{ $value->first_name }}</td>
                             <td>{{ $value->last_name }}</td>
                             <td>{{ $value->email }}</td>
-                            <td>{{ $value?->parentCompany?->company->first_name }} {{ $value?->parentCompany?->company->last_name }}</td>
+                            <!-- <td>{{ $value?->parentCompany?->company->first_name }} {{ $value?->parentCompany?->company->last_name }}</td> -->
+                            <td>{{ $value?->CompanyAdminProfile?->company_name ?? $value?->parentCompany?->company?->CompanyAdminProfile?->company_name }}</td>
+
                             <td>
                                 <a href="{{ route('admin.hiring-managers.edit', $value->id) }}">Edit</a> | <a onclick="return confirm('Are you sure want to delete?')" href="{{ route('admin.hiring-managers.delete', $value->id) }}">Delete</a>
                             </td>
