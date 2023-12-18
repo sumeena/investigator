@@ -882,11 +882,11 @@ class InvestigatorController extends Controller
                 curl_close($ch);
 
                 $responseArray = json_decode($response);
-                    $updateGoogleAccessToken = GoogleAuthUsers::updateOrCreate(['user_id' => $userId], [
-                        'access_token' => $responseArray->access_token,
-                        'expires_in'   => date("Y-m-d H:i:s", strtotime("+$responseArray->expires_in seconds")),
-                        // 'id_token'     => $responseArray->id_token
-                    ]);
+                $updateGoogleAccessToken = GoogleAuthUsers::updateOrCreate(['user_id' => $userId], [
+                    'access_token' => $responseArray->access_token,
+                    'expires_in'   => date("Y-m-d H:i:s", strtotime("+$responseArray->expires_in seconds")),
+                    // 'id_token'     => $responseArray->id_token
+                ]);
             }
         }
     }
@@ -1001,9 +1001,37 @@ class InvestigatorController extends Controller
     public function disconnectCalendar(Request $request)
     {
         $userId    = Auth::user()->id;
+
+        $nylasUser = NylasUsers::where(['user_id' => $userId, 'provider' => 'gmail'])->get();
+
+        $curl = curl_init();
+        curl_setopt_array($curl, array(
+            CURLOPT_URL            => Config::get('constants.NYLAS_API_URL') . 'a/' . Config::get('constants.NYLAS_CLIENT_ID') . '/accounts/' . $nylasUser[0]->account_id,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING       => '',
+            CURLOPT_MAXREDIRS      => 10,
+            CURLOPT_TIMEOUT        => 0,
+            CURLOPT_USERPWD        => "cg7lkuuvftx7yffwmz3xorqdk:",
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION   => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST  => 'DELETE',
+            CURLOPT_HTTPHEADER     => array(
+                'Content-Type: application/json',
+                'Accept: application/json',
+                'CLIENT_SECRET: ' . Config::get('constants.NYLAS_CLIENT_SECRET')
+            ),
+        ));
+
+        $response = curl_exec($curl);
+        curl_close($curl);
+        $nylasResponseArray = json_decode($response);
+
+        
+        if($nylasResponseArray) {
         $user      = GoogleAuthUsers::where('user_id', $userId)->delete();
         $nylasUser = NylasUsers::where(['user_id' => $userId, 'provider' => 'gmail'])->delete();
         $calEvents = CalendarEvents::where('user_id', $userId)->delete();
+        }
         return $user;
     }
 
