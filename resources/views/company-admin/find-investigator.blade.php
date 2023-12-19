@@ -4,29 +4,31 @@
 
 @php
 $userrole = '/company-admin/';
-                    $action = route('company-admin.find_investigator');
-                    $assignmentsAction = route('company-admin.assignments');
-                    $assignmentCreateAction = route('company-admin.assignments.create');
-                    $assignmentStoreAction = route('company-admin.assignments.store');
-                    $assignmentEditAction = '/company-admin/assignments/';
-                    $assignmentInviteAction = route('company-admin.assignments.invite');
-                    $assignmentSelect2Action = route('company-admin.select2-assignments');
-                    $searchStoreAction = route('company-admin.save-investigator-search-history');
+$action = route('company-admin.find_investigator');
+$assignmentsAction = route('company-admin.assignments');
+$assignmentCreateAction = route('company-admin.assignments.create');
+$assignmentStoreAction = route('company-admin.assignments.store');
+$assignmentEditAction = '/company-admin/assignments/';
+$assignmentInviteAction = route('company-admin.assignments.invite');
+$assignmentSelect2Action = route('company-admin.select2-assignments');
+$searchStoreAction = route('company-admin.save-investigator-search-history');
 
-                    if (request()->routeIs('hm.find_investigator')) {
+if (request()->routeIs('hm.find_investigator')) {
 $userrole = '/hm/';
-                    $action = route('hm.find_investigator');
-                    $assignmentsAction = route('hm.assignments');
-                    $assignmentCreateAction = route('hm.assignments.create');
-                    $assignmentStoreAction = route('hm.assignments.store');
-                    $assignmentEditAction = '/hm/assignments/';
-                    $assignmentInviteAction = route('hm.assignments.invite');
-                    $assignmentSelect2Action = route('hm.select2-assignments');
-                    $searchStoreAction = route('hm.save-investigator-search-history');
-                    }
-                    @endphp
+$action = route('hm.find_investigator');
+$assignmentsAction = route('hm.assignments');
+$assignmentCreateAction = route('hm.assignments.create');
+$assignmentStoreAction = route('hm.assignments.store');
+$assignmentEditAction = '/hm/assignments/';
+$assignmentInviteAction = route('hm.assignments.invite');
+$assignmentSelect2Action = route('hm.select2-assignments');
+$searchStoreAction = route('hm.save-investigator-search-history');
+}
+@endphp
 
 <div class="container find-investigator-role" data-role="{{$userrole}}">
+<div class="alert alert-success" role="alert" id="assignment-flash" style="display: none;">
+    </div>
     <div class="row mt-4 mb-4 mx-0">
         <div class="col-md-12">
             <div class="card mb-4">
@@ -34,7 +36,7 @@ $userrole = '/hm/';
                     <h5 class="mb-0 invSearchTitle">Investigator Search</h5>
                 </div>
                 <div class="card-body">
-                    
+
                     <form method="get" action="{{ $action }}" id="find-investigator-form">
 
                         <div class="row">
