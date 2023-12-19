@@ -406,3 +406,8 @@ input:checked + .slider:before {
   position: relative;
   top: 34px;
 }
+
+.btn-send-invites
+{
+  float:inline-end;
+}
