@@ -27,8 +27,6 @@ $searchStoreAction = route('hm.save-investigator-search-history');
 @endphp
 
 <div class="container find-investigator-role" data-role="{{$userrole}}">
-<div class="alert alert-success" role="alert" id="assignment-flash" style="display: none;">
-    </div>
     <div class="row mt-4 mb-4 mx-0">
         <div class="col-md-12">
             <div class="card mb-4">
@@ -381,6 +379,8 @@ $searchStoreAction = route('hm.save-investigator-search-history');
                     <button class="btn btn-success d-none btn-send-invites">Send Invites</button>
                 </div>
                 <div class="card-body">
+                    <div class="col-md-12 alert alert-success" role="alert" id="assignment-flash" style="display: none;">
+                    </div>
                     <input type="hidden" class="selected-investigators">
                     <div class="table-responsive text-nowrap" id="data-container">
                         <table class="table" id="investigator-table">
