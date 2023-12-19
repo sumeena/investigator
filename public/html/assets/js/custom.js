@@ -224,6 +224,9 @@ $(document).ready(function () {
                 $('#assignment-flash').show();
                 $(inviteBtn).html('Send Invites');
                 // $('#inviteModal').modal('hide');
+                setTimeout(() => {
+                    location.reload();
+                }, 1000);
                 if (response.error) {
                     alert(response.message);
                 }
