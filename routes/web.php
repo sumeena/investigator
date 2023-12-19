@@ -114,6 +114,8 @@ Route::group(['prefix' => 'company-admin', 'as' => 'company-admin.', 'middleware
 
     Route::post('/find-investigators-histories', [CompanyAdminController::class, 'saveInvestigatorSearchHistory'])->name('save-investigator-search-history');
 
+    Route::post('/assignment/send-bulk-invites', [AssignmentsController::class, 'sendBulkInvites'])->name('assignment.send-bulk-invites');
+
     Route::post('/assignment/save-notes', [AssignmentsController::class, 'saveAssignmentNotes'])->name('assignment.save-notes');
     Route::get('/assignment/get-notes', [AssignmentsController::class, 'getAssignmentNotes'])->name('assignment.get-notes');
 
