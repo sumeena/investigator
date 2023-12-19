@@ -222,6 +222,7 @@ $(document).ready(function () {
                 $(".custom-loader-overlay").hide()
                 $('#assignment-flash').text(response.message);
                 $('#assignment-flash').show();
+                $(inviteBtn).html('Send Invites');
                 // $('#inviteModal').modal('hide');
                 if (response.error) {
                     alert(response.message);

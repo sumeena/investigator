@@ -30,6 +30,8 @@ $userrole = '/hm/';
 
 <div class="container find-investigator-role" data-role="{{$userrole}}">
 
+<div class="alert alert-success" role="alert" id="assignment-flash" style="display: none;">
+    </div>
     <div class="row mt-4 mb-4 mx-0">
         <div class="col-md-12">
             <div class="card mb-4">
