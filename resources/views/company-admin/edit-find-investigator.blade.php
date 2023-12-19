@@ -4,7 +4,7 @@
 
 
 @php
-$viewProfile = '/company-admin/';
+$userrole = '/company-admin/';
 $action = route('company-admin.find_investigator');
 $assignmentsAction = route('company-admin.assignments');
 $assignmentCreateAction = route('company-admin.assignments.create');
@@ -24,11 +24,11 @@ $assignmentInviteAction = route('hm.assignments.invite');
 $assignmentSelect2Action = route('hm.select2-assignments');
 $searchStoreAction = route('hm.save-investigator-search-history');
 $searchEditAction = route('hm.update-investigator-search-history');
-$viewProfile = '/hm/';
+$userrole = '/hm/';
 }
 @endphp
 
-<div class="container find-investigator-role" data-role="{{$viewProfile}}">
+<div class="container find-investigator-role" data-role="{{$userrole}}">
 
     <div class="row mt-4 mb-4 mx-0">
         <div class="col-md-12">
@@ -774,7 +774,7 @@ $viewProfile = '/hm/';
             }
         });
 
-        $(document).on('change', 'input[type="checkbox"]', function() {
+        $(document).on('change', 'input[class="form-check-input"]', function() {
             var assignmentID = $('#assignmentID').val();
             if (assignmentID != '') {
                 $('#fieldsUpdated').val('1');
@@ -782,7 +782,7 @@ $viewProfile = '/hm/';
             }
         });
 
-        $(document).on('change', 'select, input[type="text"]', 'input[type="checkbox"]', function() {
+        $(document).on('change', 'select, input[type="text"]', 'input[class="form-check-input"]', function() {
             var assignmentID = $('#assignmentID').val();
             if (assignmentID != '') {
                 $('#fieldsUpdated').val('1');
