@@ -2,7 +2,33 @@
 @section('title', 'Find Investigators')
 @section('content')
 
-<div class="container">
+
+@php
+$viewProfile = '/company-admin/';
+$action = route('company-admin.find_investigator');
+$assignmentsAction = route('company-admin.assignments');
+$assignmentCreateAction = route('company-admin.assignments.create');
+$assignmentStoreAction = route('company-admin.assignments.store');
+$assignmentEditAction = '/company-admin/assignments/';
+$assignmentInviteAction = route('company-admin.assignments.invite');
+$assignmentSelect2Action = route('company-admin.select2-assignments');
+$searchStoreAction = route('company-admin.save-investigator-search-history');
+$searchEditAction = route('company-admin.update-investigator-search-history');
+if (request()->routeIs('hm.assignments.edit')) {
+$action = route('hm.find_investigator');
+$assignmentsAction = route('hm.assignments');
+$assignmentCreateAction = route('hm.assignments.create');
+$assignmentStoreAction = route('hm.assignments.store');
+$assignmentEditAction = '/hm/assignments/';
+$assignmentInviteAction = route('hm.assignments.invite');
+$assignmentSelect2Action = route('hm.select2-assignments');
+$searchStoreAction = route('hm.save-investigator-search-history');
+$searchEditAction = route('hm.update-investigator-search-history');
+$viewProfile = '/hm/';
+}
+@endphp
+
+<div class="container find-investigator-role" data-role="{{$viewProfile}}">
 
     <div class="row mt-4 mb-4 mx-0">
         <div class="col-md-12">
@@ -12,33 +38,12 @@
                 </div>
                 <div class="card-body">
                     @if(session('success'))
-                        <div class="alert alert-success" role="alert">
-                            {{ session('success') }}
-                        </div>
+                    <div class="alert alert-success" role="alert">
+                        {{ session('success') }}
+                    </div>
                     @endif
 
-                    @php
-                        $action = route('company-admin.find_investigator');
-                        $assignmentsAction = route('company-admin.assignments');
-                        $assignmentCreateAction = route('company-admin.assignments.create');
-                        $assignmentStoreAction = route('company-admin.assignments.store');
-                        $assignmentEditAction = '/company-admin/assignments/';
-                        $assignmentInviteAction = route('company-admin.assignments.invite');
-                        $assignmentSelect2Action = route('company-admin.select2-assignments');
-                        $searchStoreAction = route('company-admin.save-investigator-search-history');
-                        $searchEditAction = route('company-admin.update-investigator-search-history');
-                        if (request()->routeIs('hm.assignments.edit')) {
-                            $action = route('hm.find_investigator');
-                            $assignmentsAction = route('hm.assignments');
-                            $assignmentCreateAction = route('hm.assignments.create');
-                            $assignmentStoreAction = route('hm.assignments.store');
-                            $assignmentEditAction = '/hm/assignments/';
-                            $assignmentInviteAction = route('hm.assignments.invite');
-                            $assignmentSelect2Action = route('hm.select2-assignments');
-                            $searchStoreAction = route('hm.save-investigator-search-history');
-                            $searchEditAction = route('hm.update-investigator-search-history');
-                        }
-                    @endphp
+
 
                     <form method="get" action="{{ $action }}" id="find-investigator-form">
 
@@ -214,113 +219,109 @@
 
                             <div class="col-md-6">
                                 <div class="mb-1 mt-2">
-                                  <div class="card">
-                                          <h5 class="card-header pt-2 pb-0">Search Investigators</h5>
-                                          <div class="table-responsive text-nowrap">
-                                              <table class="table hr_contact">
-                                                  <tbody>
-                                                      <tr>
-                                                          <td>
-                                                            <input class="form-check-input" type="checkbox"
-                                                                   id="withInternalInvestigator" value="internal"
-                                                                   name="withInternalInvestigator" @checked(@$assignment->searchHistory->withInternalInvestigator == 'internal')>
-                                                              <label>Internal</label>
-                                                          </td>
-                                                          <td>
-                                                            <input class="form-check-input" type="checkbox"
-                                                                   id="withExternalInvestigator" value="external"
-                                                                   name="withExternalInvestigator" @checked(@$assignment->searchHistory->withExternalInvestigator == 'external')>
-                                                              <label>External</label>
-                                                          </td>
+                                    <div class="card">
+                                        <h5 class="card-header pt-2 pb-0">Search Investigators</h5>
+                                        <div class="table-responsive text-nowrap">
+                                            <table class="table hr_contact">
+                                                <tbody>
+                                                    <tr>
+                                                        <td>
+                                                            <input class="form-check-input" type="checkbox" id="withInternalInvestigator" value="internal" name="withInternalInvestigator" @checked(@$assignment->searchHistory->withInternalInvestigator == 'internal')>
+                                                            <label>Internal</label>
+                                                        </td>
+                                                        <td>
+                                                            <input class="form-check-input" type="checkbox" id="withExternalInvestigator" value="external" name="withExternalInvestigator" @checked(@$assignment->searchHistory->withExternalInvestigator == 'external')>
+                                                            <label>External</label>
+                                                        </td>
 
-                                                      </tr>
-                                                      <tr>
-                                                          <td colspan="100%">
-                                                              <span role="alert" class="text-danger small d-none" id="searchInvestigatorsTypeError">
-                                                                  Search Investigators is required, please select at least one!
-                                                              </span>
-                                                          </td>
-                                                      </tr>
-                                                  </tbody>
-                                              </table>
-                                          </div>
-                                      </div>
+                                                    </tr>
+                                                    <tr>
+                                                        <td colspan="100%">
+                                                            <span role="alert" class="text-danger small d-none" id="searchInvestigatorsTypeError">
+                                                                Search Investigators is required, please select at least one!
+                                                            </span>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
 
                         </div>
-                      <div class="daysRow" >
-                        <?php
-                          $availabilitys=array();
-                            if(@$assignment->searchHistory->availability){
-                                 $availabilitys = unserialize(@$assignment->searchHistory->availability);
+                        <div class="daysRow">
+                            <?php
+                            $availabilitys = array();
+                            if (@$assignment->searchHistory->availability) {
+                                $availabilitys = unserialize(@$assignment->searchHistory->availability);
                             }
                             //echo "<pre>"; print_r($availabilitys); echo "</pre>";
-                        ?>
-                          @php
-                          $iterationNumber = 0;
-                          @endphp
-                          @foreach($availabilitys as $availability)
+                            ?>
+                            @php
+                            $iterationNumber = 0;
+                            @endphp
+                            @foreach($availabilitys as $availability)
 
                             @push('scripts')
-                                <script>
-                                    timepicker('{{ $loop->iteration }}');
-                                </script>
+                            <script>
+                                timepicker('{{ $loop->iteration }}');
+                            </script>
                             @endpush
-                          <?php $minDate = explode('-', $availability[0]); ?>
+                            <?php $minDate = explode('-', $availability[0]); ?>
 
 
-                               <div class="dayRow">
-                                  <div class="mb-1">
-                                        <h5 class="card-header pt-2 pb-0 heading"  >Day {{ $loop->iteration }}</h5>
-                                  </div>
-                                    <div class="row">
-                                      <div class="col-md-6">
-                                          <div class="mb-1">
-                                              <div class="card">
-                                                  <h5 class="card-header pt-2 pb-0">Availability (Date)</h5>
-                                                  <table class="table"> <!-- hr_contact -->
-                                                      <tbody>
-                                                          <tr>
-                                                              <td>
+                            <div class="dayRow">
+                                <div class="mb-1">
+                                    <h5 class="card-header pt-2 pb-0 heading">Day {{ $loop->iteration }}</h5>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-1">
+                                            <div class="card">
+                                                <h5 class="card-header pt-2 pb-0">Availability (Date)</h5>
+                                                <table class="table"> <!-- hr_contact -->
+                                                    <tbody>
+                                                        <tr>
+                                                            <td>
 
-                                                                  <input type="text" class="form-control availabilitydateepicker caseAvailabilityField" data-min-date="{{@$minDate[0]}}" name="e_datetimes[{{ $loop->iteration }}]" placeholder="Availability (Date)" value="{{@$availability[0]}}" id="e-availability" />
+                                                                <input type="text" class="form-control availabilitydateepicker caseAvailabilityField" data-min-date="{{@$minDate[0]}}" name="e_datetimes[{{ $loop->iteration }}]" placeholder="Availability (Date)" value="{{@$availability[0]}}" id="e-availability" />
 
-                                                                  <span role="alert" class="text-danger small d-none" id="availability-error"> Availability is required! </span>
-                                                              </td>
-                                                          </tr>
-                                                      </tbody>
-                                                  </table>
-                                              </div>
-                                          </div>
-                                      </div>
-                                      <div class="col-md-4">
-                                          <div class="mb-1">
-                                              <div class="card">
-                                                  <h5 class="card-header pt-2 pb-0">Availability (Day Type)</h5>
-                                                  <table class="table"> <!-- hr_contact -->
-                                                      <tbody>
-                                                      <tr>
-                                                          <td>
-                                                            <select class="form-select timeperiod" onchange="reCalculateTime(this)" name="timeperiod[{{ $loop->iteration }}]" id="timeperiod{{ $loop->iteration }}">
-                                                              <option value="1" @selected($availability[1] == 1)>Half Day </option>
-                                                              <option value="2" @selected($availability[1] == 2)>Full Day</option>
-                                                            </select>
-                                                          </td>
-                                                      </tr>
-                                                      </tbody>
-                                                  </table>
-                                              </div>
-                                          </div>
-                                      </div>
-                                      <div class="col-md-2">
-                                        <button class="btn btn-md btn-primary customButton" onclick="addNewSection(this)" type="button">
-                                          Add new Row
-                                        </button>
-                                      </div>
+                                                                <span role="alert" class="text-danger small d-none" id="availability-error"> Availability is required! </span>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
                                     </div>
-                                  <div class="row AvailabilityRow" id="{{ $loop->iteration }}">
+                                    <div class="col-md-4">
+                                        <div class="mb-1">
+                                            <div class="card">
+                                                <h5 class="card-header pt-2 pb-0">Availability (Day Type)</h5>
+                                                <table class="table"> <!-- hr_contact -->
+                                                    <tbody>
+                                                        <tr>
+                                                            <td>
+                                                                <select class="form-select timeperiod" onchange="reCalculateTime(this)" name="timeperiod[{{ $loop->iteration }}]" id="timeperiod{{ $loop->iteration }}">
+                                                                    <option value="1" @selected($availability[1]==1)>Half Day </option>
+                                                                    <option value="2" @selected($availability[1]==2)>Full Day</option>
+                                                                </select>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <button class="btn btn-md btn-primary customButton" onclick="addNewSection(this)" type="button">
+                                            Add new Row
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="row AvailabilityRow" id="{{ $loop->iteration }}">
                                     <div class="col-md-6">
                                         <div class="mb-1">
                                             <div class="card">
@@ -359,18 +360,20 @@
                                         </div>
                                     </div>
                                     <div class="col-md-2">
-                                            <button class="btn btn-danger remove customButton <?php if($loop->iteration == 1){ echo "disabled"; }?>" onclick="removeSection(this)" type="button">
-                                              Remove
-                                            </button>
+                                        <button class="btn btn-danger remove customButton <?php if ($loop->iteration == 1) {
+                                                                                                echo "disabled";
+                                                                                            } ?>" onclick="removeSection(this)" type="button">
+                                            Remove
+                                        </button>
                                     </div>
-                                  </div>
-                              </div>
-                              @php
-                                  $iterationNumber = $loop->iteration; // Assign the value to another variable
-                              @endphp
-                          @endforeach
+                                </div>
+                            </div>
+                            @php
+                            $iterationNumber = $loop->iteration; // Assign the value to another variable
+                            @endphp
+                            @endforeach
 
-                      </div>
+                        </div>
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-1">
@@ -392,7 +395,7 @@
                                     </div>
                                 </div>
                             </div>
-                          </div>
+                        </div>
                     </form>
                 </div>
             </div>
@@ -402,11 +405,14 @@
         <div class="col-md-12">
             <div class="card">
                 <div class="card-header">
-                    <h4 class="card-title">
+                    <h4 class="card-title d-inline-flex">
                         Investigators
                     </h4>
+
+                    <button class="btn btn-success d-none btn-send-invites">Send Invites</button>
                 </div>
                 <div class="card-body">
+                    <input type="hidden" class="selected-investigators">
                     <div class="table-responsive text-nowrap" id="data-container">
                         <table class="table" id="investigator-table">
                             <thead>
@@ -431,7 +437,7 @@
                                 $investigator->calculated_distance)
                                 )
                                 <tr>
-                                    <td>{{ $investigators->firstItem() + $loop->index }}</td>
+                                    <td><input type="checkbox"> <!-- {{ $investigators->firstItem() + $loop->index }} --></td>
                                     <td>{{ $investigator->first_name }}</td>
                                     <td>{{ $investigator->last_name }}</td>
                                     @php
@@ -585,7 +591,7 @@
             type: 'GET',
             data: data,
             success: function(response) {
-              $(".custom-loader-overlay").hide();
+                $(".custom-loader-overlay").hide();
                 $('#data-container').html(response.data);
                 $('button#form-submit-btn').html('Search').removeAttr('disabled');
             },
@@ -616,22 +622,22 @@
         $('.availabilitydateepicker').each(function() {
             availabilitys.push($(this).val());
         });
-        const availabilitysCheck =availabilitys.join(', ');
+        const availabilitysCheck = availabilitys.join(', ');
         var editTimepickerstart = [];
         $('.edit-timepickerstart').each(function() {
             editTimepickerstart.push($(this).val());
         });
-        const EditTimepickerstartCheck =editTimepickerstart.join(', ');
+        const EditTimepickerstartCheck = editTimepickerstart.join(', ');
         var editTimepickerend = [];
         $('.e-timepickerend').each(function() {
             editTimepickerend.push($(this).val());
         });
-        const EditTimepickerendCheck =editTimepickerend.join(', ');
+        const EditTimepickerendCheck = editTimepickerend.join(', ');
         var editTimeperiod = [];
         $('.timeperiod').each(function() {
             editTimeperiod.push($(this).val());
         });
-        const EditTimeperiodCheck =editTimeperiod.join(', ');
+        const EditTimeperiodCheck = editTimeperiod.join(', ');
         const country = $('#country');
         const street = $('#autocomplete');
         const city = $('#locality');
@@ -731,8 +737,8 @@
             data['assignment_id'] = assignmentIDValue;
         }
 
-        if(searchHistoryIDValue)
-        data['search_history_id'] = searchHistoryIDValue;
+        if (searchHistoryIDValue)
+            data['search_history_id'] = searchHistoryIDValue;
 
         let success = false;
 
@@ -762,37 +768,37 @@
 
         $(document).on('keyup', '#autocomplete, #locality, #administrative_area_level_1, #postal_code, #distance', function() {
             var assignmentID = $('#assignmentID').val();
-            if(assignmentID != '') {
+            if (assignmentID != '') {
                 $('#fieldsUpdated').val('1');
                 $('#callConfirmUpdateSearchModal').removeAttr('disabled');
-             }
+            }
         });
 
         $(document).on('change', 'input[type="checkbox"]', function() {
             var assignmentID = $('#assignmentID').val();
-            if(assignmentID != '') {
+            if (assignmentID != '') {
                 $('#fieldsUpdated').val('1');
                 $('#callConfirmUpdateSearchModal').removeAttr('disabled');
-             }
+            }
         });
 
         $(document).on('change', 'select, input[type="text"]', 'input[type="checkbox"]', function() {
             var assignmentID = $('#assignmentID').val();
-            if(assignmentID != '') {
+            if (assignmentID != '') {
                 $('#fieldsUpdated').val('1');
                 $('#callConfirmUpdateSearchModal').removeAttr('disabled');
-             }
+            }
         });
 
         $(document).on('click', '#callConfirmUpdateSearchModal', function() {
             $('#assignmentCreateModal').modal('show');
         });
 
-        $(document).on('click', '#confirmUpdateSearchModalBtn', function(){
+        $(document).on('click', '#confirmUpdateSearchModalBtn', function() {
             $('#form-submit-btn').removeAttr('disabled').click();
             $('#confirmUpdateSearchModalCloseBtn').click();
             $('#fieldsUpdated').val('0');
-            $('#callConfirmUpdateSearchModal').attr('disabled',true);
+            $('#callConfirmUpdateSearchModal').attr('disabled', true);
         });
 
         createAssignmentID();
@@ -806,7 +812,7 @@
 
         const form = $('#find-investigator-form');
         form.on('submit', function(e) {
-            $(this).find('button#form-submit-btn').html('Searching...').attr('disabled',true);
+            $(this).find('button#form-submit-btn').html('Searching...').attr('disabled', true);
             e.preventDefault();
 
             // input selector
@@ -815,22 +821,22 @@
             $('.availabilitydateepicker').each(function() {
                 availabilitys.push($(this).val());
             });
-            const availabilitysCheck =availabilitys.join(', ');
+            const availabilitysCheck = availabilitys.join(', ');
             var editTimepickerstart = [];
             $('.edit-timepickerstart').each(function() {
                 editTimepickerstart.push($(this).val());
             });
-            const EditTimepickerstartCheck =editTimepickerstart.join(', ');
+            const EditTimepickerstartCheck = editTimepickerstart.join(', ');
             var editTimepickerend = [];
             $('.e-timepickerend').each(function() {
                 editTimepickerend.push($(this).val());
             });
-            const EditTimepickerendCheck =editTimepickerend.join(', ');
+            const EditTimepickerendCheck = editTimepickerend.join(', ');
             var editTimeperiod = [];
             $('.timeperiod').each(function() {
                 editTimeperiod.push($(this).val());
             });
-            const EditTimeperiodCheck =editTimeperiod.join(', ');
+            const EditTimeperiodCheck = editTimeperiod.join(', ');
 
             const zip = $('#postal_code');
             const surv = $('#surveillance');
@@ -905,7 +911,7 @@
             if (hasError) {
                 return false;
             }
-            $(".custom-loader-overlay").attr("style","display: flex !important;")
+            $(".custom-loader-overlay").attr("style", "display: flex !important;")
             // Hide error
             zipError.addClass('d-none');
             serviceTypeError.addClass('d-none');
@@ -1223,18 +1229,18 @@
 
             $(inviteBtn).attr('disabled', true);
             $(inviteBtn).html('<i class="fa fa-spinner fa-pulse"></i>');
-            $(".custom-loader-overlay").attr("style","display: flex !important;")
+            $(".custom-loader-overlay").attr("style", "display: flex !important;")
             $.ajax({
                 url: '{{ $assignmentInviteAction }}',
                 type: 'POST',
                 data: data,
                 success: function(response) {
-                  $(".custom-loader-overlay").hide()
+                    $(".custom-loader-overlay").hide()
                     $('#assignment-flash').text(response.message);
                     $('#assignment-flash').show();
                     // $('#inviteModal').modal('hide');
-                    if(response.error){
-                      alert(response.message);
+                    if (response.error) {
+                        alert(response.message);
                     }
 
                 },
