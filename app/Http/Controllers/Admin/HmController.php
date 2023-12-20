@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Hm\HmRequest;
 use App\Http\Requests\Admin\Hm\PasswordRequest;
 use App\Mail\UserCredentialMail;
+use App\Models\CompanyAdminProfile;
 use App\Models\CompanyUser;
 use App\Models\Role;
 use App\Models\User;
@@ -30,7 +31,8 @@ class HmController extends Controller
         $companyAdmins = User::whereHas('userRole', function ($q) {
             $q->where('role', 'company-admin');
         })->whereNotNull('website')->where('website', '!=', '')->get();
-        return view('admin.hm.add', compact('companyAdmins'));
+        $companies = CompanyAdminProfile::with('user')->get();
+        return view('admin.hm.add', compact('companyAdmins','companies'));
     }
 
     public function store(HmRequest $request)
@@ -73,7 +75,8 @@ class HmController extends Controller
             $q->where('role', 'company-admin');
         })->whereNotNull('website')->where('website', '!=', '')->get();
         $hm = User::with('parentCompany')->find($id);
-        return view('admin.hm.add', compact('hm', 'companyAdmins'));
+        $company = CompanyAdminProfile::where('user_id',$hm->parentCompany->parent_id)->get();
+        return view('admin.hm.add', compact('hm', 'companyAdmins', 'company'));
     }
 
     public function delete($id)
