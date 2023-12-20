@@ -51,6 +51,7 @@ class InvestigatorController extends Controller
             'phone'      => $request->phone,
             'password'   => Hash::make($password),
             'role'       => Role::where('role', 'investigator')->first()->id,
+            'investigatorType' => 'external'
         ];
         $user     = User::updateOrCreate([
             'id' => $request->id

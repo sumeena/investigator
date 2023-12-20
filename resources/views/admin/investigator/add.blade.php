@@ -8,6 +8,9 @@
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">{{isset($investigator) && !empty($investigator->id) ? 'Edit':'Add'}}
                         Investigator</h5>
+                        <a href="{{ route('admin.investigators.index') }}" class="float-end">
+                                    Back
+                                </a>
                 </div>
                 <div class="card-body">
                     <form method="post" action="{{ route('admin.investigators.submit') }}">
@@ -72,6 +75,12 @@
                             <label class="form-label" for="basic-default-message">Role</label>
                             <input type="text" class="form-control" value="Investigator" disabled>
                         </div>
+
+                        <div class="mb-3">
+                            <label class="form-label" for="basic-default-message">Type</label>
+                            <input type="text" class="form-control" value="External" disabled>
+                        </div>
+
                         <button type="submit"
                                 class="btn btn-primary">{{isset($investigator) && !empty($investigator->id) ? 'Update':'Submit'}}</button>
                         @if(isset($investigator) && ($investigator->id))
