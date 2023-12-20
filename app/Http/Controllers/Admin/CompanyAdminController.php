@@ -83,11 +83,9 @@ class CompanyAdminController extends Controller
             'user_id' => $user->id ], ['company_name' => $company_name ]
         );
 
-        if (empty($request->company_admin)) {
-            if(empty($request->id)) {
+        if (!empty($request->company_admin) && empty($request->id)) {
             $parent = User::find($request->company_admin)->id ?? null;
             $company_users = CompanyUser::create(['user_id' => $user->id, 'parent_id' => $parent]);
-            }
         }
 
         if ($request->id) {
