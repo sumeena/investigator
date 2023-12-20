@@ -7,6 +7,9 @@
             <div class="card mb-4">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5 class="mb-0">{{ isset($hm) && !empty($hm->id) ? 'Edit' : 'Add' }} Hiring Manager</h5>
+                    <a href="{{ route('admin.hiring-managers.index') }}" class="float-end">
+                    Back
+                </a>
                 </div>
                 <div class="card-body">
                     <form method="post" action="{{ route('admin.hiring-managers.submit') }}">
@@ -62,19 +65,19 @@
                         </div>
                         <div class="mb-2">
                             @if (isset($hm) && !empty($hm->id))
-                                <label class="form-label" for="basic-default-message">Company Admin</label>
+                                <label class="form-label" for="basic-default-message">Company</label>
                                 @if (!empty($hm?->parentCompany))
-                                    <input type="text" class="form-control" value="{{ $hm?->parentCompany->company->first_name . ' ' . $hm?->parentCompany->company->last_name . ' -- ' . $hm?->parentCompany->company?->website }}" disabled>
+                                    <input type="text" class="form-control" value="{{ $company[0]?->company_name . ' -- ' . $hm?->parentCompany->company?->website }}" disabled>
                                     <input type="hidden" class="form-control" name="company_admin" value="{{ $hm?->parentCompany->company->id }}">
                                 @else
                                     <input type="text" class="form-control" value="{{ $hm?->first_name . ' ' . $hm?->last_name . ' -- ' . $hm?->website }}" disabled>
                                     <input type="hidden" class="form-control" name="company_admin" value="{{ $hm->id }}">
                                 @endif
                             @else
-                                <label class="form-label" for="basic-default-message">Select Company Admin</label>
-                                <select id="defaultSelect" class="form-select " name="company_admin">
-                                    @foreach ($companyAdmins as $companyAdmin)
-                                        <option value="{{ $companyAdmin->id }}">{{ $companyAdmin->first_name }} {{ $companyAdmin->first_name }} -- {{ $companyAdmin->website }}</option>
+                                <label class="form-label" for="basic-default-message">Select Company</label>
+                                <select id="defaultSelect" class="form-select" name="company_admin">
+                                    @foreach ($companies as $company)
+                                        <option value="{{ $company?->user->id }}">{{ $company->company_name }} -- {{ $company?->user->website }}</option>
                                     @endforeach
                                 </select>
                                 @error('website')

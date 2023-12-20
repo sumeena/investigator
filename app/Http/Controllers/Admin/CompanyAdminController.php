@@ -10,6 +10,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\Admin\CompanyAdmin\CompanyAdminRequest;
 use App\Http\Requests\Admin\CompanyAdmin\PasswordRequest;
+use App\Models\CompanyAdminProfile;
 use App\Models\CompanyUser;
 use Illuminate\Support\Facades\Mail;
 use App\Rules\CompanyAdminMatchDomain;
@@ -46,11 +47,14 @@ class CompanyAdminController extends Controller
     public function store(Request $request)
     {
         if (!empty($request->company_admin)) {
+            $company_name = $request->company_name_edit;
             $request->website = null;
             $website = User::find($request->company_admin)->website ?? null;
         } else {
+            $company_name = $request->company_name;
             $website = $request->website;
         }
+
         $request->validate([
             'first_name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,' . $request->id, new CompanyAdminMatchDomain($website, $request->role)],
@@ -73,9 +77,17 @@ class CompanyAdminController extends Controller
         $user = User::updateOrCreate([
             'id' => $request->id
         ], $data);
-        if (!empty($request->company_admin) && empty($request->id)) {
+
+        
+        CompanyAdminProfile::updateOrCreate([
+            'user_id' => $user->id ], ['company_name' => $company_name ]
+        );
+
+        if (empty($request->company_admin)) {
+            if(empty($request->id)) {
             $parent = User::find($request->company_admin)->id ?? null;
             $company_users = CompanyUser::create(['user_id' => $user->id, 'parent_id' => $parent]);
+            }
         }
 
         if ($request->id) {
@@ -101,8 +113,8 @@ class CompanyAdminController extends Controller
             $q->where('role', 'company-admin');
         })->whereNotNull('website')->where('website', '!=', '')->get();
         $companyAdmin = User::with('parentCompany')->find($id);
-        
-        return view('admin.company-admin.add', compact('companyAdmin', 'companyAdmins'));
+        $companyAdminProfile = CompanyAdminProfile::where('user_id',$id)->get();        
+        return view('admin.company-admin.add', compact('companyAdmin', 'companyAdmins','companyAdminProfile'));
     }
 
     public function delete($id)
