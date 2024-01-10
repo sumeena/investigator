@@ -41,6 +41,10 @@ Route::get('/', function () {
     return view('auth.login', compact('title'));
 });
 
+Route::get('/419', function () {
+    return view('errors.419');
+});
+
 Route::get('/privacy-policy', function () {
     $title = 'ILOGISTIC Portal | Privacy Policy';
     return view('privacy-policy', compact('title'));
