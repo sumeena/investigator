@@ -145,7 +145,7 @@
                             <div class="col-md-6">
                                 <div class="row">
                                     <div class="col-md-6">
-                                        <b><label>Contractor Hourly Rate :</label></b>
+                                        <b><label>Hourly Rate :</label></b>
                                     </div>
                                     <div class="col-md-6"><b>$</b>{{ $serviceLine->hourly_rate }}</div>
                                 </div>
@@ -155,7 +155,7 @@
                             <div class="col-md-6">
                                 <div class="row">
                                     <div class="col-md-6">
-                                        <b><label>Contractor Travel Rate:</label></b>
+                                        <b><label>Travel Rate:</label></b>
                                     </div>
                                     <div class="col-md-6"><b>$</b>{{ $serviceLine->travel_rate }}</div>
                                 </div>
@@ -163,7 +163,7 @@
                             <div class="col-md-6">
                                 <div class="row">
                                     <div class="col-md-6">
-                                        <b><label>Contractor Milage Rate :</label></b>
+                                        <b><label>Milage Rate :</label></b>
                                     </div>
                                     <div class="col-md-6"><b>$</b>{{ $serviceLine->milage_rate }}</div>
                                 </div>
@@ -262,7 +262,7 @@
                             <div class="col-md-6">
                                 <div class="row">
                                     <div class="col-md-6">
-                                        <b><label>Convert Video :</label></b>
+                                        <b><label>Covert Video :</label></b>
                                     </div>
                                     <div class="col-md-6">
                                         @if($equipment && $equipment->is_convert_video)
