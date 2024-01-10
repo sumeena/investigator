@@ -922,7 +922,7 @@
                                             </td>
                                             <td>
                                                 <input class="form-control investigator_profile_document_form_19 @error('document_form_19') is-invalid @enderror" type="file" name="document_form_19">
-                                                <a target="_blank" href="{{ asset('storage/docs/i-9.pdf') }}" download="i-9.pdf">Download I-9 Form here </a>
+                                                <a target="_blank" href="{{ asset('html/assets/form/i-9.pdf') }}" download="i-9.pdf">Download I-9 Form here </a>
                                                 @if(isset($document->form_19))
                                                 <a href="{{ Storage::disk('public')->url($document->form_19) }}" target="_blank">
                                                     View Form 19
