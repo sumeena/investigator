@@ -286,7 +286,7 @@
                             <div class="col-md-6">
                                 <div class="row">
                                     <div class="col-md-6">
-                                        <b><label>Convert Video :</label></b>
+                                        <b><label>Covert Video :</label></b>
                                     </div>
                                     <div class="col-md-6">
                                         @if($equipment && $equipment->is_convert_video)
