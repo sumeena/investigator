@@ -421,3 +421,9 @@ input:checked + .slider:before {
 .size-10 {
   font-size: 10px;
 }
+
+@media (max-width: 767px){
+	#layout-navbar {display: flex;}
+	.profileData h5 .btn-outline-primary {float: none !important;display: table;margin: 10px 0 0 0 !important;}
+}
+.layout-content-navbar .layout-page {max-width: 99%;}
