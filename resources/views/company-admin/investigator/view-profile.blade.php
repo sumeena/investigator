@@ -163,7 +163,7 @@
                             <div class="col-md-6">
                                 <div class="row">
                                     <div class="col-md-6">
-                                        <b><label><!-- {{App\Http\Controllers\Investigator\InvestigatorController::checkInvestigatorType()}} --> Milage Rate :</label></b>
+                                        <b><label><!-- {{App\Http\Controllers\Investigator\InvestigatorController::checkInvestigatorType()}} --> Mileage Rate :</label></b>
                                     </div>
                                     <div class="col-md-6"><b>$</b>{{ $serviceLine->milage_rate }}</div>
                                 </div>

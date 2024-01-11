@@ -163,7 +163,7 @@
                             <div class="col-md-6">
                                 <div class="row">
                                     <div class="col-md-6">
-                                        <b><label>Milage Rate :</label></b>
+                                        <b><label>Mileage Rate :</label></b>
                                     </div>
                                     <div class="col-md-6"><b>$</b>{{ $serviceLine->milage_rate }}</div>
                                 </div>
