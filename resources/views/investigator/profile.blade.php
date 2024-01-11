@@ -200,7 +200,7 @@
                                             <th>Years Experience</th>
                                             <th>Hourly Rate</th>
                                             <th>Travel Rate</th>
-                                            <th>Milage Rate</th>
+                                            <th>Mileage Rate</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -439,13 +439,13 @@
                     <hr>
                     <div class="mb-3">
                         <div class="card">
-                            <h5 class="card-header">Equipment <span class="starrequired">*</span></h5>
+                            <h5 class="card-header">Equipment </h5>
                             <div class="table-responsive text-nowrap">
                                 <table class="table">
                                     <thead>
                                         <tr class="text-nowrap">
-                                            <th>Camera Type <span class="starrequired">*</span></th>
-                                            <th>Camera Model Number <span class="starrequired">*</span></th>
+                                            <th>Camera Type</th>
+                                            <th>Camera Model Number</th>
                                             <th>Dashcam</th>
                                             <th>Covert Video</th>
                                         </tr>
@@ -717,7 +717,12 @@
                                                 <span role="alert" class="text-danger small">
                                                     {{ $message }}
                                                 </span>
+                                                </br>
                                                 @enderror
+                                                <span class="disclaimer mt-1 size-10">
+                                                *Supported file formats - jpeg, jpg, png</span></br>
+                                                <span class="disclaimer mt-1 size-10">
+                                                *File size should be less than 5M</span>
                                             </td>
                                             <td>
                                                 <input class="form-control investigator_profile_proof_of_insurance @error('work_vehicles.'.$workVehicleKey.'.proof_of_insurance') is-invalid @enderror" type="file" name="work_vehicles[{{ $workVehicleKey }}][proof_of_insurance]">
@@ -859,7 +864,7 @@
                                 <table class="table">
                                     <thead>
                                         <tr class="text-nowrap">
-                                            <th>DL</th>
+                                            <th>Driver's License</th>
                                             <th>ID/PassPort Photo</th>
                                             <th>SSN</th>
                                             <th>Birth Certificate</th>
