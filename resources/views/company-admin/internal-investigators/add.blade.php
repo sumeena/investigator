@@ -77,7 +77,7 @@
                                             <th>Years Experience</th>
                                             <th>Hourly Rate</th>
                                             <th>Travel Rate</th>
-                                            <th>Milage Rate</th>
+                                            <th>Mileage Rate</th>
                                         </tr>
                                         </thead>
                                         <tbody>
