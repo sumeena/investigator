@@ -159,15 +159,30 @@
                 <p class="text-center">Our platform provides services for companies looking for surveillance services and for surveillance investigator projects.</p>
             </div>
 
-            <div class="col-md-12 mt-4">
-                <h4 style="margin-left: 40px;"><b>For Company:</b></h4>
+            <div class="col-md-12 mt-4 company-about-us">
+                <h4 style="margin-left: 40px;"><b>Investigative Agencies:</b></h4>
+
+                <p class="m-l-5">
+                    iLogistics platform provides a comprehensive solution for efficiently managing and assigning insurance investigation cases. If you have a need for experienced and trained staff investigators that know how to write reports & updates, get & send video and follow instructions that are throughout the state then this platform is a great tool.
+                </p>
+                <p class="m-l-5">
+                    Your case is matched with investigators that have synced their calendars with iLogistics platform so you only see the investigators that meet your time frame and are in the location you need.
+                </p>
+                <p class="m-l-5">
+                    iLogistics filters the investigator pool per your needs by;
+                </p>
+
                 <ul class="mt-4">
-                    <li><p><img width="20" src="{{ asset('html/green_tick.png') }}"> Register as company</p></li>
-                    <li><p><img width="20" src="{{ asset('html/green_tick.png') }}"> Add staff members</p></li>
-                    <li><p><img width="20" src="{{ asset('html/green_tick.png') }}"> Create assignments and search for the right investigator from the available database.</p></li>
-                    <li><p><img width="20" src="{{ asset('html/green_tick.png') }}"> Filter investigators based on their availability, distance, rates etc.</p></li>
-                    <li><p><img width="20" src="{{ asset('html/green_tick.png') }}"> Chat with the shortlisted candidates.</p></li>
+                    <li><p><img width="20" src="{{ asset('html/green_tick.png') }}"> Availability</p></li>
+                    <li><p><img width="20" src="{{ asset('html/green_tick.png') }}"> Location</p></li>
+                    <li><p><img width="20" src="{{ asset('html/green_tick.png') }}"> Experience Level</p></li>
+                    <li><p><img width="20" src="{{ asset('html/green_tick.png') }}"> Cost.</p></li>
                 </ul>
+
+                <p class="m-l-5"> You then get a list of investigators that match your needs and you decide to send them a case notification. The investigators instantly get a text and email. They then confirm the case and you can get it scheduled.</p>
+                <p class="m-l-5">iLogistics platform can work for your current in house investigators or you can use additional investigator resources. Giving you the ability to quickly make fast comparisons to as to who best assign the cases based on time frame, experience, availability and cost.</p>
+                <p class="m-l-5">Whether you use the platform to schedule only in house investigators or other investigative resources, iLogistics is the most efficient unbiased way to quickly schedule your assignments.</p>
+
             </div>
 
 
