@@ -134,7 +134,64 @@ $(document).ready(function () {
 
     $(document).on('keypress', '#messageTextArea', function () {
         $(this).removeClass('empty-error');
+    });
+
+
+    /** on click of misc checkbox */
+
+    /* $(document).on('change', '.misc-checkbox', function() {
+        if($(this).prop('checked')){
+            cloneRow();
+            $('.add-more-rows').parents('tr').removeClass('d-none');
+        }
+    }) */
+
+    if($('.miscellaneous-checkbox').prop('checked'))
+    {
+        $('.add-more-rows').parents('tr').removeClass('d-none');
+    }
+
+    $(document).on('change', '.miscellaneous-checkbox', function() {
+        if(!$(this).prop('checked'))
+        {
+            $('.each-misc-row').remove();
+            $('.miscellaneous-checkbox').addClass('misc-checkbox');
+            $('.add-more-rows').parents('tr').addClass('d-none');
+        }
+        else {
+            cloneRow();
+            $('.add-more-rows').parents('tr').removeClass('d-none');
+        }
+
+        $('.typeahead').typeahead('destroy');
+        miscTypeahead();
     })
+
+    $(document).on('click', '.add-misc-row', function() {
+        checkForValidations($(this).parents('tr').prev('tr').attr('id'));
+        // return false;
+        cloneRow();
+        $('.miscellaneous-checkbox').prop('checked',true);
+        $('.typeahead').typeahead('destroy');
+        miscTypeahead();
+    })
+
+    $(document).on('click', '.remove-misc-row', function() {
+        $(this).parents('tr').remove();
+        var miscRowsLength = $('.each-misc-row').length;
+
+        if(!miscRowsLength || miscRowsLength <= 0)
+        {
+            $('.miscellaneous-checkbox').prop('checked',false);
+            $('.miscellaneous-checkbox').addClass('misc-checkbox');
+            $('.add-more-rows').parents('tr').addClass('d-none');
+        }
+        $('.typeahead').typeahead('destroy');
+        miscTypeahead();
+    });
+
+
+    /** on click of misc checkbox */
 
     /** Send msg from assignment */
 
@@ -510,8 +567,72 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         })
     });
-
 });
+
+function miscTypeahead() {
+    var bestPictures = new Bloodhound({
+        datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
+        queryTokenizer: Bloodhound.tokenizers.whitespace,
+        // prefetch: 'searchForServiceLine/%QUERY',
+        remote: {
+          url: '/investigator/searchForServiceLine?q=%QUERY%',
+          wildcard: '%QUERY%'
+        }
+      });
+
+    $('.typeahead').typeahead({
+        hint: true,
+        highlight: true,
+        minLength: 1
+    }, {
+        name: 'investigation_types',
+        source: bestPictures,
+        display: function(data) {
+            return data.type_name  //Input value to be set when you select a suggestion. 
+        },
+        templates: {
+            empty: [],
+            header: [
+                '<div class="list-group search-results-dropdown">'
+            ],
+            suggestion: function(data) {
+            return '<div style="font-weight:normal; margin-top:-10px ! important; z-index:9999" class="list-group-item">' + data.type_name + '</div></div>'
+            }
+        }
+    });
+}
+
+function checkForValidations(tr) {
+    var error = 0;
+    var miscServiceName = $('#'+tr).find('td:first span').children('input:nth-child(2)').val();
+    if(miscServiceName == '') {
+        $('#'+tr).find('td:first span').children('input:nth-child(2)').addClass('error')
+    }
+    error = 1;
+
+
+}
+
+var rowCounter = 2;
+
+// Function to clone the template row and update the IDs and names
+function cloneRow() {
+    var newRow = $('.misc-row-1').clone().attr('id','misc-row-'+rowCounter).removeClass('misc-row-1 d-none').addClass('misc-rows each-misc-row misc-row-'+rowCounter);
+    
+    // Update IDs and names in the cloned row
+    newRow.find('select, input').each(function () {
+        var currentId = $(this).attr('id');
+        var currentName = $(this).attr('name');
+        $(this).val('');
+    });
+
+    var appendTo = $('.add-more-rows').parents('tr');
+    $(newRow).insertBefore(appendTo);
+    $('.misc-row-'+rowCounter+' td:first input').addClass('typeahead')
+
+    // Increment the row counter for the next row
+    rowCounter++;    
+}
 
 
 function reCalculateTime(row) {

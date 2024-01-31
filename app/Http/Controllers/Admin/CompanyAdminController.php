@@ -88,6 +88,17 @@ class CompanyAdminController extends Controller
             $company_users = CompanyUser::create(['user_id' => $user->id, 'parent_id' => $parent]);
         }
 
+        if(empty($request->company_admin))
+        {
+            $investigators = User::where('role',3)->get();
+
+            foreach($investigators as $investigator)
+            {
+                $investigator->investigatorBlockedCompanyAdmins()->attach($user->id);
+                // Mail::to($investigator->email)->send(new NewCompanyAdminRegistered($userData));
+            }
+        }
+
         if ($request->id) {
             session()->flash('success', 'Hi Admin , Company Admin Record Updated Successfully!');
         } else {

@@ -47,6 +47,7 @@ class InvestigatorProfileRequest extends FormRequest
             'investigation_type.2.hourly_rate'      => [new RequiredIf(isset($this->investigation_type[2]['type']))],
             'investigation_type.2.travel_rate'      => [new RequiredIf(isset($this->investigation_type[2]['type']))],
             'investigation_type.2.milage_rate'      => [new RequiredIf(isset($this->investigation_type[2]['type']))],
+            'investigation_type.2.misc_service_name'      => [new RequiredIf(isset($this->investigation_type[2]['type']))],
             'video_claimant_percentage'             => 'bail|required',
             'survelance_report'                     => 'bail|nullable|mimes:jpeg,png,jpg,pdf,doc,docx|max:20000',
             'camera_type'                           => 'bail',

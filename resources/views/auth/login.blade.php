@@ -6,7 +6,7 @@
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-6">
-            <h2>Servicing the the Greater San Francisco<br>Bay Area, San Jose, Sacramento, Fresno<br>and Southern California since 1969.</h2>
+            <h2>iLogistics is the platform for experienced investigators to get matched efficiently to cases that fit their: schedule, distance and rates.</h2>
         </div>
         <div class="col-md-6">
             <div class="card">
@@ -82,26 +82,27 @@
     <div class="card mt-4">
         <div class="row mt-4 our-services justify-content-center">
             <div class="col-md-12">
-                <h2 class="text-center"><b>Our Services</b></h2>
+                <h2 class="text-center"><b>Customized Filtering and Search Parameters</b></h2>
+                <h4 class="text-center">Investigation Firms can search using the same criteria the investigators customize.</h4>
             </div>
             <div class="col-md-4 mt-4">
                 <ul>
                     <li>
-                        <p><img width="20" src="{{ asset('html/green_tick.png') }}"> INVESTIGATION</p>
+                        <p><img width="20" src="{{ asset('html/green_tick.png') }}"> AVAILABILITY</p>
                     </li>
                 </ul>
             </div>
             <div class="col-md-4 mt-4">
                 <ul>
                     <li>
-                        <p><img width="20" src="{{ asset('html/green_tick.png') }}"> ACTIVITY CHECK</p>
+                        <p><img width="20" src="{{ asset('html/green_tick.png') }}"> DISTANCE</p>
                     </li>
                 </ul>
             </div>
             <div class="col-md-4 mt-4">
                 <ul>
                     <li>
-                        <p><img width="20" src="{{ asset('html/green_tick.png') }}"> SOCIAL MEDIA CHECKS</p>
+                        <p><img width="20" src="{{ asset('html/green_tick.png') }}"> HOURLY RATE</p>
                     </li>
                 </ul>
             </div>
@@ -109,21 +110,21 @@
             <div class="col-md-4 mt-4">
                 <ul>
                     <li>
-                        <p><img width="20" src="{{ asset('html/green_tick.png') }}"> BACKGROUND CHECKS</p>
+                        <p><img width="20" src="{{ asset('html/green_tick.png') }}"> TRAVEL RATE</p>
                     </li>
                 </ul>
             </div>
             <div class="col-md-4 mt-4">
                 <ul>
                     <li>
-                        <p><img width="20" src="{{ asset('html/green_tick.png') }}"> AOE/COE INVESTIGATIONS</p>
+                        <p><img width="20" src="{{ asset('html/green_tick.png') }}"> MILEAGE RATE</p>
                     </li>
                 </ul>
             </div>
             <div class="col-md-4 mt-4">
                 <ul>
                     <li>
-                        <p><img width="20" src="{{ asset('html/green_tick.png') }}"> RECORDED STATEMENT INVESTIGATIONS</p>
+                        <p><img width="20" src="{{ asset('html/green_tick.png') }}"> EXPERIENCE LEVEL</p>
                     </li>
                 </ul>
             </div>
@@ -131,17 +132,26 @@
             <div class="col-md-4 mt-4">
                 <ul>
                     <li>
-                        <p><img width="20" src="{{ asset('html/green_tick.png') }}"> TRANSCRIPTION</p>
+                        <p><img width="20" src="{{ asset('html/green_tick.png') }}"> INVESTIGATOR PERFORMANCE RATING</p>
                     </li>
                 </ul>
             </div>
-            <div class="col-md-8 mt-4">
+            <div class="col-md-4 mt-4">
                 <ul>
                     <li>
-                        <p><img width="20" src="{{ asset('html/green_tick.png') }}"> PHARMACY/MEDICAL SWEEP INVESTIGATIONS</p>
+                        <p><img width="20" src="{{ asset('html/green_tick.png') }}"> IMMEDIATE TEXT NOTIFICATION</p>
                     </li>
                 </ul>
             </div>
+
+            <div class="col-md-4 mt-4">
+                <ul>
+                    <li>
+                        <p><img width="20" src="{{ asset('html/green_tick.png') }}"> INTERNAL STAFF SCHEDULING</p>
+                    </li>
+                </ul>
+            </div>
+
         </div>
     </div>
 

@@ -24,6 +24,8 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\URL;
 use App\Models\Assignment;
 use App\Models\AssignmentUser;
+use App\Models\InvestigatorServiceLine;
+use App\Models\InvestigatorType;
 
 class InvestigatorController extends Controller
 {
@@ -48,10 +50,13 @@ class InvestigatorController extends Controller
         $states          = State::all();
         $languageOptions = Language::all();
         $timezones       = Timezone::where('active', 1)->get();
+        $investigation_types = InvestigatorType::all();
 
         $user              = auth()->user();
         $userId            = $user->id;
-        $googleAuthDeatils = GoogleAuthUsers::where('user_id', $userId)->exists();
+        
+        $googleAuthDetails = GoogleAuthUsers::where('user_id', $userId)->exists();
+        $nylasUser = NylasUsers::where(['user_id' => $userId, 'provider' => 'gmail'])->exists();
         $user->load([
             'investigatorServiceLines',
             'investigatorLicenses',
@@ -63,10 +68,20 @@ class InvestigatorController extends Controller
             'investigatorAvailability'
         ]);
 
-        $serviceLines    = $user->investigatorServiceLines;
-        $survServiceLine = $user->investigatorServiceLines()->where('investigation_type', 'surveillance')->first();
-        $statServiceLine = $user->investigatorServiceLines()->where('investigation_type', 'statements')->first();
-        $miscServiceLine = $user->investigatorServiceLines()->where('investigation_type', 'misc')->first();
+        $serviceLines = $user->investigatorServiceLines()->with('investigationType')->get();
+
+        $survServiceLine =  $statServiceLine = '';
+        $miscServiceLine = array();
+        foreach ($serviceLines as $serviceLine) {
+            if ($serviceLine->investigationType['type_name'] == 'surveillance')
+                $survServiceLine = $serviceLine;
+            else if ($serviceLine->investigationType['type_name'] == 'statements')
+                $statServiceLine = $serviceLine;
+            else
+                $miscServiceLine[] = $serviceLine;
+            // if($serviceLine->investigationType['type_name'] == 'statements')
+        }
+
         $licenses        = $user->investigatorLicenses;
         $workVehicles    = $user->investigatorWorkVehicles;
         $languages       = $user->investigatorLanguages;
@@ -91,7 +106,8 @@ class InvestigatorController extends Controller
             'availability',
             'languageOptions',
             'timezones',
-            'googleAuthDeatils'
+            'googleAuthDetails',
+            'nylasUser'
         ));
     }
 
@@ -125,7 +141,7 @@ class InvestigatorController extends Controller
             }
 
             // loop through licenses and check insurance is checked or not, if check then check file is uploaded or not, if not then throw multiple validation error for specific index of license
-
+            // dd(count($request->investigation_type));
             // Save service lines data
             if (count($request->investigation_type)) {
                 $user->investigatorServiceLines()->delete();
@@ -133,14 +149,39 @@ class InvestigatorController extends Controller
                     if (!isset($investigation_type["type"]))
                         continue;
 
-                    $user->investigatorServiceLines()->create([
-                        'investigation_type' => $investigation_type["type"],
+                    if (isset($investigation_type['misc_service_name'])) {
+                        foreach ($investigation_type['misc_service_name'] as $key => $misc_service) {
+                            if ($misc_service) {
+                                $serviceLinesInvestigationTypes = InvestigatorType::firstOrCreate(
+                                    ['type_name' => $misc_service]
+                                );
+
+                                $user->investigatorServiceLines()->updateOrCreate([
+                                    'investigation_type_id' => $serviceLinesInvestigationTypes->id
+                                ], [
+                                    'case_experience'    => $investigation_type["case_experience"][$key],
+                                    'years_experience'   => $investigation_type["years_experience"][$key],
+                                    'hourly_rate'        => $investigation_type["hourly_rate"][$key],
+                                    'travel_rate'        => $investigation_type["travel_rate"][$key],
+                                    'milage_rate'        => $investigation_type["milage_rate"][$key],
+                                ]);
+                            }
+                        }
+                    }
+                    if(isset($investigation_type['service_name'])) {
+                    $serviceLinesInvestigationTypes = InvestigatorType::firstOrCreate(
+                        ['type_name' => $investigation_type['service_name']]
+                    );
+                    $user->investigatorServiceLines()->updateOrCreate([
+                        'investigation_type_id' => $serviceLinesInvestigationTypes->id
+                    ], [
                         'case_experience'    => $investigation_type["case_experience"],
                         'years_experience'   => $investigation_type["years_experience"],
                         'hourly_rate'        => $investigation_type["hourly_rate"],
                         'travel_rate'        => $investigation_type["travel_rate"],
                         'milage_rate'        => $investigation_type["milage_rate"],
                     ]);
+                }
                 }
             }
 
@@ -207,13 +248,13 @@ class InvestigatorController extends Controller
 
             $user->update(['is_investigator_profile_submitted' => true]);
 
-
             session()->flash('success', 'Profile has been saved successfully.');
 
             return redirect('investigator/investigator-profile');
         } catch (ValidationException $e) {
             throw $e;
         } catch (\Exception $e) {
+            dd($e);
             session()->flash('error', 'Something went wrong, please try again later!');
             return redirect()->back();
         }
@@ -531,8 +572,8 @@ class InvestigatorController extends Controller
 
         $states            = State::all();
         $userId            = Auth::user()->id;
-        $googleAuthDeatils = GoogleAuthUsers::where('user_id', $userId)->exists();
-
+        $googleAuthDetails = GoogleAuthUsers::where('user_id', $userId)->exists();
+        $nylasUser = NylasUsers::where(['user_id' => $userId, 'provider' => 'gmail'])->exists();
         $user->load([
             'investigatorServiceLines',
             'investigatorLicenses',
@@ -546,7 +587,8 @@ class InvestigatorController extends Controller
             'investigatorAvailability.timezone'
         ]);
 
-        $serviceLines = $user->investigatorServiceLines;
+        // $serviceLines = $user->investigatorServiceLines;
+        $serviceLines = $user->investigatorServiceLines()->with('investigationType')->get();
         $licenses     = $user->investigatorLicenses;
         $workVehicles = $user->investigatorWorkVehicles;
         $languages    = $user->investigatorLanguages;
@@ -566,7 +608,8 @@ class InvestigatorController extends Controller
             'equipment',
             'document',
             'availability',
-            'googleAuthDeatils'
+            'googleAuthDetails',
+            'nylasUser'
         ));
     }
 
@@ -574,9 +617,9 @@ class InvestigatorController extends Controller
     {  //show my profile page for investigator
         $profile           = Auth::user();
         $userId            = Auth::user()->id;
-        $googleAuthDeatils = GoogleAuthUsers::where('user_id', $userId)->exists();
-
-        return view('investigator.my-profile', compact('profile', 'googleAuthDeatils'));
+        $googleAuthDetails = GoogleAuthUsers::where('user_id', $userId)->exists();
+        $nylasUser = NylasUsers::where(['user_id' => $userId, 'provider' => 'gmail'])->exists();
+        return view('investigator.my-profile', compact('profile', 'googleAuthDetails', 'nylasUser'));
     }
 
     public function investigatorProfileUpdate(ProfileRequest $request)
@@ -720,7 +763,8 @@ class InvestigatorController extends Controller
         $userId            = Auth::user()->id;
         $userName          = Auth::user()->first_name;
         $userEmail         = Auth::user()->email;
-        $googleAuthDeatils = GoogleAuthUsers::where('user_id', $userId)->exists();
+                
+        $googleAuthDetails = GoogleAuthUsers::where('user_id', $userId)->exists();
 
         $nylasUser = NylasUsers::where(['user_id' => $userId, 'provider' => 'gmail'])->exists();
 
@@ -728,7 +772,7 @@ class InvestigatorController extends Controller
 
         $profile = array();
 
-        if ($googleAuthDeatils && (!$nylasUser || !$calendarEvents)) {
+        if ($googleAuthDetails && (!$nylasUser || !$calendarEvents)) {
 
             $userInfo = GoogleAuthUsers::where('user_id', $userId)->get();
 
@@ -779,6 +823,7 @@ class InvestigatorController extends Controller
             $array    = json_decode($response);
             curl_close($curl);
 
+            if($array) {
             $curl = curl_init();
             curl_setopt_array($curl, array(
                 CURLOPT_URL            => Config::get('constants.NYLAS_API_URL') . 'connect/token',
@@ -838,13 +883,13 @@ class InvestigatorController extends Controller
             curl_close($curl);
             $responseArr['calendars'] = json_decode($response);
             $profile['calendars']     = $responseArr['calendars'];
-        }
+        } }
 
         $profile['user'] = Auth::user();
 
         $userId = Auth::user()->id;
 
-        return view('investigator.calendar', compact('profile', 'nylasUser', 'googleAuthDeatils', 'calendarEvents'));
+        return view('investigator.calendar', compact('profile', 'nylasUser', 'googleAuthDetails', 'calendarEvents'));
     }
 
     /** Check google access token expiry */
@@ -863,7 +908,6 @@ class InvestigatorController extends Controller
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
             $error_response = curl_exec($ch);
             $array          = json_decode($error_response);
-
             if (isset($array->error)) {
                 // Generate new Access Token using old Refresh Token
                 $ch = curl_init();
@@ -882,6 +926,14 @@ class InvestigatorController extends Controller
                 curl_close($ch);
 
                 $responseArray = json_decode($response);
+
+                if(isset($responseArray->error) && $responseArray->error == 'invalid_grant')
+                {
+                    $this->disconnectCalendar();
+                    session()->flash('error', 'Calendar Session Expired..Please Connect Again');
+                    return redirect()->route('investigator.calendar');
+                }
+
                 $updateGoogleAccessToken = GoogleAuthUsers::updateOrCreate(['user_id' => $userId], [
                     'access_token' => $responseArray->access_token,
                     'expires_in'   => date("Y-m-d H:i:s", strtotime("+$responseArray->expires_in seconds")),
@@ -998,7 +1050,7 @@ class InvestigatorController extends Controller
         return $calEvents;
     }
 
-    public function disconnectCalendar(Request $request)
+    public function disconnectCalendar()
     {
         $userId    = Auth::user()->id;
 
@@ -1026,11 +1078,11 @@ class InvestigatorController extends Controller
         curl_close($curl);
         $nylasResponseArray = json_decode($response);
 
-        
-        if($nylasResponseArray) {
-        $user      = GoogleAuthUsers::where('user_id', $userId)->delete();
-        $nylasUser = NylasUsers::where(['user_id' => $userId, 'provider' => 'gmail'])->delete();
-        $calEvents = CalendarEvents::where('user_id', $userId)->delete();
+
+        if ($nylasResponseArray) {
+            $user      = GoogleAuthUsers::where('user_id', $userId)->delete();
+            $nylasUser = NylasUsers::where(['user_id' => $userId, 'provider' => 'gmail'])->delete();
+            $calEvents = CalendarEvents::where('user_id', $userId)->delete();
         }
         return $user;
     }
@@ -1063,5 +1115,10 @@ class InvestigatorController extends Controller
         if (auth()->user()->investigatorType != 'internal') {
             return "Contractor";
         }
+    }
+
+    public function searchForServiceLine(Request $request)
+    {
+        return InvestigatorType::where('type_name', 'LIKE', '%' . $request->q . '%')->get();
     }
 }

@@ -20,7 +20,7 @@
                                     Edit Investigator Profile
                                 </a>
 
-                                @if(!$googleAuthDeatils)
+                                @if(!$googleAuthDetails || !$nylasUser)
                                     <button type="button" data-toggle="modal" data-target="#sync-calendar" class="text-white float-end btn btn-outline-primary btn-sm mt-n1 mr-10">Connect with Google calendar</button>
                                 @else
                                     <button type="button" data-toggle="modal" data-target="#disconnect-calendar" class="text-white float-end btn btn-outline-primary btn-sm mt-n1 mr-10">Disconnect Calendar</button>
@@ -145,7 +145,7 @@
                                     <div class="col-md-6">
                                         <b><label>Investigation Types:</label></b>
                                     </div>
-                                    <div class="col-md-6">{{ ucfirst($serviceLine->investigation_type) }}</div>
+                                    <div class="col-md-6">{{ ucfirst($serviceLine->investigationType['type_name']) }}</div>
                                 </div>
                             </div>
                             <div class="col-md-6">

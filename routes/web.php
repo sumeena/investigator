@@ -277,6 +277,9 @@ Route::group(['prefix' => 'hm', 'as' => 'hm.', 'middleware' => ['hm']], function
 
 // Investigator Dashboard Routes
 Route::group(['prefix' => 'investigator', 'as' => 'investigator.', 'middleware' => ['investigator']], function () {
+
+    Route::get('/searchForServiceLine', [InvestigatorController::class, 'searchForServiceLine'])->name('searchForServiceLine');
+
     Route::get('/', [InvestigatorController::class, 'index'])->name('index');
     Route::get('/profile', [InvestigatorController::class, 'viewProfile'])->name('profile');
     Route::get('/view', [InvestigatorController::class, 'view'])->name('view');
