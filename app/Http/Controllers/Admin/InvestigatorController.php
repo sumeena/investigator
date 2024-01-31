@@ -133,7 +133,8 @@ class InvestigatorController extends Controller
             'investigatorAvailability.timezone'
         ]);
 
-        $serviceLines = $user->investigatorServiceLines;
+        // $serviceLines = $user->investigatorServiceLines;
+        $serviceLines = $user->investigatorServiceLines()->with('investigationType')->get();
         $licenses     = $user->investigatorLicenses;
         $workVehicles = $user->investigatorWorkVehicles;
         $languages    = $user->investigatorLanguages;

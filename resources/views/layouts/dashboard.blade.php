@@ -137,6 +137,12 @@
 
     <script type="text/javascript" src="{{ asset('html/assets/js/wickedpicker.min.js') }}"></script>
 
+    <script type="text/javascript" src="{{ asset('html/assets/js/typeahead.jquery.min.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('html/assets/js/bloodhound.min.js') }}"></script>
+    <script src="https://twitter.github.io/typeahead.js/releases/latest/typeahead.bundle.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.20.0/jquery.validate.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
     <!-- custom js -->
     <script src="{{ asset('html/assets/js/custom.js') }}"></script>
 

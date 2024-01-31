@@ -8,15 +8,16 @@ use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use App\Models\User;
 
-class WelcomeMailNotification extends Notification
+class WelcomeMailNotificationInvestigator extends Notification
 {
     use Queueable;
 
     public $user;
     public $pass;
-
     /**
      * Create a new notification instance.
+     *
+     * @return void
      */
     public function __construct(User $user, $pass = 0)
     {
@@ -27,8 +28,8 @@ class WelcomeMailNotification extends Notification
     /**
      * Get the notification's delivery channels.
      *
+     * @param  mixed  $notifiable
      * @return array
-
      */
     public function via(object $notifiable): array
     {
@@ -37,6 +38,9 @@ class WelcomeMailNotification extends Notification
 
     /**
      * Get the mail representation of the notification.
+     *
+     * @param  mixed  $notifiable
+     * @return \Illuminate\Notifications\Messages\MailMessage
      */
     public function toMail(object $notifiable): MailMessage
     {
@@ -47,20 +51,20 @@ class WelcomeMailNotification extends Notification
         ];
 
         return (new MailMessage)->markdown(
-                'emails.welcome', ['mailData' => $mailData]
+                'emails.welcome-investigator', ['mailData' => $mailData]
             );
     }
 
     /**
      * Get the array representation of the notification.
      *
+     * @param  mixed  $notifiable
      * @return array
-
      */
-    public function toArray(object $notifiable): array
+    public function toArray($notifiable): array
     {
         return [
-
+            //
         ];
     }
 }

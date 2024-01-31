@@ -5,7 +5,7 @@
 <?php
   $calendars = array();
   if(isset($profile['calendars']))
-  $calendars = $profile['calendars'];
+  $calendars = $profile['calendars'];  
 ?>
 <div class="row mt-4 mb-4">
   <div class="col-md-1"></div>
@@ -13,7 +13,7 @@
     <div class="card mb-4">
       <div class="card-header d-flex justify-content-between align-items-center">
         <h5 class="mb-0">Calendar</h5>
-        @if(!$googleAuthDeatils)
+        @if(!$googleAuthDetails && !$nylasUser)
           <button type="button" data-toggle="modal" data-target="#sync-calendar" class="float-end btn btn-outline-primary btn-sm mt-n1 mr-10">Sync Calendar</button>
         @endif
         <button type="button" data-toggle="modal" data-target="#update-calendar" class="float-end d-none btn btn-outline-primary btn-sm mt-n1 mr-10 update-calender-button">Update Calendar</button>
@@ -23,7 +23,7 @@
 
         <input type="hidden" class="nylas-user" value="{{$nylasUser}}">
         <input type="hidden" class="calendar-events" value="{{$calendarEvents}}">
-        <input type="hidden" class="google-auth-user" value="{{$googleAuthDeatils}}">
+        <input type="hidden" class="google-auth-user" value="{{$googleAuthDetails}}">
         @if(session('success'))
             <div class="alert alert-success" role="alert">
                 {{ session('success') }}

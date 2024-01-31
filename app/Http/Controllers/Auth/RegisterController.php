@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Mail\NewCompanyAdminRegistered;
 use App\Models\Role;
 use App\Providers\RouteServiceProvider;
 use App\Models\User;
@@ -16,6 +17,9 @@ use Illuminate\Support\Facades\Validator;
 use Auth;
 use Illuminate\Validation\Rules\RequiredIf;
 use App\Notifications\WelcomeMailNotification;
+use App\Notifications\WelcomeMailNotificationInvestigator;
+use Illuminate\Support\Facades\Mail;
+
 class RegisterController extends Controller
 {
     /*
@@ -110,7 +114,6 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
-
         if($data['role'] == 3){
           $investigatorType = "external";
         }else{
@@ -125,7 +128,21 @@ class RegisterController extends Controller
             'website'    => $this->checkIsCompanyAdminRole($data['role']) ? preg_replace('/^www\./', '', $data['website']) : null,
             'password'   => Hash::make($data['password']),
         ]);
-        $userData->notify(new WelcomeMailNotification($userData));
+
+        if($this->checkIsCompanyAdminRole($data['role']))
+        {
+            $userData->notify(new WelcomeMailNotification($userData));
+            $investigators = User::where('role',3)->get();
+
+            foreach($investigators as $investigator)
+            {
+                $investigator->investigatorBlockedCompanyAdmins()->attach($userData->id);
+            }
+        }
+        else if($this->checkIsInvestigatorRole($data['role']))
+        {
+            $userData->notify(new WelcomeMailNotificationInvestigator($userData));
+        }
         return $userData;
     }
 
@@ -144,5 +161,17 @@ class RegisterController extends Controller
         }
 
         return $hasCompanyAdminRole;
+    }
+
+    private function checkIsInvestigatorRole($roleId)
+    {
+        $role = Role::find($roleId);
+        $hasInvestigatorRole = false;
+
+        if ($role && $role->role == 'investigator') {
+            $hasInvestigatorRole = true;
+        }
+
+        return $hasInvestigatorRole;
     }
 }
