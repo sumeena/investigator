@@ -889,7 +889,7 @@ class InvestigatorController extends Controller
 
         $userId = Auth::user()->id;
 
-        return view('investigator.calendar', compact('profile', 'nylasUser', 'googleAuthDeatils', 'calendarEvents'));
+        return view('investigator.calendar', compact('profile', 'nylasUser', 'googleAuthDetails', 'calendarEvents'));
     }
 
     /** Check google access token expiry */
@@ -908,7 +908,6 @@ class InvestigatorController extends Controller
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
             $error_response = curl_exec($ch);
             $array          = json_decode($error_response);
-
             if (isset($array->error)) {
                 // Generate new Access Token using old Refresh Token
                 $ch = curl_init();
@@ -927,6 +926,14 @@ class InvestigatorController extends Controller
                 curl_close($ch);
 
                 $responseArray = json_decode($response);
+
+                if(isset($responseArray->error) && $responseArray->error == 'invalid_grant')
+                {
+                    $this->disconnectCalendar();
+                    session()->flash('error', 'Calendar Session Expired..Please Connect Again');
+                    return redirect()->route('investigator.calendar');
+                }
+
                 $updateGoogleAccessToken = GoogleAuthUsers::updateOrCreate(['user_id' => $userId], [
                     'access_token' => $responseArray->access_token,
                     'expires_in'   => date("Y-m-d H:i:s", strtotime("+$responseArray->expires_in seconds")),
@@ -1043,7 +1050,7 @@ class InvestigatorController extends Controller
         return $calEvents;
     }
 
-    public function disconnectCalendar(Request $request)
+    public function disconnectCalendar()
     {
         $userId    = Auth::user()->id;
 

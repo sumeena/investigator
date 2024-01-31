@@ -3,9 +3,9 @@
 @section('content')
 
 <?php
-  $calendars = array();
-  if(isset($profile['calendars']))
-  $calendars = $profile['calendars'];  
+$calendars = array();
+if (isset($profile['calendars']))
+  $calendars = $profile['calendars'];
 ?>
 <div class="row mt-4 mb-4">
   <div class="col-md-1"></div>
@@ -14,20 +14,31 @@
       <div class="card-header d-flex justify-content-between align-items-center">
         <h5 class="mb-0">Calendar</h5>
         @if(!$googleAuthDetails && !$nylasUser)
-          <button type="button" data-toggle="modal" data-target="#sync-calendar" class="float-end btn btn-outline-primary btn-sm mt-n1 mr-10">Sync Calendar</button>
+        <button type="button" data-toggle="modal" data-target="#sync-calendar" class="float-end btn btn-outline-primary btn-sm mt-n1 mr-10">Sync Calendar</button>
         @endif
         <button type="button" data-toggle="modal" data-target="#update-calendar" class="float-end d-none btn btn-outline-primary btn-sm mt-n1 mr-10 update-calender-button">Update Calendar</button>
       </div>
 
       <div class="card-body">
 
+        @if(session('success'))
+        <div class="alert alert-success" role="alert">
+          {{ session('success') }}
+        </div>
+        @endif
+        @if(session('error'))
+        <div class="alert alert-danger" role="alert">
+          {{ session('error') }}
+        </div>
+        @endif
+
         <input type="hidden" class="nylas-user" value="{{$nylasUser}}">
         <input type="hidden" class="calendar-events" value="{{$calendarEvents}}">
         <input type="hidden" class="google-auth-user" value="{{$googleAuthDetails}}">
         @if(session('success'))
-            <div class="alert alert-success" role="alert">
-                {{ session('success') }}
-            </div>
+        <div class="alert alert-success" role="alert">
+          {{ session('success') }}
+        </div>
         @endif
 
         <div class="calendar" id="calendar"></div>
@@ -40,7 +51,7 @@
 @include('investigator.calendar-sync-modal')
 
 @if(!$nylasUser || !$calendarEvents)
-  @include('investigator.select-calendar-modal')
+@include('investigator.select-calendar-modal')
 @endif
 
 
@@ -66,12 +77,12 @@
 @endsection
 @push('scripts')
 <script>
-  $(document).ready(function(){
+  $(document).ready(function() {
     var nylasUserValue = $('.nylas-user').val();
     var calendarEventsValue = $('.calendar-events').val();
     var googleAuthUserValue = $('.google-auth-user').val();
-    if(googleAuthUserValue && (!nylasUserValue || !calendarEventsValue))
-    $('#calendars-list').modal('show');
+    if (googleAuthUserValue && (!nylasUserValue || !calendarEventsValue))
+      $('#calendars-list').modal('show');
   })
 </script>
 @endpush
