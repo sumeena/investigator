@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 use App\Http\Requests\Admin\CompanyAdmin\PasswordRequest;
+use App\Models\InvestigatorType;
 use Illuminate\Support\Facades\Mail;
 
 class InternalInvestigatorsController extends Controller
@@ -71,7 +72,51 @@ class InternalInvestigatorsController extends Controller
         ], $data);
 
         // Save service lines data
+
+
         if (count($request->investigation_type)) {
+            $user->investigatorServiceLines()->delete();
+            foreach ($request->investigation_type as $investigation_type) {
+                if (!isset($investigation_type["type"]))
+                    continue;
+
+                if (isset($investigation_type['misc_service_name'])) {
+                    foreach ($investigation_type['misc_service_name'] as $key => $misc_service) {
+                        if ($misc_service) {
+                            $serviceLinesInvestigationTypes = InvestigatorType::firstOrCreate(
+                                ['type_name' => $misc_service]
+                            );
+
+                            $user->investigatorServiceLines()->updateOrCreate([
+                                'investigation_type_id' => $serviceLinesInvestigationTypes->id
+                            ], [
+                                'case_experience'    => $investigation_type["case_experience"][$key],
+                                'years_experience'   => $investigation_type["years_experience"][$key],
+                                'hourly_rate'        => $investigation_type["hourly_rate"][$key],
+                                'travel_rate'        => $investigation_type["travel_rate"][$key],
+                                'milage_rate'        => $investigation_type["milage_rate"][$key],
+                            ]);
+                        }
+                    }
+                }
+                if(isset($investigation_type['service_name'])) {
+                $serviceLinesInvestigationTypes = InvestigatorType::firstOrCreate(
+                    ['type_name' => $investigation_type['service_name']]
+                );
+                $user->investigatorServiceLines()->updateOrCreate([
+                    'investigation_type_id' => $serviceLinesInvestigationTypes->id
+                ], [
+                    'case_experience'    => $investigation_type["case_experience"],
+                    'years_experience'   => $investigation_type["years_experience"],
+                    'hourly_rate'        => $investigation_type["hourly_rate"],
+                    'travel_rate'        => $investigation_type["travel_rate"],
+                    'milage_rate'        => $investigation_type["milage_rate"],
+                ]);
+            }
+            }
+        }
+        
+        /* if (count($request->investigation_type)) {
             $user->investigatorServiceLines()->delete();
             foreach ($request->investigation_type as $investigation_type) {
                 if (!isset($investigation_type["type"]))
@@ -86,7 +131,7 @@ class InternalInvestigatorsController extends Controller
                     'milage_rate'        => $investigation_type["milage_rate"],
                 ]);
             }
-        }
+        } */
         // Create company user data
         CompanyUser::updateOrCreate([
             'user_id'   => $user->id,
@@ -113,14 +158,28 @@ class InternalInvestigatorsController extends Controller
         $user->load(['parentCompany', 'parentCompany.company']);
         $investigator->load(['investigatorServiceLines']);
 
-        $serviceLines    = $investigator->investigatorServiceLines;
-        $survServiceLine = $investigator->investigatorServiceLines()->where('investigation_type', 'surveillance')->first();
+        $serviceLines    = $investigator->investigatorServiceLines()->with('investigationType')->get();
+
+        $survServiceLine =  $statServiceLine = '';
+        $miscServiceLine = array();
+
+        foreach ($serviceLines as $serviceLine) {
+            if ($serviceLine->investigationType['type_name'] == 'surveillance')
+                $survServiceLine = $serviceLine;
+            else if ($serviceLine->investigationType['type_name'] == 'statements')
+                $statServiceLine = $serviceLine;
+            else
+                $miscServiceLine[] = $serviceLine;
+            // if($serviceLine->investigationType['type_name'] == 'statements')
+        }
+
+        /* $survServiceLine = $investigator->investigatorServiceLines()->where('investigation_type', 'surveillance')->first();
         $statServiceLine = $investigator->investigatorServiceLines()->where('investigation_type', 'statements')->first();
-        $miscServiceLine = $investigator->investigatorServiceLines()->where('investigation_type', 'misc')->first();
+        $miscServiceLine = $investigator->investigatorServiceLines()->where('investigation_type', 'misc')->first(); */
         return view('company-admin.internal-investigators.add', compact('investigator', 'user','serviceLines',
         'survServiceLine',
         'statServiceLine',
-        'miscServiceLine',));
+        'miscServiceLine'));
     }
 
     public function delete($id)

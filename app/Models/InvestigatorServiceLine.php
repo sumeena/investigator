@@ -36,4 +36,9 @@ class InvestigatorServiceLine extends Model
 
         return $text;
     }
+
+    public function investigationType()
+    {
+        return $this->belongsTo(InvestigatorType::class, 'investigation_type_id');
+    }
 }

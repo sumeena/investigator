@@ -28,7 +28,9 @@ return new class extends Migration
     public function down()
     {
         Schema::table('investigator_search_histories', function (Blueprint $table) {
-            //
+            $table->dropColumn('distance');
+            $table->dropColumn('withInternalInvestigator');
+            $table->dropColumn('withExternalInvestigator');
         });
     }
 };

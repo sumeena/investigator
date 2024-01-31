@@ -1,4 +1,4 @@
-@if(!$googleAuthDeatils)
+@if(!$googleAuthDetails || !$nylasUser)
 <div class="modal" id="sync-calendar" tabindex="-1" role="dialog">
   <div class="modal-dialog" role="document">
     <div class="modal-content" style="width:50%">

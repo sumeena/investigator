@@ -121,7 +121,7 @@
                                     <div class="col-md-6">
                                         <b><label>Investigation Types:</label></b>
                                     </div>
-                                    <div class="col-md-6">{{ ucfirst($serviceLine->investigation_type) }}</div>
+                                    <div class="col-md-6">{{ ucfirst($serviceLine->investigationType['type_name']) }}</div>
                                 </div>
                             </div>
                             <div class="col-md-6">
