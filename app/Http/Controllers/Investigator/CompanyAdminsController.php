@@ -9,7 +9,6 @@ class CompanyAdminsController extends Controller
 {
     public function index()
     {
-      
         $companyAdmins = User::whereHas('userRole', function ($q) {
             $q->where('role', 'company-admin');
         })

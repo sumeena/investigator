@@ -4,6 +4,7 @@ $(document).ready(function () {
     timepicker()
     resetPassword("#password");
     resetPassword("#new-password");
+    miscTypeahead();
     if ($('.users-list').length > 0) {
         setTimeout(() => {
             $('.btn-users:first-child').click();
@@ -168,8 +169,6 @@ $(document).ready(function () {
     })
 
     $(document).on('click', '.add-misc-row', function() {
-        checkForValidations($(this).parents('tr').prev('tr').attr('id'));
-        // return false;
         cloneRow();
         $('.miscellaneous-checkbox').prop('checked',true);
         $('.typeahead').typeahead('destroy');
@@ -602,38 +601,73 @@ function miscTypeahead() {
     });
 }
 
-function checkForValidations(tr) {
-    var error = 0;
-    var miscServiceName = $('#'+tr).find('td:first span').children('input:nth-child(2)').val();
-    if(miscServiceName == '') {
-        $('#'+tr).find('td:first span').children('input:nth-child(2)').addClass('error')
-    }
-    error = 1;
-
-
-}
-
 var rowCounter = 2;
 
 // Function to clone the template row and update the IDs and names
 function cloneRow() {
-    var newRow = $('.misc-row-1').clone().attr('id','misc-row-'+rowCounter).removeClass('misc-row-1 d-none').addClass('misc-rows each-misc-row misc-row-'+rowCounter);
+    if (!isRowEmpty())
+        return false;
+    /* 
+        if (isRowEmpty(rowCounter)) {
     
+            alert('Please fill in the current row before adding a new one.');
+            return;
+        } */
+
+    var newRow = $('.misc-row-1').clone().attr('id', 'misc-row-' + rowCounter).removeClass('misc-row-1 d-none').addClass('misc-rows each-misc-row misc-row-' + rowCounter);
+
+    newRow.children('td:first').find('input').attr('name','investigation_type[2][misc_service_name][]')
+    newRow.children('td:nth-child(2)').find('select').attr('name','investigation_type[2][case_experience][]')
+    newRow.children('td:nth-child(3)').find('input').attr('name','investigation_type[2][years_experience][]')
+    newRow.children('td:nth-child(4)').find('input').attr('name','investigation_type[2][hourly_rate][]')
+    newRow.children('td:nth-child(5)').find('input').attr('name','investigation_type[2][travel_rate][]')
+    newRow.children('td:nth-child(6)').find('input').attr('name','investigation_type[2][milage_rate][]')
+
+
+    console.log();
     // Update IDs and names in the cloned row
-    newRow.find('select, input').each(function () {
+    /* newRow.find('td:nth-child(0)').each(function (index) {
+        console.log(index);
         var currentId = $(this).attr('id');
-        var currentName = $(this).attr('name');
+        var currentName = $(this).find(':nth-child(0)').find('input').attr('name','investigation_type[2][misc_service_name][]');
         $(this).val('');
-    });
+    }); */
 
     var appendTo = $('.add-more-rows').parents('tr');
     $(newRow).insertBefore(appendTo);
-    $('.misc-row-'+rowCounter+' td:first input').addClass('typeahead')
+    $('.misc-row-' + rowCounter + ' td:first input').addClass('typeahead')
 
     // Increment the row counter for the next row
-    rowCounter++;    
+    rowCounter++;
 }
 
+
+// Function to check if the previous row is empty
+function isRowEmpty() {
+    var lastTrWithClass = $('tr.each-misc-row:last');
+    var isValid = true;
+    lastTrWithClass.find('td').each(function () {
+        $(this).find('input,select').each(function () {
+            if (!$(this).attr('readonly')) {
+                if ($(this).val().trim() === '') {
+                    isValid = false;
+                    $(this).addClass('empty-error');
+                } else {
+                    $(this).removeClass('empty-error');
+                }
+            }
+        });
+    });
+
+    if (isValid) {
+        return true;
+        // Proceed with further actions if all inputs are valid
+    } else {
+        // Show a message or handle validation failure appropriately
+        alert('Please fill in all fields before adding a new row.');
+        return false;
+    }
+}
 
 function reCalculateTime(row) {
     var rowObject = $(row);
