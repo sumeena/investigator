@@ -569,12 +569,16 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 function miscTypeahead() {
+    console.log('working');
+
+    var role = $('.investigators-role').data('role');
+
     var bestPictures = new Bloodhound({
         datumTokenizer: Bloodhound.tokenizers.obj.whitespace('value'),
         queryTokenizer: Bloodhound.tokenizers.whitespace,
         // prefetch: 'searchForServiceLine/%QUERY',
         remote: {
-          url: '/investigator/searchForServiceLine?q=%QUERY%',
+          url: '/'+role+'/searchForServiceLine?q=%QUERY%',
           wildcard: '%QUERY%'
         }
       });

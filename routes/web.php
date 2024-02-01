@@ -202,6 +202,7 @@ Route::group(['prefix' => 'company-admin', 'as' => 'company-admin.', 'middleware
             ->name('reset-password');
         Route::post('/update-password', [InternalInvestigatorsController::class, 'passwordUpdate'])
             ->name('update-password');
+        Route::get('/searchForServiceLine', [InternalInvestigatorsController::class, 'searchForServiceLine'])->name('searchForServiceLine');
     });
 
 
