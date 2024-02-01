@@ -29,6 +29,8 @@
                 <tbody>
 
                 @forelse($companyAdmins as $companyAdmin)
+
+                @if($companyAdmin->parentCompany == NULL)
                     <tr>
                         <td>{{ $companyAdmins->firstItem() + $loop->index }}</td>
                         <td>{{$companyAdmin->companyAdminProfile->company_name}}</td>
@@ -54,6 +56,7 @@
                             </form>
                         </td>
                     </tr>
+                @endif
                 @empty
                     <tr>
                         <td colspan="100%" class="text-center">

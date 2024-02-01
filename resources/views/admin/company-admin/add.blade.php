@@ -82,7 +82,7 @@
                         <select id="defaultSelect" class="form-select " name="company_admin">
                             <option value="">Add a New Company</option>
                             @foreach ($companyAdmins as $companyadmin)
-                            <option value="{{ $companyadmin->id }}">{{ $companyadmin->first_name }} {{ $companyadmin->first_name }} -- {{ $companyadmin->website }}</option>
+                            <option value="{{ $companyadmin->id }}">{{ $companyadmin->first_name }} {{ $companyadmin->last_name }} -- {{ $companyadmin->website }}</option>
                             @endforeach
                         </select>
                         @endif
