@@ -1,7 +1,7 @@
 @extends('layouts.dashboard')
 @section('title', 'Company User')
 @section('content')
-    <div class="row mt-4 mb-4 justify-content-center">
+    <div data-role="company-admin/internal-investigators" class="row mt-4 mb-4 justify-content-center investigators-role">
         <div class="col-md-10">
             <div class="card mb-4">
                 <div class="card-header d-flex justify-content-between align-items-center">
@@ -255,72 +255,76 @@
                                         if(@$miscServiceLine) {
                                         $miscServiceLineCount = count($miscServiceLine);
                                         }
+
+                                        if(@count(old('investigation_type.2.misc_service_name', [])))
+                                        $oldValuesCount = count(old('investigation_type.2.misc_service_name', []));
+
                                         ?>
 
-@if(@$miscServiceLine)
-                                        @foreach($miscServiceLine as $miscServiceLineEach)
+                                        @if(@$miscServiceLine)
+                                        @foreach($miscServiceLine as $key => $miscServiceLineEach)
                                         <tr class="each-misc-row">
                                             <td>
-                                                <input type="text" class="typeahead form-control @error('investigation_type.2.misc_service_name') is-invalid @enderror" name="investigation_type[2][misc_service_name][]" value="{{ old('investigation_type.2.misc_service_name',@$miscServiceLineEach->investigationType['type_name'] ?? '') }}">
-                                                @error('investigation_type.2.misc_service_name')
-                                                <span role="alert" class="text-danger small">
+                                                <input type="text" class="typeahead form-control @error('investigation_type.2.misc_service_name.'.$key) is-invalid @enderror" name="investigation_type[2][misc_service_name][]" value="{{ old('investigation_type.2.misc_service_name.'.$key,@$miscServiceLineEach->investigationType['type_name'] ?? '') }}">
+                                                @error('investigation_type.2.misc_service_name.'.$key)
+                                                <span role="alert" class="text-danger small d-block ">
                                                     {{ $message }}
                                                 </span>
                                                 @enderror
                                             </td>
                                             <td>
-                                                <select class="form-select @error('investigation_type.2.case_experience') is-invalid @enderror" name="investigation_type[2][case_experience][]">
+                                                <select class="form-select @error('investigation_type.2.case_experience.'.$key) is-invalid @enderror" name="investigation_type[2][case_experience][]">
                                                     <option value="">--select--</option>
                                                     <option value="1" @selected(@$miscServiceLineEach && @$miscServiceLineEach->case_experience == 1 ||
-                                                        old('investigation_type.2.case_experience') == 1)>
+                                                        old('investigation_type.2.case_experience.'.$key) == 1)>
                                                         Under 50
                                                     </option>
                                                     <option value="2" @selected(@$miscServiceLineEach && @$miscServiceLineEach->case_experience == 2 ||
-                                                        old('investigation_type.2.case_experience') == 2)>
+                                                        old('investigation_type.2.case_experience.'.$key) == 2)>
                                                         50-499
                                                     </option>
                                                     <option value="3" @selected(@$miscServiceLineEach && @$miscServiceLineEach->case_experience == 3 ||
-                                                        old('investigation_type.2.case_experience') == 3)>
+                                                        old('investigation_type.2.case_experience.'.$key) == 3)>
                                                         500+
                                                     </option>
                                                 </select>
-                                                @error('investigation_type.2.case_experience')
-                                                <span role="alert" class="text-danger small">
+                                                @error('investigation_type.2.case_experience.'.$key)
+                                                <span role="alert" class="text-danger small d-block">
                                                     {{ $message }}
                                                 </span>
                                                 @enderror
                                             </td>
                                             <td>
-                                                <input type="text" class="form-control @error('investigation_type.2.years_experience') is-invalid @enderror" name="investigation_type[2][years_experience][]" value="{{ old('investigation_type.2.years_experience', @$miscServiceLineEach->years_experience ?? '') }}">
-                                                @error('investigation_type.2.years_experience')
-                                                <span role="alert" class="text-danger small">
-                                                    {{ $message }}
-                                                </span>
-                                                @enderror
-                                            </td>
-                                            <td>
-                                                <span class="investigation_span">$</span>
-                                                <input type="text" class="form-control @error('investigation_type.2.hourly_rate') is-invalid @enderror investigation_input_dollar_sign" name="investigation_type[2][hourly_rate][]" value="{{ old('investigation_type.2.hourly_rate', @$miscServiceLineEach->hourly_rate ?? $rate) }}">
-                                                @error('investigation_type.2.hourly_rate')
-                                                <span role="alert" class="text-danger small">
+                                                <input type="text" class="form-control @error('investigation_type.2.years_experience.'.$key) is-invalid @enderror" name="investigation_type[2][years_experience][]" value="{{ old('investigation_type.2.years_experience.'.$key, @$miscServiceLineEach->years_experience ?? '') }}">
+                                                @error('investigation_type.2.years_experience.'.$key)
+                                                <span role="alert" class="text-danger small d-block">
                                                     {{ $message }}
                                                 </span>
                                                 @enderror
                                             </td>
                                             <td>
                                                 <span class="investigation_span">$</span>
-                                                <input type="text" class="form-control @error('investigation_type.2.travel_rate') is-invalid @enderror investigation_input_dollar_sign" name="investigation_type[2][travel_rate][]" value="{{ old('investigation_type.2.travel_rate', @$miscServiceLineEach->travel_rate ?? $rate) }}">
-                                                @error('investigation_type.2.travel_rate')
-                                                <span role="alert" class="text-danger small">
+                                                <input type="text" class="form-control @error('investigation_type.2.hourly_rate.'.$key) is-invalid @enderror investigation_input_dollar_sign" name="investigation_type[2][hourly_rate][]" value="{{ old('investigation_type.2.hourly_rate.'.$key, @$miscServiceLineEach->hourly_rate ?? $rate) }}">
+                                                @error('investigation_type.2.hourly_rate.'.$key)
+                                                <span role="alert" class="text-danger small d-block">
                                                     {{ $message }}
                                                 </span>
                                                 @enderror
                                             </td>
                                             <td>
                                                 <span class="investigation_span">$</span>
-                                                <input type="text" class="form-control @error('investigation_type.2.milage_rate') is-invalid @enderror investigation_input_dollar_sign" name="investigation_type[2][milage_rate][]" value="{{ old('investigation_type.2.milage_rate', @$miscServiceLineEach->milage_rate ?? $rate) }}">
-                                                @error('investigation_type.2.milage_rate')
-                                                <span role="alert" class="text-danger small">
+                                                <input type="text" class="form-control @error('investigation_type.2.travel_rate.'.$key) is-invalid @enderror investigation_input_dollar_sign" name="investigation_type[2][travel_rate][]" value="{{ old('investigation_type.2.travel_rate.'.$key,  @$miscServiceLineEach->travel_rate ?? $rate) }}">
+                                                @error('investigation_type.2.travel_rate.'.$key)
+                                                <span role="alert" class="text-danger small d-block">
+                                                    {{ $message }}
+                                                </span>
+                                                @enderror
+                                            </td>
+                                            <td>
+                                                <span class="investigation_span">$</span>
+                                                <input type="text" class="form-control @error('investigation_type.2.milage_rate.'.$key) is-invalid @enderror investigation_input_dollar_sign" name="investigation_type[2][milage_rate][]" value="{{ old('investigation_type.2.milage_rate.'.$key, @$miscServiceLineEach->milage_rate ?? $rate) }}">
+                                                @error('investigation_type.2.milage_rate.'.$key)
+                                                <span role="alert" class="text-danger small d-block">
                                                     {{ $message }}
                                                 </span>
                                                 @enderror
@@ -332,65 +336,72 @@
                                         @endforeach
 
                                         @endif
-                                        <tr class="d-none misc-row-1">
+
+
+
+
+
+                                        @if(@$oldValuesCount > 0)
+                                        @for($i=@$miscServiceLineCount; $i<$oldValuesCount; $i++)
+                                        <tr class="">
                                             <td>
-                                                <input type="text" class="form-control @error('investigation_type.2.misc_service_name') is-invalid @enderror" name="investigation_type[2][misc_service_name][]" value="{{ old('investigation_type.2.misc_service_name') }}">
-                                                @error('investigation_type.2.misc_service_name')
-                                                <span role="alert" class="text-danger small">
+                                                <input type="text" class="typeahead form-control @error('investigation_type.2.misc_service_name.' . $i) is-invalid @enderror" name="investigation_type[2][misc_service_name][]" value="{{ old('investigation_type.2.misc_service_name.' . $i) }}">
+                                                @error('investigation_type.2.misc_service_name.'.$i)
+                                                <span role="alert" class="text-danger small d-block">
                                                     {{ $message }}
                                                 </span>
                                                 @enderror
                                             </td>
                                             <td>
-                                                <select class="form-select @error('investigation_type.2.case_experience') is-invalid @enderror" name="investigation_type[2][case_experience][]">
+                                                <select class="form-select @error('investigation_type.2.case_experience.' . $i) is-invalid @enderror" name="investigation_type[2][case_experience][]">
                                                     <option value="">--select--</option>
-                                                    <option value="1" @selected(old('investigation_type.2.case_experience')==1)>
+                                                    <option value="1" @selected(old('investigation_type.2.case_experience.'.$i)==1)>
                                                         Under 50
                                                     </option>
-                                                    <option value="2" @selected(old('investigation_type.2.case_experience')==2)>
+                                                    <option value="2" @selected(old('investigation_type.2.case_experience.'.$i)==2)>
                                                         50-499
                                                     </option>
-                                                    <option value="3" @selected(old('investigation_type.2.case_experience')==3)>
+                                                    <option value="3" @selected(old('investigation_type.2.case_experience.'.$i)==3)>
                                                         500+
                                                     </option>
                                                 </select>
-                                                @error('investigation_type.2.case_experience')
-                                                <span role="alert" class="text-danger small">
+                                                @error('investigation_type.2.case_experience.'.$i)
+                                                <span role="alert" class="text-danger small d-block">
                                                     {{ $message }}
                                                 </span>
                                                 @enderror
                                             </td>
                                             <td>
-                                                <input type="text" class="form-control @error('investigation_type.2.years_experience') is-invalid @enderror" name="investigation_type[2][years_experience][]" value="{{ old('investigation_type.2.years_experience') }}">
-                                                @error('investigation_type.2.years_experience')
-                                                <span role="alert" class="text-danger small">
-                                                    {{ $message }}
-                                                </span>
-                                                @enderror
-                                            </td>
-                                            <td>
-                                                <span class="investigation_span">$</span>
-                                                <input type="text" class="form-control @error('investigation_type.2.hourly_rate') is-invalid @enderror investigation_input_dollar_sign" name="investigation_type[2][hourly_rate][]" value="{{ old('investigation_type.2.hourly_rate') }}">
-                                                @error('investigation_type.2.hourly_rate')
-                                                <span role="alert" class="text-danger small">
+                                                <input type="text" class="form-control @error('investigation_type.2.years_experience.' . $i) is-invalid @enderror" name="investigation_type[2][years_experience][]" value="{{ old('investigation_type.2.years_experience.' . $i) }}">
+                                                @error('investigation_type.2.years_experience.'.$i)
+                                                <span role="alert" class="text-danger small d-block">
                                                     {{ $message }}
                                                 </span>
                                                 @enderror
                                             </td>
                                             <td>
                                                 <span class="investigation_span">$</span>
-                                                <input type="text" class="form-control @error('investigation_type.2.travel_rate') is-invalid @enderror investigation_input_dollar_sign" name="investigation_type[2][travel_rate][]" value="{{ old('investigation_type.2.travel_rate') }}">
-                                                @error('investigation_type.2.travel_rate')
-                                                <span role="alert" class="text-danger small">
+                                                <input type="text" class="form-control @error('investigation_type.2.hourly_rate.' . $i) is-invalid @enderror investigation_input_dollar_sign" name="investigation_type[2][hourly_rate][]" value="{{ old('investigation_type.2.hourly_rate.' . $i) }}">
+                                                @error('investigation_type.2.hourly_rate.'.$i)
+                                                <span role="alert" class="text-danger small d-block">
                                                     {{ $message }}
                                                 </span>
                                                 @enderror
                                             </td>
                                             <td>
                                                 <span class="investigation_span">$</span>
-                                                <input type="text" class="form-control @error('investigation_type.2.milage_rate') is-invalid @enderror investigation_input_dollar_sign" name="investigation_type[2][milage_rate][]" value="{{ old('investigation_type.2.milage_rate') }}">
-                                                @error('investigation_type.2.milage_rate')
-                                                <span role="alert" class="text-danger small">
+                                                <input type="text" class="form-control @error('investigation_type.2.travel_rate.' . $i) is-invalid @enderror investigation_input_dollar_sign" name="investigation_type[2][travel_rate][]" value="{{ old('investigation_type.2.travel_rate.' . $i) }}">
+                                                @error('investigation_type.2.travel_rate.'.$i)
+                                                <span role="alert" class="text-danger small d-block">
+                                                    {{ $message }}
+                                                </span>
+                                                @enderror
+                                            </td>
+                                            <td>
+                                                <span class="investigation_span">$</span>
+                                                <input type="text" class="form-control @error('investigation_type.2.milage_rate.' . $i) is-invalid @enderror investigation_input_dollar_sign" name="investigation_type[2][milage_rate][]" value="{{ old('investigation_type.2.milage_rate.' . $i) }}">
+                                                @error('investigation_type.2.milage_rate.'.$i)
+                                                <span role="alert" class="text-danger small d-block">
                                                     {{ $message }}
                                                 </span>
                                                 @enderror
@@ -398,9 +409,83 @@
                                             <td>
                                                 <button type="button" class="btn btn-danger remove-misc-row"><i class="fa fa-minus-circle"></i></button>
                                             </td>
-                                        </tr>
+                                            </tr>
 
-                                        <tr class="d-none">
+                                            @endfor
+
+                                            @endif
+
+
+                                            <tr class="d-none misc-row-1">
+                                                <td>
+                                                    <input type="text" class="form-control @error('investigation_type.2.misc_service_name') is-invalid @enderror" name="" value="">
+                                                    @error('investigation_type.2.misc_service_name')
+                                                    <span role="alert" class="text-danger small d-block">
+                                                        {{ $message }}
+                                                    </span>
+                                                    @enderror
+                                                </td>
+                                                <td>
+                                                    <select class="form-select @error('investigation_type.2.case_experience') is-invalid @enderror" name="">
+                                                        <option value="">--select--</option>
+                                                        <option value="1">
+                                                            Under 50
+                                                        </option>
+                                                        <option value="2">
+                                                            50-499
+                                                        </option>
+                                                        <option value="3">
+                                                            500+
+                                                        </option>
+                                                    </select>
+                                                    @error('investigation_type.2.case_experience')
+                                                    <span role="alert" class="text-danger small d-block">
+                                                        {{ $message }}
+                                                    </span>
+                                                    @enderror
+                                                </td>
+                                                <td>
+                                                    <input type="text" class="form-control @error('investigation_type.2.years_experience') is-invalid @enderror" name="" value="">
+                                                    @error('investigation_type.2.years_experience')
+                                                    <span role="alert" class="text-danger small d-block">
+                                                        {{ $message }}
+                                                    </span>
+                                                    @enderror
+                                                </td>
+                                                <td>
+                                                    <span class="investigation_span">$</span>
+                                                    <input type="text" class="form-control @error('investigation_type.2.hourly_rate') is-invalid @enderror investigation_input_dollar_sign" name="" value="">
+                                                    @error('investigation_type.2.hourly_rate')
+                                                    <span role="alert" class="text-danger small d-block">
+                                                        {{ $message }}
+                                                    </span>
+                                                    @enderror
+                                                </td>
+                                                <td>
+                                                    <span class="investigation_span">$</span>
+                                                    <input type="text" class="form-control @error('investigation_type.2.travel_rate') is-invalid @enderror investigation_input_dollar_sign" name="" value="">
+                                                    @error('investigation_type.2.travel_rate')
+                                                    <span role="alert" class="text-danger small d-block">
+                                                        {{ $message }}
+                                                    </span>
+                                                    @enderror
+                                                </td>
+                                                <td>
+                                                    <span class="investigation_span">$</span>
+                                                    <input type="text" class="form-control @error('investigation_type.2.milage_rate') is-invalid @enderror investigation_input_dollar_sign" name="" value="">
+                                                    @error('investigation_type.2.milage_rate')
+                                                    <span role="alert" class="text-danger small d-block">
+                                                        {{ $message }}
+                                                    </span>
+                                                    @enderror
+                                                </td>
+                                                <td>
+                                                    <button type="button" class="btn btn-danger remove-misc-row"><i class="fa fa-minus-circle"></i></button>
+                                                </td>
+                                            </tr>
+
+                                       
+                                            <tr class="d-none">
                                             <td colspan="7"><button type="button" class="btn btn-success add-more-rows add-misc-row"><i class="fa fa-plus-circle"></i> Add more rows</button></td>
                                         </tr>
                                         </tbody>

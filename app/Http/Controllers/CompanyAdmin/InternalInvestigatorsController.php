@@ -223,4 +223,10 @@ class InternalInvestigatorsController extends Controller
 
         return $isCheck;
     }
+
+
+    public function searchForServiceLine(Request $request)
+    {
+        return InvestigatorType::where('type_name', 'LIKE', '%' . $request->q . '%')->get();
+    }
 }
