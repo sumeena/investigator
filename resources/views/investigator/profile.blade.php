@@ -1,7 +1,7 @@
 @extends('layouts.dashboard')
 @section('title', "Investigator's Profile")
 @section('content')
-<div class="row mt-4 mb-4 mx-0 justify-content-center">
+<div data-role="investigator" class="row mt-4 mb-4 mx-0 justify-content-center investigators-role">
     <div class="col-md-10">
         <div class="card mb-4">
             <div class="card-header d-flex justify-content-between align-items-center">
@@ -72,7 +72,7 @@
                                 <input type="text" id="autocomplete" class="form-control @error('address') is-invalid @enderror" name="address" value="{{isset($user->address) ? $user->address : old('address')}}">
                             </div>
                             @error('address')
-                            <span role="alert" class="text-danger small">
+                            <span role="alert" class="text-danger small d-block">
                                 {{ $message }}
                             </span>
                             @enderror
@@ -93,7 +93,7 @@
                                     <input type="text" id="locality" class="form-control @error('city') is-invalid @enderror" name="city" value="{{isset($user->city) ? $user->city : old('city')}}">
                                 </div>
                                 @error('city')
-                                <span role="alert" class="text-danger small">
+                                <span role="alert" class="text-danger small d-block">
                                     {{ $message }}
                                 </span>
                                 @enderror
@@ -107,7 +107,7 @@
                                 </div>
                             </div>
                             @error('state')
-                            <span role="alert" class="text-danger small">
+                            <span role="alert" class="text-danger small d-block">
                                 {{ $message }}
                             </span>
                             @enderror
@@ -127,7 +127,7 @@
                                 </div>
                             </div>
                             @error('country')
-                            <span role="alert" class="text-danger small">
+                            <span role="alert" class="text-danger small d-block">
                                 {{ $message }}
                             </span>
                             @enderror
@@ -139,7 +139,7 @@
                                     <input type="text" id="postal_code" class="form-control @error('zipcode') is-invalid @enderror" name="zipcode" value="{{isset($user->zipcode) ? $user->zipcode : old('zipcode')}}">
                                 </div>
                                 @error('zipcode')
-                                <span role="alert" class="text-danger small">
+                                <span role="alert" class="text-danger small d-block">
                                     {{ $message }}
                                 </span>
                                 @enderror
@@ -170,7 +170,7 @@
                                 </div>
                             </div>
                             @error('bio')
-                            <span role="alert" class="text-danger small">
+                            <span role="alert" class="text-danger small d-block">
                                 {{ $message }}
                             </span>
                             @enderror
@@ -225,7 +225,7 @@
                                                     </option>
                                                 </select>
                                                 @error('investigation_type.0.case_experience')
-                                                <span role="alert" class="text-danger small">
+                                                <span role="alert" class="text-danger small d-block">
                                                     {{ $message }}
                                                 </span>
                                                 @enderror
@@ -233,7 +233,7 @@
                                             <td>
                                                 <input type="text" class="form-control @error('investigation_type.0.years_experience') is-invalid @enderror" name="investigation_type[0][years_experience]" value="{{ old('investigation_type.0.years_experience', $survServiceLine->years_experience ?? '') }}">
                                                 @error('investigation_type.0.years_experience')
-                                                <span role="alert" class="text-danger small">
+                                                <span role="alert" class="text-danger small d-block">
                                                     {{ $message }}
                                                 </span>
                                                 @enderror
@@ -242,7 +242,7 @@
                                                 <span class="investigation_span">$</span>
                                                 <input type="text" class="form-control @error('investigation_type.0.hourly_rate') is-invalid @enderror investigation_input_dollar_sign" name="investigation_type[0][hourly_rate]" {{$disabled}} value="{{ old('investigation_type.0.hourly_rate', $survServiceLine->hourly_rate ?? '') }}">
                                                 @error('investigation_type.0.hourly_rate')
-                                                <span role="alert" class="text-danger small">
+                                                <span role="alert" class="text-danger small d-block">
                                                     {{ $message }}
                                                 </span>
                                                 @enderror
@@ -251,7 +251,7 @@
                                                 <span class="investigation_span">$</span>
                                                 <input type="text" class="form-control @error('investigation_type.0.travel_rate') is-invalid @enderror investigation_input_dollar_sign" name="investigation_type[0][travel_rate]" {{$disabled}} value="{{ old('investigation_type.0.travel_rate', $survServiceLine->travel_rate ?? '') }}">
                                                 @error('investigation_type.0.travel_rate')
-                                                <span role="alert" class="text-danger small">
+                                                <span role="alert" class="text-danger small d-block">
                                                     {{ $message }}
                                                 </span>
                                                 @enderror
@@ -260,7 +260,7 @@
                                                 <span class="investigation_span">$</span>
                                                 <input type="text" class="form-control @error('investigation_type.0.milage_rate') is-invalid @enderror investigation_input_dollar_sign" name="investigation_type[0][milage_rate]" {{$disabled}} value="{{ old('investigation_type.0.milage_rate', $survServiceLine->milage_rate ?? '') }}">
                                                 @error('investigation_type.0.milage_rate')
-                                                <span role="alert" class="text-danger small">
+                                                <span role="alert" class="text-danger small d-block">
                                                     {{ $message }}
                                                 </span>
                                                 @enderror
@@ -287,7 +287,7 @@
                                                     </option>
                                                 </select>
                                                 @error('investigation_type.1.case_experience')
-                                                <span role="alert" class="text-danger small">
+                                                <span role="alert" class="text-danger small d-block">
                                                     {{ $message }}
                                                 </span>
                                                 @enderror
@@ -295,7 +295,7 @@
                                             <td>
                                                 <input type="text" class="form-control @error('investigation_type.1.years_experience') is-invalid @enderror" name="investigation_type[1][years_experience]" value="{{ old('investigation_type.1.years_experience', $statServiceLine->years_experience ?? '') }}">
                                                 @error('investigation_type.1.years_experience')
-                                                <span role="alert" class="text-danger small">
+                                                <span role="alert" class="text-danger small d-block">
                                                     {{ $message }}
                                                 </span>
                                                 @enderror
@@ -304,7 +304,7 @@
                                                 <span class="investigation_span">$</span>
                                                 <input type="text" class="form-control @error('investigation_type.1.hourly_rate') is-invalid @enderror investigation_input_dollar_sign" name="investigation_type[1][hourly_rate]" {{$disabled}} value="{{ old('investigation_type.1.hourly_rate', $statServiceLine->hourly_rate ?? $rate) }}">
                                                 @error('investigation_type.1.hourly_rate')
-                                                <span role="alert" class="text-danger small">
+                                                <span role="alert" class="text-danger small d-block">
                                                     {{ $message }}
                                                 </span>
                                                 @enderror
@@ -313,7 +313,7 @@
                                                 <span class="investigation_span">$</span>
                                                 <input type="text" class="form-control @error('investigation_type.1.travel_rate') is-invalid @enderror investigation_input_dollar_sign" name="investigation_type[1][travel_rate]" {{$disabled}} value="{{ old('investigation_type.1.travel_rate', $statServiceLine->travel_rate ?? $rate) }}">
                                                 @error('investigation_type.1.travel_rate')
-                                                <span role="alert" class="text-danger small">
+                                                <span role="alert" class="text-danger small d-block">
                                                     {{ $message }}
                                                 </span>
                                                 @enderror
@@ -322,7 +322,7 @@
                                                 <span class="investigation_span">$</span>
                                                 <input type="text" class="form-control @error('investigation_type.1.milage_rate') is-invalid @enderror investigation_input_dollar_sign" name="investigation_type[1][milage_rate]" {{$disabled}} value="{{ old('investigation_type.1.milage_rate', $statServiceLine->milage_rate ?? $rate) }}">
                                                 @error('investigation_type.1.milage_rate')
-                                                <span role="alert" class="text-danger small">
+                                                <span role="alert" class="text-danger small d-block">
                                                     {{ $message }}
                                                 </span>
                                                 @enderror
@@ -345,7 +345,7 @@
                                             <td>
                                                 <input type="text" class="typeahead form-control @error('investigation_type.2.misc_service_name.'.$key) is-invalid @enderror" name="investigation_type[2][misc_service_name][]" value="{{ old('investigation_type.2.misc_service_name.'.$key,$miscServiceLineEach->investigationType['type_name'] ?? '') }}">
                                                 @error('investigation_type.2.misc_service_name.'.$key)
-                                                <span role="alert" class="text-danger small">
+                                                <span role="alert" class="text-danger small d-block ">
                                                     {{ $message }}
                                                 </span>
                                                 @enderror
@@ -368,7 +368,7 @@
                                                     </option>
                                                 </select>
                                                 @error('investigation_type.2.case_experience.'.$key)
-                                                <span role="alert" class="text-danger small">
+                                                <span role="alert" class="text-danger small d-block">
                                                     {{ $message }}
                                                 </span>
                                                 @enderror
@@ -376,7 +376,7 @@
                                             <td>
                                                 <input type="text" class="form-control @error('investigation_type.2.years_experience.'.$key) is-invalid @enderror" name="investigation_type[2][years_experience][]" value="{{ old('investigation_type.2.years_experience.'.$key, $miscServiceLineEach->years_experience ?? '') }}">
                                                 @error('investigation_type.2.years_experience.'.$key)
-                                                <span role="alert" class="text-danger small">
+                                                <span role="alert" class="text-danger small d-block">
                                                     {{ $message }}
                                                 </span>
                                                 @enderror
@@ -385,7 +385,7 @@
                                                 <span class="investigation_span">$</span>
                                                 <input type="text" class="form-control @error('investigation_type.2.hourly_rate.'.$key) is-invalid @enderror investigation_input_dollar_sign" name="investigation_type[2][hourly_rate][]" {{$disabled}} value="{{ old('investigation_type.2.hourly_rate.'.$key, $miscServiceLineEach->hourly_rate ?? $rate) }}">
                                                 @error('investigation_type.2.hourly_rate.'.$key)
-                                                <span role="alert" class="text-danger small">
+                                                <span role="alert" class="text-danger small d-block">
                                                     {{ $message }}
                                                 </span>
                                                 @enderror
@@ -394,7 +394,7 @@
                                                 <span class="investigation_span">$</span>
                                                 <input type="text" class="form-control @error('investigation_type.2.travel_rate.'.$key) is-invalid @enderror investigation_input_dollar_sign" name="investigation_type[2][travel_rate][]" {{$disabled}} value="{{ old('investigation_type.2.travel_rate.'.$key, $miscServiceLineEach->travel_rate ?? $rate) }}">
                                                 @error('investigation_type.2.travel_rate.'.$key)
-                                                <span role="alert" class="text-danger small">
+                                                <span role="alert" class="text-danger small d-block">
                                                     {{ $message }}
                                                 </span>
                                                 @enderror
@@ -403,7 +403,7 @@
                                                 <span class="investigation_span">$</span>
                                                 <input type="text" class="form-control @error('investigation_type.2.milage_rate.'.$key) is-invalid @enderror investigation_input_dollar_sign" name="investigation_type[2][milage_rate][]" {{$disabled}} value="{{ old('investigation_type.2.milage_rate.'.$key, $miscServiceLineEach->milage_rate ?? $rate) }}">
                                                 @error('investigation_type.2.milage_rate.'.$key)
-                                                <span role="alert" class="text-danger small">
+                                                <span role="alert" class="text-danger small d-block">
                                                     {{ $message }}
                                                 </span>
                                                 @enderror
@@ -415,11 +415,12 @@
                                         @endforeach
 
 
-                                        @for($i=$miscServiceLineCount; $i<$oldValuesCount; $i++) <tr class="">
+                                        @for($i=$miscServiceLineCount; $i<$oldValuesCount; $i++)
+                                        <tr class="">
                                             <td>
                                                 <input type="text" class="typeahead form-control @error('investigation_type.2.misc_service_name.' . $i) is-invalid @enderror" name="investigation_type[2][misc_service_name][]" value="{{ old('investigation_type.2.misc_service_name.' . $i) }}">
                                                 @error('investigation_type.2.misc_service_name.'.$i)
-                                                <span role="alert" class="text-danger small">
+                                                <span role="alert" class="text-danger small d-block">
                                                     {{ $message }}
                                                 </span>
                                                 @enderror
@@ -438,7 +439,7 @@
                                                     </option>
                                                 </select>
                                                 @error('investigation_type.2.case_experience.'.$i)
-                                                <span role="alert" class="text-danger small">
+                                                <span role="alert" class="text-danger small d-block">
                                                     {{ $message }}
                                                 </span>
                                                 @enderror
@@ -446,7 +447,7 @@
                                             <td>
                                                 <input type="text" class="form-control @error('investigation_type.2.years_experience.' . $i) is-invalid @enderror" name="investigation_type[2][years_experience][]" value="{{ old('investigation_type.2.years_experience.' . $i) }}">
                                                 @error('investigation_type.2.years_experience.'.$i)
-                                                <span role="alert" class="text-danger small">
+                                                <span role="alert" class="text-danger small d-block">
                                                     {{ $message }}
                                                 </span>
                                                 @enderror
@@ -455,7 +456,7 @@
                                                 <span class="investigation_span">$</span>
                                                 <input type="text" class="form-control @error('investigation_type.2.hourly_rate.' . $i) is-invalid @enderror investigation_input_dollar_sign" name="investigation_type[2][hourly_rate][]" {{$disabled}} value="{{ old('investigation_type.2.hourly_rate.' . $i) }}">
                                                 @error('investigation_type.2.hourly_rate.'.$i)
-                                                <span role="alert" class="text-danger small">
+                                                <span role="alert" class="text-danger small d-block">
                                                     {{ $message }}
                                                 </span>
                                                 @enderror
@@ -464,7 +465,7 @@
                                                 <span class="investigation_span">$</span>
                                                 <input type="text" class="form-control @error('investigation_type.2.travel_rate.' . $i) is-invalid @enderror investigation_input_dollar_sign" name="investigation_type[2][travel_rate][]" {{$disabled}} value="{{ old('investigation_type.2.travel_rate.' . $i) }}">
                                                 @error('investigation_type.2.travel_rate.'.$i)
-                                                <span role="alert" class="text-danger small">
+                                                <span role="alert" class="text-danger small d-block">
                                                     {{ $message }}
                                                 </span>
                                                 @enderror
@@ -473,7 +474,7 @@
                                                 <span class="investigation_span">$</span>
                                                 <input type="text" class="form-control @error('investigation_type.2.milage_rate.' . $i) is-invalid @enderror investigation_input_dollar_sign" name="investigation_type[2][milage_rate][]" {{$disabled}} value="{{ old('investigation_type.2.milage_rate.' . $i) }}">
                                                 @error('investigation_type.2.milage_rate.'.$i)
-                                                <span role="alert" class="text-danger small">
+                                                <span role="alert" class="text-danger small d-block">
                                                     {{ $message }}
                                                 </span>
                                                 @enderror
@@ -490,7 +491,7 @@
                                                 <td>
                                                     <input type="text" class="form-control @error('investigation_type.2.misc_service_name') is-invalid @enderror" name="" value="">
                                                     @error('investigation_type.2.misc_service_name')
-                                                    <span role="alert" class="text-danger small">
+                                                    <span role="alert" class="text-danger small d-block">
                                                         {{ $message }}
                                                     </span>
                                                     @enderror
@@ -509,7 +510,7 @@
                                                         </option>
                                                     </select>
                                                     @error('investigation_type.2.case_experience')
-                                                    <span role="alert" class="text-danger small">
+                                                    <span role="alert" class="text-danger small d-block">
                                                         {{ $message }}
                                                     </span>
                                                     @enderror
@@ -517,7 +518,7 @@
                                                 <td>
                                                     <input type="text" class="form-control @error('investigation_type.2.years_experience') is-invalid @enderror" name="" value="">
                                                     @error('investigation_type.2.years_experience')
-                                                    <span role="alert" class="text-danger small">
+                                                    <span role="alert" class="text-danger small d-block">
                                                         {{ $message }}
                                                     </span>
                                                     @enderror
@@ -526,7 +527,7 @@
                                                     <span class="investigation_span">$</span>
                                                     <input type="text" class="form-control @error('investigation_type.2.hourly_rate') is-invalid @enderror investigation_input_dollar_sign" name="" {{$disabled}} value="">
                                                     @error('investigation_type.2.hourly_rate')
-                                                    <span role="alert" class="text-danger small">
+                                                    <span role="alert" class="text-danger small d-block">
                                                         {{ $message }}
                                                     </span>
                                                     @enderror
@@ -535,7 +536,7 @@
                                                     <span class="investigation_span">$</span>
                                                     <input type="text" class="form-control @error('investigation_type.2.travel_rate') is-invalid @enderror investigation_input_dollar_sign" name="" {{$disabled}} value="">
                                                     @error('investigation_type.2.travel_rate')
-                                                    <span role="alert" class="text-danger small">
+                                                    <span role="alert" class="text-danger small d-block">
                                                         {{ $message }}
                                                     </span>
                                                     @enderror
@@ -544,7 +545,7 @@
                                                     <span class="investigation_span">$</span>
                                                     <input type="text" class="form-control @error('investigation_type.2.milage_rate') is-invalid @enderror investigation_input_dollar_sign" name="" {{$disabled}} value="">
                                                     @error('investigation_type.2.milage_rate')
-                                                    <span role="alert" class="text-danger small">
+                                                    <span role="alert" class="text-danger small d-block">
                                                         {{ $message }}
                                                     </span>
                                                     @enderror
@@ -580,7 +581,7 @@
                                             <td>
                                                 <span class="investigation_span">%</span><input type="text" class="form-control investigation_input_dollar_sign @error('video_claimant_percentage') is-invalid @enderror" name="video_claimant_percentage" value="{{ old('video_claimant_percentage', $review->video_claimant_percentage ?? '') }}">
                                                 @error('video_claimant_percentage')
-                                                <span role="alert" class="text-danger small">
+                                                <span role="alert" class="text-danger small d-block">
                                                     {{ $message }}
                                                 </span>
                                                 @enderror
@@ -588,7 +589,7 @@
                                             <td>
                                                 <input class="form-control investigator_profile_document_form_19 @error('survelance_report') is-invalid @enderror" type="file" name="survelance_report">
                                                 @error('survelance_report')
-                                                <span role="alert" class="text-danger small">
+                                                <span role="alert" class="text-danger small d-block">
                                                     {{ $message }}
                                                 </span>
                                                 @enderror
@@ -629,7 +630,7 @@
                                             <td>
                                                 <input type="text" class="form-control @error('camera_type') is-invalid @enderror" name="camera_type" value="{{ old('camera_type', $equipment->camera_type ?? '') }}">
                                                 @error('camera_type')
-                                                <span role="alert" class="text-danger small">
+                                                <span role="alert" class="text-danger small d-block">
                                                     {{ $message }}
                                                 </span>
                                                 @enderror
@@ -637,7 +638,7 @@
                                             <td>
                                                 <input type="text" class="form-control @error('camera_model_number') is-invalid @enderror" name="camera_model_number" value="{{ old('camera_model_number', $equipment->camera_model ?? '') }}">
                                                 @error('camera_model_number')
-                                                <span role="alert" class="text-danger small">
+                                                <span role="alert" class="text-danger small d-block">
                                                     {{ $message }}
                                                 </span>
                                                 @enderror
@@ -702,7 +703,7 @@
                                                     @endforeach
                                                 </select>
                                                 @error('licenses.'.$licenseKey.'.state')
-                                                <span role="alert" class="text-danger small">
+                                                <span role="alert" class="text-danger small d-block">
                                                     {{ $message }}
                                                 </span>
                                                 @enderror
@@ -710,7 +711,7 @@
                                             <td>
                                                 <input type="text" class="form-control @error('licenses.'.$licenseKey.'.license_number') is-invalid @enderror" name="licenses[{{ $licenseKey }}][license_number]" value="{{ old('licenses.'.$licenseKey.'.license_number', $license['license_number']) }}">
                                                 @error('licenses.'.$licenseKey.'.license_number')
-                                                <span role="alert" class="text-danger small">
+                                                <span role="alert" class="text-danger small d-block">
                                                     {{ $message }}
                                                 </span>
                                                 @enderror
@@ -718,7 +719,7 @@
                                             <td>
                                                 <input class="form-control @error('licenses.'.$licenseKey.'.expiration_date') is-invalid @enderror" type="date" name="licenses[{{ $licenseKey }}][expiration_date]" value="{{ old('licenses.'.$licenseKey.'.expiration_date', $license['expiration_date']) }}">
                                                 @error('licenses.'.$licenseKey.'.expiration_date')
-                                                <span role="alert" class="text-danger small">
+                                                <span role="alert" class="text-danger small d-block">
                                                     {{ $message }}
                                                 </span>
                                                 @enderror
@@ -743,7 +744,7 @@
                                                 </a>
                                                 @endif
                                                 @error('licenses.'.$licenseKey.'.insurance_file')
-                                                <span role="alert" class="text-danger small">
+                                                <span role="alert" class="text-danger small d-block">
                                                     {{ $message }}
                                                 </span>
                                                 @enderror
@@ -768,7 +769,7 @@
                                                 </a>
                                                 @endif
                                                 @error('licenses.'.$licenseKey.'.bonded_file')
-                                                <span role="alert" class="text-danger small">
+                                                <span role="alert" class="text-danger small d-block">
                                                     {{ $message }}
                                                 </span>
                                                 @enderror
@@ -834,7 +835,7 @@
                                             <td>
                                                 <input type="text" class="form-control investigator_profile_vechile_year @error('work_vehicles.'.$workVehicleKey.'.year') is-invalid @enderror" name="work_vehicles[{{ $workVehicleKey }}][year]" value="{{ old('work_vehicles.'.$workVehicleKey.'.year', $workVehicle['year']) }}">
                                                 @error('work_vehicles.'.$workVehicleKey.'.year')
-                                                <span role="alert" class="text-danger small">
+                                                <span role="alert" class="text-danger small d-block">
                                                     {{ $message }}
                                                 </span>
                                                 @enderror
@@ -842,7 +843,7 @@
                                             <td>
                                                 <input type="text" class="form-control investigator_profile_vechile_make @error('work_vehicles.'.$workVehicleKey.'.make') is-invalid @enderror" name="work_vehicles[{{ $workVehicleKey }}][make]" value="{{ old('work_vehicles.'.$workVehicleKey.'.make', $workVehicle['make']) }}">
                                                 @error('work_vehicles.'.$workVehicleKey.'.make')
-                                                <span role="alert" class="text-danger small">
+                                                <span role="alert" class="text-danger small d-block">
                                                     {{ $message }}
                                                 </span>
                                                 @enderror
@@ -850,7 +851,7 @@
                                             <td>
                                                 <input class="form-control investigator_profile_vechile_model @error('work_vehicles.'.$workVehicleKey.'.model') is-invalid @enderror" type="text" name="work_vehicles[{{ $workVehicleKey }}][model]" value="{{ old('work_vehicles.'.$workVehicleKey.'.model', $workVehicle['model']) }}">
                                                 @error('work_vehicles.'.$workVehicleKey.'.model')
-                                                <span role="alert" class="text-danger small">
+                                                <span role="alert" class="text-danger small d-block">
                                                     {{ $message }}
                                                 </span>
                                                 @enderror
@@ -859,7 +860,7 @@
                                             <td>
                                                 <input class="form-control @error('work_vehicles.'.$workVehicleKey.'.insurance_company') is-invalid @enderror" type="text" name="work_vehicles[{{ $workVehicleKey }}][insurance_company]" value="{{ old('work_vehicles.'.$workVehicleKey.'.insurance_company', $workVehicle['insurance_company']) }}">
                                                 @error('work_vehicles.'.$workVehicleKey.'.insurance_company')
-                                                <span role="alert" class="text-danger small">
+                                                <span role="alert" class="text-danger small d-block">
                                                     {{ $message }}
                                                 </span>
                                                 @enderror
@@ -867,7 +868,7 @@
                                             <td>
                                                 <input class="form-control @error('work_vehicles.'.$workVehicleKey.'.policy_number') is-invalid @enderror" type="text" name="work_vehicles[{{ $workVehicleKey }}][policy_number]" value="{{ old('work_vehicles.'.$workVehicleKey.'.policy_number', $workVehicle['policy_number']) }}">
                                                 @error('work_vehicles.'.$workVehicleKey.'.policy_number')
-                                                <span role="alert" class="text-danger small">
+                                                <span role="alert" class="text-danger small d-block">
                                                     {{ $message }}
                                                 </span>
                                                 @enderror
@@ -875,7 +876,7 @@
                                             <td>
                                                 <input class="form-control @error('work_vehicles.'.$workVehicleKey.'.expiration_date') is-invalid @enderror" type="date" name="work_vehicles[{{ $workVehicleKey }}][expiration_date]" value="{{ old('work_vehicles.'.$workVehicleKey.'.expiration_date', $workVehicle['expiration_date']) }}">
                                                 @error('work_vehicles.'.$workVehicleKey.'.expiration_date')
-                                                <span role="alert" class="text-danger small">
+                                                <span role="alert" class="text-danger small d-block">
                                                     {{ $message }}
                                                 </span>
                                                 @enderror
@@ -888,7 +889,7 @@
                                                 </a>
                                                 @endif
                                                 @error('work_vehicles.'.$workVehicleKey.'.picture')
-                                                <span role="alert" class="text-danger small">
+                                                <span role="alert" class="text-danger small d-block">
                                                     {{ $message }}
                                                 </span>
                                                 </br>
@@ -906,7 +907,7 @@
                                                 </a>
                                                 @endif
                                                 @error('work_vehicles.'.$workVehicleKey.'.proof_of_insurance')
-                                                <span role="alert" class="text-danger small">
+                                                <span role="alert" class="text-danger small d-block">
                                                     {{ $message }}
                                                 </span>
                                                 @enderror
@@ -974,7 +975,7 @@
                                                     @endforeach
                                                 </select>
                                                 @error('languages.'.$languageKey.'.language')
-                                                <span role="alert" class="text-danger small">
+                                                <span role="alert" class="text-danger small d-block">
                                                     {{ $message }}
                                                 </span>
                                                 @enderror
@@ -990,7 +991,7 @@
                                                     </option>
                                                 </select>
                                                 @error('languages.'.$languageKey.'.fluency')
-                                                <span role="alert" class="text-danger small">
+                                                <span role="alert" class="text-danger small d-block">
                                                     {{ $message }}
                                                 </span>
                                                 @enderror
@@ -1006,7 +1007,7 @@
                                                     </option>
                                                 </select>
                                                 @error('languages.'.$languageKey.'.writing_fluency')
-                                                <span role="alert" class="text-danger small">
+                                                <span role="alert" class="text-danger small d-block">
                                                     {{ $message }}
                                                 </span>
                                                 @enderror
@@ -1055,7 +1056,7 @@
                                                 </a>
                                                 @endif
                                                 @error('document_dl')
-                                                <span role="alert" class="text-danger small">
+                                                <span role="alert" class="text-danger small d-block">
                                                     {{ $message }}
                                                 </span>
                                                 @enderror
@@ -1068,7 +1069,7 @@
                                                 </a>
                                                 @endif
                                                 @error('document_id')
-                                                <span role="alert" class="text-danger small">
+                                                <span role="alert" class="text-danger small d-block">
                                                     {{ $message }}
                                                 </span>
                                                 @enderror
@@ -1081,7 +1082,7 @@
                                                 </a>
                                                 @endif
                                                 @error('document_ssn')
-                                                <span role="alert" class="text-danger small">
+                                                <span role="alert" class="text-danger small d-block">
                                                     {{ $message }}
                                                 </span>
                                                 @enderror
@@ -1094,7 +1095,7 @@
                                                 </a>
                                                 @endif
                                                 @error('document_birth_certificate')
-                                                <span role="alert" class="text-danger small">
+                                                <span role="alert" class="text-danger small d-block">
                                                     {{ $message }}
                                                 </span>
                                                 @enderror
@@ -1108,7 +1109,7 @@
                                                 </a>
                                                 @endif
                                                 @error('document_form_19')
-                                                <span role="alert" class="text-danger small">
+                                                <span role="alert" class="text-danger small d-block">
                                                     {{ $message }}
                                                 </span>
                                                 @enderror
@@ -1143,7 +1144,7 @@
                                             <td>
                                                 <input class="form-control @error('availability_days') is-invalid @enderror" type="text" name="availability_days" value="{{ old('availability_days', $availability->days ?? '') }}">
                                                 @error('availability_days')
-                                                <span role="alert" class="text-danger small">
+                                                <span role="alert" class="text-danger small d-block">
                                                     {{ $message }}
                                                 </span>
                                                 @enderror
@@ -1151,7 +1152,7 @@
                                             <td>
                                                 <input class="form-control @error('availability_hours') is-invalid @enderror" type="text" name="availability_hours" value="{{ old('availability_hours', $availability->hours ?? '') }}">
                                                 @error('availability_hours')
-                                                <span role="alert" class="text-danger small">
+                                                <span role="alert" class="text-danger small d-block">
                                                     {{ $message }}
                                                 </span>
                                                 @enderror
@@ -1178,7 +1179,7 @@
                                             <td>
                                                 <input class="form-control w-50 @error('availability_distance') is-invalid @enderror" type="text" name="availability_distance" value="{{ old('availability_distance', $availability->distance ?? '') }}">
                                                 @error('availability_distance')
-                                                <span role="alert" class="text-danger small">
+                                                <span role="alert" class="text-danger small d-block">
                                                     {{ $message }}
                                                 </span>
                                                 @enderror
@@ -1212,7 +1213,7 @@
                                                     @endforeach
                                                 </select>
                                                 @error('timezone')
-                                                <span role="alert" class="text-danger small">
+                                                <span role="alert" class="text-danger small d-block">
                                                     {{ $message }}
                                                 </span>
                                                 @enderror
