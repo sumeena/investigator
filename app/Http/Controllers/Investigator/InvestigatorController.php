@@ -113,6 +113,7 @@ class InvestigatorController extends Controller
 
     public function store(InvestigatorProfileRequest $request)
     {
+        // dd($request->all());
         try {
             $user_id = Auth::user()->id;
             $user = User::find($user_id);
@@ -254,7 +255,7 @@ class InvestigatorController extends Controller
         } catch (ValidationException $e) {
             throw $e;
         } catch (\Exception $e) {
-            dd($e);
+            // dd($e);
             session()->flash('error', 'Something went wrong, please try again later!');
             return redirect()->back();
         }

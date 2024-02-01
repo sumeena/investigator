@@ -78,10 +78,11 @@ class CompanyAdminController extends Controller
             'id' => $request->id
         ], $data);
 
-        
-        CompanyAdminProfile::updateOrCreate([
-            'user_id' => $user->id ], ['company_name' => $company_name ]
-        );
+        if ($company_name) {
+            CompanyAdminProfile::updateOrCreate([
+                'user_id' => $user->id ], ['company_name' => $company_name ]
+            );
+        }
 
         if (!empty($request->company_admin) && empty($request->id)) {
             $parent = User::find($request->company_admin)->id ?? null;

@@ -116,8 +116,6 @@ class CompanyAdminController extends Controller
                     }
                 }
             }
-
-
             session()->flash('success', 'Company Profile Updated Sucessfully.');
             return redirect()->route('company-admin.view');
         } catch (\Exception $e) {
