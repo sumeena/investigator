@@ -569,7 +569,6 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 function miscTypeahead() {
-    console.log('working');
 
     var role = $('.investigators-role').data('role');
 
@@ -609,6 +608,8 @@ var rowCounter = 2;
 
 // Function to clone the template row and update the IDs and names
 function cloneRow() {
+
+    console.log(isRowEmpty);
     if (!isRowEmpty())
         return false;
     /* 
@@ -626,16 +627,6 @@ function cloneRow() {
     newRow.children('td:nth-child(4)').find('input').attr('name','investigation_type[2][hourly_rate][]')
     newRow.children('td:nth-child(5)').find('input').attr('name','investigation_type[2][travel_rate][]')
     newRow.children('td:nth-child(6)').find('input').attr('name','investigation_type[2][milage_rate][]')
-
-
-    console.log();
-    // Update IDs and names in the cloned row
-    /* newRow.find('td:nth-child(0)').each(function (index) {
-        console.log(index);
-        var currentId = $(this).attr('id');
-        var currentName = $(this).find(':nth-child(0)').find('input').attr('name','investigation_type[2][misc_service_name][]');
-        $(this).val('');
-    }); */
 
     var appendTo = $('.add-more-rows').parents('tr');
     $(newRow).insertBefore(appendTo);

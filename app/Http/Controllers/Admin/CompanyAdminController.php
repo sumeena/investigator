@@ -46,6 +46,8 @@ class CompanyAdminController extends Controller
      */
     public function store(Request $request)
     {
+
+        dd($request->all());
         if (!empty($request->company_admin)) {
             $company_name = $request->company_name_edit;
             $request->website = null;
@@ -77,6 +79,7 @@ class CompanyAdminController extends Controller
         $user = User::updateOrCreate([
             'id' => $request->id
         ], $data);
+        
 
         if ($company_name) {
             CompanyAdminProfile::updateOrCreate([
