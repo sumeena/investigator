@@ -203,6 +203,8 @@
                 if (selectedValue == '') {
                     $('#newCompanyLink').toggle();
                 } else {
+                    $('input[name="website"]').val('');
+                    $('input[name="company_name"]').val('');
                     $('#newCompanyLink').css('display', 'none');
                 }
             });

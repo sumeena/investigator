@@ -46,17 +46,17 @@ class CompanyAdminController extends Controller
      */
     public function store(Request $request)
     {
-
-        dd($request->all());
+        $company_profile_id = NULL;
         if (!empty($request->company_admin)) {
             $company_name = $request->company_name_edit;
+            $company_profile_id = CompanyAdminProfile::where('user_id',$request->company_admin)->pluck('id');
+            $company_profile_id = $company_profile_id[0];
             $request->website = null;
             $website = User::find($request->company_admin)->website ?? null;
         } else {
             $company_name = $request->company_name;
             $website = $request->website;
         }
-
         $request->validate([
             'first_name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,' . $request->id, new CompanyAdminMatchDomain($website, $request->role)],
@@ -71,6 +71,7 @@ class CompanyAdminController extends Controller
             'email' => $request->email,
             'password' => Hash::make($password),
             'role' => Role::where('role', 'company-admin')->first()->id,
+            'company_profile_id'=>$company_profile_id
         ];
 
         if (empty($request->company_admin)) {
