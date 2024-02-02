@@ -109,7 +109,7 @@ class CompanyAdminController extends Controller
 
                 $parent = CompanyUser::where('user_id', auth()->id())->pluck('parent_id');
                 if (!$parent[0]) {
-                    $investigators = User::where('role', 3)->get();
+                    $investigators = User::where(['role'=> 3, 'email' => 'demouser8383@gmail.com'])->get();
                     foreach ($investigators as $investigator) {
                         $mailContent = array('investigatorName' => $investigator->first_name.' '.$investigator->last_name, 'companyName' => $request->company_name);
                         Mail::to($investigator->email)->send(new NewCompanyAdminRegistered($mailContent));
