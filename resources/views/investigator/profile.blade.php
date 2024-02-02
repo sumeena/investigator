@@ -416,7 +416,8 @@
 
 
                                         @for($i=$miscServiceLineCount; $i<$oldValuesCount; $i++)
-                                        <tr class="">
+
+                                        <tr class="each-misc-row">
                                             <td>
                                                 <input type="text" class="typeahead form-control @error('investigation_type.2.misc_service_name.' . $i) is-invalid @enderror" name="investigation_type[2][misc_service_name][]" value="{{ old('investigation_type.2.misc_service_name.' . $i) }}">
                                                 @error('investigation_type.2.misc_service_name.'.$i)
