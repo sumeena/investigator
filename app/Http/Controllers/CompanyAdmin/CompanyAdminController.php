@@ -46,7 +46,6 @@ class CompanyAdminController extends Controller
 
     public function viewProfile()
     {
-
         $user = auth()->user();
         $user->load([
             'CompanyAdminProfile',
@@ -56,6 +55,7 @@ class CompanyAdminController extends Controller
         $profile       = $user->CompanyAdminProfile;
         $parentCompany = CompanyAdminProfile::find($user->company_profile_id);
         $timezones     = Timezone::where('active', 1)->get();
+
         return view('company-admin.profile', compact('profile', 'timezones', 'user', 'parentCompany'));
     }
 
@@ -107,11 +107,13 @@ class CompanyAdminController extends Controller
                     'company_profile_id' => $companyAdminProfile->id
                 ]);
 
-                $parent = CompanyUser::where('user_id', auth()->id())->pluck('parent_id');
-                if (!$parent[0]) {
-                    $investigators = User::where(['role'=> 3, 'email' => 'demouser8383@gmail.com'])->get();
+                $parentCompanyExists = CompanyUser::where('user_id', auth()->id())->exists();
+
+                if ($parentCompanyExists) {
+                    $parent = CompanyUser::where('user_id', auth()->id())->pluck('parent_id');
+                    $investigators = User::where(['role' => 3, 'email' => 'demouser8383@gmail.com'])->get();
                     foreach ($investigators as $investigator) {
-                        $mailContent = array('investigatorName' => $investigator->first_name.' '.$investigator->last_name, 'companyName' => $request->company_name);
+                        $mailContent = array('investigatorName' => $investigator->first_name . ' ' . $investigator->last_name, 'companyName' => $request->company_name);
                         Mail::to($investigator->email)->send(new NewCompanyAdminRegistered($mailContent));
                     }
                 }
