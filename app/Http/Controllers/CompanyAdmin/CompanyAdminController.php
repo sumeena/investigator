@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests\CompanyAdmin\ProfileRequest;
 use App\Http\Requests\CompanyAdmin\CompanyAdminProfileRequest;
 use App\Http\Requests\CompanyAdmin\PasswordRequest;
+use App\Jobs\SendInvestigatorsEmailQueueJob;
 use App\Mail\NewCompanyAdminRegistered;
 use App\Models\AssignmentUser;
 use App\Models\InvestigatorLanguage;
@@ -24,7 +25,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use App\Models\CompanyUser;
-
+use App\Models\InvestigatorBlockedCompanyAdmin;
+use Faker\Provider\ar_EG\Company;
 
 class CompanyAdminController extends Controller
 {
@@ -109,12 +111,17 @@ class CompanyAdminController extends Controller
 
                 $parentCompanyExists = CompanyUser::where('user_id', auth()->id())->exists();
 
-                if ($parentCompanyExists) {
-                    $parent = CompanyUser::where('user_id', auth()->id())->pluck('parent_id');
-                    $investigators = User::where(['role' => 3, 'email' => 'demouser8383@gmail.com'])->get();
+                if (!$parentCompanyExists) {
+                    $investigators = User::where(['role' => 3])->get();
+
                     foreach ($investigators as $investigator) {
-                        $mailContent = array('investigatorName' => $investigator->first_name . ' ' . $investigator->last_name, 'companyName' => $request->company_name);
-                        Mail::to($investigator->email)->send(new NewCompanyAdminRegistered($mailContent));
+
+                        $blockedTableId = InvestigatorBlockedCompanyAdmin::where(['investigator_id'=>$investigator->id, 'company_admin_id'=>$loginUseId])->pluck('id');
+
+                        $mailContent = array('investigatorName' => $investigator->first_name . ' ' . $investigator->last_name, 'companyName' => $request->company_name, 'email' => $investigator->email, 'blockedTableId' => $blockedTableId[0]);
+
+                        dispatch(new SendInvestigatorsEmailQueueJob($mailContent));
+
                     }
                 }
             }
