@@ -10,6 +10,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\Admin\CompanyAdmin\CompanyAdminRequest;
 use App\Http\Requests\Admin\CompanyAdmin\PasswordRequest;
+use App\Mail\NewCompanyAdminRegistered;
 use App\Models\CompanyAdminProfile;
 use App\Models\CompanyUser;
 use Illuminate\Support\Facades\Mail;
