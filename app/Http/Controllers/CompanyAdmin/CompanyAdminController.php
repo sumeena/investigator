@@ -38,11 +38,15 @@ class CompanyAdminController extends Controller
         $companyAdminCount = User::where('role', 3)->where('company_profile_id', $user->company_profile_id)->count();
         $companyHmCount = User::where('role', 4)->where('company_profile_id', $user->company_profile_id)->count();
         $parentId = NULL;
+        $userId = $user->id;
         if ($companyUser) {
             $parent = CompanyUser::where('user_id', auth()->id())->pluck('parent_id');
             $parentId = $parent[0];
+            $userId = $parentId;
         }
-        $assignmentCount = Assignment::withCount('users')->with('author')->where(['user_id' => $user->id, 'is_delete' => NULL])->orWhere(['user_id' => $parentId, 'is_delete' => NULL])->orderBy('created_at', 'desc')->count();
+
+        $assignmentCount = Assignment::withCount('users')->with('author')->where(['user_id' => $userId, 'is_delete' => NULL])->orderBy('created_at', 'desc')->count();
+        
         return view('company-admin.index', compact('user', 'assignmentCount', 'internalCount', 'companyAdminCount', 'companyHmCount'));
     }
 
