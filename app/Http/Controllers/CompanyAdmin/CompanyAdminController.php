@@ -26,6 +26,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use App\Models\CompanyUser;
 use App\Models\InvestigatorBlockedCompanyAdmin;
+use App\Models\InvestigatorType;
 use Faker\Provider\ar_EG\Company;
 
 class CompanyAdminController extends Controller
@@ -148,15 +149,32 @@ class CompanyAdminController extends Controller
         $assignmentCount = Assignment::where('user_id', auth()->id())->count();
         $assignmentID = Assignment::where('id', $request->assignment_id)->pluck('assignment_id');
         $assignmentUsers = AssignmentUser::where('assignment_id', $request->assignment_id)->pluck('user_id')->toArray();
+
+        $investigationTypes = InvestigatorType::get();
+
         if ($this->checkQueryAvailablity($request)) {
             $filtered      = true;
             $investigators = User::investigatorFiltered($request)
                 ->paginate(20);
         }
 
+        $serviceLine = '';
+
+        if($request->statements)
+        $serviceLine = $request->statements;
+
+        if($request->surveillance)
+        $serviceLine = $request->surveillance;
+
+        if($request->misc)
+        $serviceLine = $request->misc;
+
+
         if ($request->ajax()) {
 
-            $html = view('company-admin.find-investigator-response', compact('investigators', 'assignmentCount', 'assignmentUsers'))->render();
+            $service = $serviceLine;
+            $days = $request->dayType;
+            $html = view('company-admin.find-investigator-response', compact('investigators', 'assignmentCount', 'assignmentUsers', 'service', 'days'))->render();
             $login = route('login');
             if (isset($request->assignment_id) && (isset($request->fieldsUpdated) && $request->fieldsUpdated == '1')) {
 
@@ -177,7 +195,7 @@ class CompanyAdminController extends Controller
                 }
             }
             return response()->json([
-                'data' => $html,
+                'data' => $html
             ]);
         }
 
@@ -189,7 +207,8 @@ class CompanyAdminController extends Controller
                 'filtered',
                 'investigators',
                 'request',
-                'assignments'
+                'assignments',
+                'investigationTypes'
             )
         );
     }
@@ -298,6 +317,23 @@ class CompanyAdminController extends Controller
         }
         $availability = serialize($availability);
         //$availability = $request->availability.','.$request->start_time.' - '.$request->end_time;
+
+       /*  $survID = $statID = $miscID = '';
+
+        $query = InvestigatorType::query();
+        $query->when(($request->surveillance), function ($q,$request) {
+            return $q->where('type_name', 'LIKE', "%{$request->surveillance}%");
+        });
+
+        $authors = $query->get();
+        dd($authors);
+
+        $survID = InvestigatorType::where('type_name', 'like', "%{$request->surveillance}%")->pluck('id');
+
+        $statID = InvestigatorType::where('type_name', 'LIKE', "%{$request->statements}%")->pluck('id');
+
+        $miscID = InvestigatorType::where('type_name', 'like', "%{$request->misc}%")->pluck('id'); */
+
         InvestigatorSearchHistory::updateOrCreate([
             'user_id'      => auth()->id(),
             'assignment_id' => $request->assignment_id

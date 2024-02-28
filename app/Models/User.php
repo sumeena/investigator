@@ -252,7 +252,7 @@ class User extends Authenticatable
         $withInternalInvestigator = $request->withInternalInvestigator;
         $withExternalInvestigator = $request->withExternalInvestigator;
 
-
+        
         $query                      = self::query()
             ->with([
                 'investigatorServiceLines',
@@ -299,8 +299,6 @@ class User extends Authenticatable
               $query->where('users.investigatorType', ''.$withExternalInvestigator.'');
           }
         }
-
-
 
         return app(Pipeline::class)
             ->send($query)
@@ -368,7 +366,7 @@ class User extends Authenticatable
 
     public function getServiceType($service_type)
     {
-        return $this->investigatorServiceLines()->where('investigation_type', $service_type)->first();
+        return $this->investigatorServiceLines()->where('investigation_type_id', $service_type)->first();
     }
 
     /**

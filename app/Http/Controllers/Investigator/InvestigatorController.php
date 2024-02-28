@@ -169,6 +169,7 @@ class InvestigatorController extends Controller
                             }
                         }
                     }
+        
                     if(isset($investigation_type['service_name'])) {
                     $serviceLinesInvestigationTypes = InvestigatorType::firstOrCreate(
                         ['type_name' => $investigation_type['service_name']]
@@ -176,6 +177,7 @@ class InvestigatorController extends Controller
                     $user->investigatorServiceLines()->updateOrCreate([
                         'investigation_type_id' => $serviceLinesInvestigationTypes->id
                     ], [
+                        'investigation_type' => $investigation_type['service_name'],
                         'case_experience'    => $investigation_type["case_experience"],
                         'years_experience'   => $investigation_type["years_experience"],
                         'hourly_rate'        => $investigation_type["hourly_rate"],
@@ -685,15 +687,15 @@ class InvestigatorController extends Controller
             $googleConfigs = [
                 'response_type'          => 'code',
                 'access_type'            => 'offline',
-                'client_id'              => Config::get('constants.GOOGLE_CLIENT_ID'),
+                'client_id'              => env('GOOGLE_CLIENT_ID'),
                 'redirect_uri'           => $redirectUri,
-                'scope'                  => implode(' ', Config::get('constants.GOOGLE_SCOPES')),
+                'scope'                  => implode(' ', env('GOOGLE_SCOPES')),
                 'prompt'                 => 'consent',
                 'include_granted_scopes' => 'true',
                 'state'                  => 'state_parameter_passthrough_value',
             ];
 
-            $authUrl = Config::get('constants.GOOGLE_OAUTH_AUTH_URL') . '?' . http_build_query($googleConfigs);
+            $authUrl = env('GOOGLE_OAUTH_AUTH_URL') . '?' . http_build_query($googleConfigs);
 
             if (!isset($_GET['code'])) {
                 header('Location:' . $authUrl);
@@ -706,15 +708,15 @@ class InvestigatorController extends Controller
                 return;
             }
             $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, Config::get('constants.GOOGLE_OAUTH_ACCESS_TOKEN_URL'));
+            curl_setopt($ch, CURLOPT_URL, env('GOOGLE_OAUTH_ACCESS_TOKEN_URL'));
             curl_setopt($ch, CURLOPT_POST, TRUE);
             curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/x-www-form-urlencoded']);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
             curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
             curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query([
                 'code'          => $code,
-                'client_id'     => Config::get('constants.GOOGLE_CLIENT_ID'),
-                'client_secret' => Config::get('constants.GOOGLE_CLIENT_SECRET'),
+                'client_id'     => env('GOOGLE_CLIENT_ID'),
+                'client_secret' => env('GOOGLE_CLIENT_SECRET'),
                 'redirect_uri'  => $redirectUri,
                 'grant_type'    => 'authorization_code',
             ]));
@@ -729,20 +731,20 @@ class InvestigatorController extends Controller
             $refresh_token = $userInfo[0]->refresh_token;
             // Check if the access token already expired
             $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, Config::get('constants.GOOGLE_OAUTH_TOKEN_VALIDATION_URL') . '?access_token=' . $access_token);
+            curl_setopt($ch, CURLOPT_URL, env('GOOGLE_OAUTH_TOKEN_VALIDATION_URL') . '?access_token=' . $access_token);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
             $error_response = curl_exec($ch);
             $array          = json_decode($error_response);
             if (isset($array->error)) {
                 // Generate new Access Token using old Refresh Token
                 $ch = curl_init();
-                curl_setopt($ch, CURLOPT_URL, Config::get('constants.GOOGLE_NEW_ACCESS_TOKEN_URL'));
+                curl_setopt($ch, CURLOPT_URL, env('GOOGLE_NEW_ACCESS_TOKEN_URL'));
                 curl_setopt($ch, CURLOPT_POST, TRUE);
                 curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/x-www-form-urlencoded']);
                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
                 curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query([
-                    'client_id'     => Config::get('constants.GOOGLE_CLIENT_ID'),
-                    'client_secret' => Config::get('constants.GOOGLE_CLIENT_SECRET'),
+                    'client_id'     => env('GOOGLE_CLIENT_ID'),
+                    'client_secret' => env('GOOGLE_CLIENT_SECRET'),
                     'refresh_token' => $refresh_token,
                     'grant_type'    => 'refresh_token',
                 ]));
@@ -791,15 +793,15 @@ class InvestigatorController extends Controller
             $userProfile = json_decode($result);
 
             $google_settings = [
-                'google_client_id'     => Config::get('constants.GOOGLE_CLIENT_ID'),
-                'google_client_secret' => Config::get('constants.GOOGLE_CLIENT_SECRET'),
+                'google_client_id'     => env('GOOGLE_CLIENT_ID'),
+                'google_client_secret' => env('GOOGLE_CLIENT_SECRET'),
                 'google_refresh_token' => $userInfo[0]->refresh_token,
             ];
 
             $curl = curl_init();
 
             curl_setopt_array($curl, array(
-                CURLOPT_URL            => Config::get('constants.NYLAS_API_URL') . 'connect/authorize',
+                CURLOPT_URL            => env('NYLAS_API_URL') . 'connect/authorize',
                 CURLOPT_RETURNTRANSFER => true,
                 CURLOPT_ENCODING       => '',
                 CURLOPT_MAXREDIRS      => 10,
@@ -808,7 +810,7 @@ class InvestigatorController extends Controller
                 CURLOPT_HTTP_VERSION   => CURL_HTTP_VERSION_1_1,
                 CURLOPT_CUSTOMREQUEST  => 'POST',
                 CURLOPT_POSTFIELDS     => '{
-                "client_id": "' . Config::get('constants.NYLAS_CLIENT_ID') . '",
+                "client_id": "' . env('NYLAS_CLIENT_ID') . '",
                 "name": "' . $userName . '",
                 "email_address": "' . $userProfile->email . '",
                 "provider": "gmail",
@@ -827,7 +829,7 @@ class InvestigatorController extends Controller
             if($array) {
             $curl = curl_init();
             curl_setopt_array($curl, array(
-                CURLOPT_URL            => Config::get('constants.NYLAS_API_URL') . 'connect/token',
+                CURLOPT_URL            => env('NYLAS_API_URL') . 'connect/token',
                 CURLOPT_RETURNTRANSFER => true,
                 CURLOPT_ENCODING       => '',
                 CURLOPT_MAXREDIRS      => 10,
@@ -836,8 +838,8 @@ class InvestigatorController extends Controller
                 CURLOPT_HTTP_VERSION   => CURL_HTTP_VERSION_1_1,
                 CURLOPT_CUSTOMREQUEST  => 'POST',
                 CURLOPT_POSTFIELDS     => '{
-                "client_id": "' . Config::get('constants.NYLAS_CLIENT_ID') . '",
-                "client_secret": "' . Config::get('constants.NYLAS_CLIENT_SECRET') . '",
+                "client_id": "' . env('NYLAS_CLIENT_ID') . '",
+                "client_secret": "' . env('NYLAS_CLIENT_SECRET') . '",
                 "code": "' . $array->code . '"
             }',
                 CURLOPT_HTTPHEADER     => array(
@@ -867,7 +869,7 @@ class InvestigatorController extends Controller
 
             $curl = curl_init();
             curl_setopt_array($curl, array(
-                CURLOPT_URL            => Config::get('constants.NYLAS_API_URL') . 'calendars',
+                CURLOPT_URL            => env('NYLAS_API_URL') . 'calendars',
                 CURLOPT_RETURNTRANSFER => true,
                 CURLOPT_ENCODING       => '',
                 CURLOPT_MAXREDIRS      => 10,
@@ -905,20 +907,20 @@ class InvestigatorController extends Controller
             $refresh_token = $userInfo[0]->refresh_token;
             // Check if the access token already expired
             $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, Config::get('constants.GOOGLE_OAUTH_TOKEN_VALIDATION_URL') . '?access_token=' . $access_token);
+            curl_setopt($ch, CURLOPT_URL, env('GOOGLE_OAUTH_TOKEN_VALIDATION_URL') . '?access_token=' . $access_token);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
             $error_response = curl_exec($ch);
             $array          = json_decode($error_response);
             if (isset($array->error)) {
                 // Generate new Access Token using old Refresh Token
                 $ch = curl_init();
-                curl_setopt($ch, CURLOPT_URL, Config::get('constants.GOOGLE_NEW_ACCESS_TOKEN_URL'));
+                curl_setopt($ch, CURLOPT_URL, env('GOOGLE_NEW_ACCESS_TOKEN_URL'));
                 curl_setopt($ch, CURLOPT_POST, TRUE);
                 curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/x-www-form-urlencoded']);
                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
                 curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query([
-                    'client_id'     => Config::get('constants.GOOGLE_CLIENT_ID'),
-                    'client_secret' => Config::get('constants.GOOGLE_CLIENT_SECRET'),
+                    'client_id'     => env('GOOGLE_CLIENT_ID'),
+                    'client_secret' => env('GOOGLE_CLIENT_SECRET'),
                     'refresh_token' => $refresh_token,
                     'grant_type'    => 'refresh_token',
                 ]));
@@ -953,7 +955,7 @@ class InvestigatorController extends Controller
         $calendarId = $request->calendar_id;
         $curl       = curl_init();
         curl_setopt_array($curl, array(
-            CURLOPT_URL            => Config::get('constants.NYLAS_API_URL') . 'events?calendar_id=' . $calendarId,
+            CURLOPT_URL            => env('NYLAS_API_URL') . 'events?calendar_id=' . $calendarId,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING       => '',
             CURLOPT_MAXREDIRS      => 10,
@@ -974,7 +976,7 @@ class InvestigatorController extends Controller
         if (isset($events->message)) {
             $curl = curl_init();
             curl_setopt_array($curl, array(
-                CURLOPT_URL            => Config::get('constants.NYLAS_API_URL') . 'oauth/revoke',
+                CURLOPT_URL            => env('NYLAS_API_URL') . 'oauth/revoke',
                 CURLOPT_RETURNTRANSFER => true,
                 CURLOPT_ENCODING       => '',
                 CURLOPT_MAXREDIRS      => 10,
@@ -1059,7 +1061,7 @@ class InvestigatorController extends Controller
 
         $curl = curl_init();
         curl_setopt_array($curl, array(
-            CURLOPT_URL            => Config::get('constants.NYLAS_API_URL') . 'a/' . Config::get('constants.NYLAS_CLIENT_ID') . '/accounts/' . $nylasUser[0]->account_id,
+            CURLOPT_URL            => env('NYLAS_API_URL') . 'a/' . env('NYLAS_CLIENT_ID') . '/accounts/' . $nylasUser[0]->account_id,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_ENCODING       => '',
             CURLOPT_MAXREDIRS      => 10,
@@ -1071,7 +1073,7 @@ class InvestigatorController extends Controller
             CURLOPT_HTTPHEADER     => array(
                 'Content-Type: application/json',
                 'Accept: application/json',
-                'CLIENT_SECRET: ' . Config::get('constants.NYLAS_CLIENT_SECRET')
+                'CLIENT_SECRET: ' . env('NYLAS_CLIENT_SECRET')
             ),
         ));
 
