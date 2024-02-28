@@ -683,13 +683,15 @@ class InvestigatorController extends Controller
 
         if (!GoogleAuthUsers::where('user_id', $userId)->exists()) {
 
+            $googleScopes = explode(',',env('GOOGLE_SCOPES'));
+
             $redirectUri   = $this->base_url . '/investigator/sync-calendar/google-oauth2callback';
             $googleConfigs = [
                 'response_type'          => 'code',
                 'access_type'            => 'offline',
                 'client_id'              => env('GOOGLE_CLIENT_ID'),
                 'redirect_uri'           => $redirectUri,
-                'scope'                  => implode(' ', env('GOOGLE_SCOPES')),
+                'scope'                  => implode(' ', $googleScopes),
                 'prompt'                 => 'consent',
                 'include_granted_scopes' => 'true',
                 'state'                  => 'state_parameter_passthrough_value',
