@@ -27,6 +27,7 @@ use Illuminate\Support\Str;
 use Illuminate\Testing\Assert;
 use Illuminate\Validation\Rules\Exists;
 use App\Mail\NewMassageMail;
+use App\Models\InvestigatorType;
 use PhpParser\Node\Expr\Assign;
 use Twilio\Rest\Client;
 
@@ -124,7 +125,7 @@ class AssignmentsController extends Controller
         $investigators   = [];
         $assignments     = Assignment::where('user_id', auth()->id())->paginate(10);
         $assignmentCount = Assignment::where('user_id', auth()->id())->count();
-
+        $investigationTypes = InvestigatorType::get();
         $assignment->load(['users', 'searchHistory']);
 
         if ($this->checkQueryAvailablity($request)) {
@@ -150,7 +151,8 @@ class AssignmentsController extends Controller
                 'investigators',
                 'request',
                 'assignments',
-                'assignment'
+                'assignment',
+                'investigationTypes'
             )
         );
     }
@@ -660,6 +662,11 @@ Please correct it as soon as you can.",
                 $query->where('assignment_id', 'like', '%' . $searchBy . '%')
                     ->orWhere('client_id', 'like', '%' . $searchBy . '%');
             })
+                ->where('user_id' , $userId)
+                ->when($parentId != '', function ($query) use ($parentId)
+                {
+                    $query->orWhere('user_id', $parentId);
+                })
                 ->Where(['status' => $_GET['status-select']])
                 ->orderBy('created_at', 'desc')->paginate(10);
         } else if (isset($_GET['searchby']) && !empty($_GET['searchby'])) {
@@ -670,22 +677,28 @@ Please correct it as soon as you can.",
                     $query->where('assignment_id', 'like', '%' . $searchBy . '%')
                         ->orWhere('client_id', 'like', '%' . $searchBy . '%');
                 })
+                ->where('user_id' , $userId)
+                ->when($parentId != '', function ($query) use ($parentId)
+                {
+                    $query->orWhere('user_id', $parentId);
+                })
                 ->orderBy('created_at', 'desc')
                 ->paginate(10);
         } else if (isset($_GET['status-select']) && !empty($_GET['status-select'])) {
-            $assignments = Assignment::withCount('users')->with('author')->where(
-                [
-                    'status' => "" . $_GET['status-select'] . "",
-                ]
-            )
-                ->where(['status' => "" . $_GET['status-select'] . ""])
+            $assignments = Assignment::withCount('users')->with('author')->where('status' , "" . $_GET['status-select'] . "")
+                ->where('user_id' , $userId)
+                ->when($parentId != '', function ($query) use ($parentId)
+                {
+                    $query->orWhere('user_id', $parentId);
+                })
                 ->orderBy('created_at', 'desc')->paginate(10);
-        } else {
-
-            if (!empty($parentId)) {
-                $userId = $parentId;
-            }
-            $assignments = Assignment::withCount('users')->with('author')->where(['user_id' => $userId, 'is_delete' => NULL])->orderBy('created_at', 'desc')->paginate(10);
+        } else{
+            $assignments = Assignment::withCount('users')->where('user_id',$userId)->when($parentId != '', function ($query) use ($parentId)
+             {
+                $query->orWhere('user_id', $parentId);
+               })
+               ->where('is_delete', NULL)
+               ->orderBy('created_at','desc')->paginate(10);
         }
         return view('company-admin.assignments', compact('assignments'));
     }

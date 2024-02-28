@@ -45,6 +45,8 @@ class InternalInvestigatorsController extends Controller
     public function store(InternalInvestigatorRequest $request)
     {
 
+
+        // dd($request->all());
         config(['mail.from.address' => 'admin@stagingwebsites.info']);
 
         $role = Role::where('role', 'investigator')->first();
@@ -72,7 +74,6 @@ class InternalInvestigatorsController extends Controller
         ], $data);
 
         // Save service lines data
-
 
         if (count($request->investigation_type)) {
             $user->investigatorServiceLines()->delete();
@@ -106,6 +107,7 @@ class InternalInvestigatorsController extends Controller
                 $user->investigatorServiceLines()->updateOrCreate([
                     'investigation_type_id' => $serviceLinesInvestigationTypes->id
                 ], [
+                    'investigation_type' => $investigation_type['service_name'],
                     'case_experience'    => $investigation_type["case_experience"],
                     'years_experience'   => $investigation_type["years_experience"],
                     'hourly_rate'        => $investigation_type["hourly_rate"],

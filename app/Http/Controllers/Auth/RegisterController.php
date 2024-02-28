@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Mail\NewCompanyAdminRegistered;
+use App\Mail\SuperAdminMail;
 use App\Models\Role;
 use App\Providers\RouteServiceProvider;
 use App\Models\User;
+use App\Notifications\SuperAdminMailNotification;
 use App\Rules\CompanyAdminMatchDomain;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Foundation\Auth\RegistersUsers;
@@ -19,6 +21,7 @@ use Illuminate\Validation\Rules\RequiredIf;
 use App\Notifications\WelcomeMailNotification;
 use App\Notifications\WelcomeMailNotificationInvestigator;
 use Illuminate\Support\Facades\Mail;
+use Twilio\Rest\Client;
 
 class RegisterController extends Controller
 {
@@ -143,6 +146,40 @@ class RegisterController extends Controller
         {
             $userData->notify(new WelcomeMailNotificationInvestigator($userData));
         }
+
+        $superAdmin = User::select('email','first_name','last_name','phone')->where('role',USER::ADMIN)->get();
+        // $userData->notify(new SuperAdminMailNotification($userData));
+
+
+        $account_sid = env('TWILIO_ACCOUNT_SID');
+        $auth_token = env('TWILIO_AUTH_TOKEN');
+
+        $twilio_number = "+12569801067"; // Your Twilio phone number
+
+        $client = new Client($account_sid, $auth_token);
+        try {
+            $client->messages->create(
+                '+1' . $superAdmin[0]->phone, // Recipient's phone number
+                array(
+                    'from' => $twilio_number,
+                    'body' => 'New user registered on ilogisticsinc.com'
+                )
+            );
+        } catch (\Exception $e) {
+            // Handle exceptions or errors
+            return "Error: " . $e->getMessage();
+        }
+        return "sent";
+
+
+        Mail::to($superAdmin[0]->email)->send(new SuperAdminMail([
+            'role'       => $data['role'],
+            'first_name' => $data['first_name'],
+            'last_name'  => $data['last_name'],
+            'email'      => $data['email'],
+            'admin_name' => $superAdmin[0]->first_name.' '.$superAdmin[0]->last_name
+        ]));
+
         return $userData;
     }
 
