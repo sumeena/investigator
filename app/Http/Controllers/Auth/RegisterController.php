@@ -154,7 +154,7 @@ class RegisterController extends Controller
         $account_sid = env('TWILIO_ACCOUNT_SID');
         $auth_token = env('TWILIO_AUTH_TOKEN');
 
-        $twilio_number = "+12569801067"; // Your Twilio phone number
+        $twilio_number = env('SERVICES_TWILIO_PHONE_NUMBER'); // Your Twilio phone number
 
         $client = new Client($account_sid, $auth_token);
         try {
@@ -170,7 +170,6 @@ class RegisterController extends Controller
             return "Error: " . $e->getMessage();
         }
         return "sent";
-
 
         Mail::to($superAdmin[0]->email)->send(new SuperAdminMail([
             'role'       => $data['role'],
