@@ -29,12 +29,12 @@ class SuperAdminMail extends Mailable
      *
      * @return \Illuminate\Mail\Mailables\Envelope
      */
-    public function envelope()
+    /* public function envelope()
     {
         return new Envelope(
             subject: 'Super Admin Mail',
         );
-    }
+    } */
 
     /**
      * Get the message content definition.
