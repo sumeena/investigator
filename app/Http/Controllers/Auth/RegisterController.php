@@ -169,7 +169,6 @@ class RegisterController extends Controller
             // Handle exceptions or errors
             return "Error: " . $e->getMessage();
         }
-        return "sent";
 
         Mail::to($superAdmin[0]->email)->send(new SuperAdminMail([
             'role'       => $data['role'],
