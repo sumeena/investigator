@@ -132,17 +132,32 @@ $userrole = '/hm/';
                                         <div class="table-responsive text-nowrap">
                                             <table class="table hr_contact">
                                                 <tbody>
+                                                <?php
+                                                    $survId = $statId = $miscId = '';
+                                                        foreach($investigationTypes as $type)
+                                                        {
+                                                            if($type->type_name == 'surveillance')
+                                                            $survId =  $type->id;
+
+                                                            if($type->type_name == 'statements')
+                                                            $statId =  $type->id;
+
+                                                            if($type->type_name == 'misc')
+                                                            $miscId =  $type->id;
+                                                        }
+                                                    ?>
+
                                                     <tr>
                                                         <td>
-                                                            <input class="form-check-input" type="checkbox" id="surveillance" value="surveillance" name="surveillance" @checked(@$assignment->searchHistory->surveillance == 'surveillance')>
+                                                            <input class="form-check-input" type="radio" id="surveillance" value="{{$survId}}" name="service_lines" @checked(@$assignment->searchHistory->surveillance)>
                                                             <label>Surveillance</label>
                                                         </td>
                                                         <td>
-                                                            <input class="form-check-input" type="checkbox" id="statements" value="statements" name="statements" @checked(@$assignment->searchHistory->statements == 'statements')>
+                                                            <input class="form-check-input" type="radio" id="statements" value="{{$statId}}" name="service_lines" @checked(@$assignment->searchHistory->statements)>
                                                             <label>Statements</label>
                                                         </td>
                                                         <td>
-                                                            <input class="form-check-input" type="checkbox" value="misc" name="misc" id="misc" @checked(@$assignment->searchHistory->misc == 'misc')>
+                                                            <input class="form-check-input" type="radio" value="{{$miscId}}" name="service_lines" id="misc" @checked(@$assignment->searchHistory->misc)>
                                                             <label>Misc</label>
                                                         </td>
                                                     </tr>
@@ -698,7 +713,7 @@ $userrole = '/hm/';
         }
 
         if (statValue) {
-            data['statements'] = 'statements';
+            data['statements'] = stat.val();
         }
         if (withInternalInvestigatorValue) {
             data['withInternalInvestigator'] = 'internal';
@@ -708,11 +723,11 @@ $userrole = '/hm/';
         }
 
         if (miscValue) {
-            data['misc'] = 'misc';
+            data['misc'] = misc.val();
         }
 
         if (survValue) {
-            data['surveillance'] = 'surveillance';
+            data['surveillance'] = surv.val();
         }
 
         if (languages && languages.length) {
@@ -935,7 +950,7 @@ $userrole = '/hm/';
             }
 
             if (statValue) {
-                data['statements'] = 'statements';
+                data['statements'] = stat.val();
             }
             if (withExternalInvestigatorValue) {
                 data['withExternalInvestigator'] = 'external';
@@ -945,11 +960,11 @@ $userrole = '/hm/';
             }
 
             if (miscValue) {
-                data['misc'] = 'misc';
+                data['misc'] = misc.val();
             }
 
             if (survValue) {
-                data['surveillance'] = 'surveillance';
+                data['surveillance'] = surv.val();
             }
 
             if (languages && languages.length) {

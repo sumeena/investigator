@@ -121,17 +121,32 @@ $searchStoreAction = route('hm.save-investigator-search-history');
                                         <div class="table-responsive text-nowrap">
                                             <table class="table hr_contact">
                                                 <tbody>
+                                                    <?php
+                                                    $survId = $statId = $miscId = '';
+                                                        foreach($investigationTypes as $type)
+                                                        {
+                                                            if($type->type_name == 'surveillance')
+                                                            $survId =  $type->id;
+
+                                                            if($type->type_name == 'statements')
+                                                            $statId =  $type->id;
+
+                                                            if($type->type_name == 'misc')
+                                                            $miscId =  $type->id;
+                                                        }
+                                                    ?>
                                                     <tr>
                                                         <td>
-                                                            <input class="form-check-input" type="checkbox" id="surveillance" value="surveillance" name="surveillance" @checked(old('surveillance', $request->get('surveillance')) == 'surveillance')>
+                                                            <input class="form-check-input" type="radio" id="surveillance" value="{{$survId}}" name="service_lines" @if(old('service_lines',$request->service_lines) == $survId) checked @endif >
                                                             <label>Surveillance</label>
                                                         </td>
                                                         <td>
-                                                            <input class="form-check-input" type="checkbox" id="statements" value="statements" name="statements" @checked(old('statements', $request->get('statements')) == 'statements')>
+                                                            <input class="form-check-input" type="radio" id="statements" value="{{$statId}}" name="service_lines" @checked(old('service_lines', $request->service_lines == $statId))
+                                                            >
                                                             <label>Statements</label>
                                                         </td>
                                                         <td>
-                                                            <input class="form-check-input" type="checkbox" value="misc" name="misc" id="misc" @checked(old('misc', $request->get('misc')) == 'misc')>
+                                                            <input class="form-check-input" type="radio" value="{{$miscId}}" name="service_lines" id="misc" @checked(old('service_lines', $request->service_lines == $miscId))>
                                                             <label>Misc</label>
                                                         </td>
                                                     </tr>
@@ -649,6 +664,7 @@ $searchStoreAction = route('hm.save-investigator-search-history');
         }
 
         let success = false;
+        console.log(data);
 
         $.ajax({
             url: '{{ $searchStoreAction }}',
@@ -708,140 +724,7 @@ $searchStoreAction = route('hm.save-investigator-search-history');
             var data = checkForValidation();
             const distance = $('#distance');
             const distanceValue = distance.val();
-            data['distance'] = distanceValue;
-
-
-            // input selector
-            /* const zip = $('#postal_code');
-            const surv = $('#surveillance');
-            const stat = $('#statements');
-            const misc = $('#misc');
-            const lang = $('#language-select');
-            const license = $('#license-select');
-            const lat = $('#lat');
-            const lng = $('#lng');
-            const availability = $('#availability');
-            const timepickerstart = $('#timepickerstart');
-            const timepickerend = $('#timepickerend');
-            const withInternalInvestigator = $('#withInternalInvestigator');
-            const withExternalInvestigator = $('#withExternalInvestigator');
-
-            // values
-            const zipValue = zip.val();
-            const survValue = surv.is(':checked');
-            const statValue = stat.is(':checked');
-            const miscValue = misc.is(':checked');
-            const languages = lang.val();
-            const licenseValue = license.val();
-            const latValue = lat.val();
-            const lngValue = lng.val();
-            const availabilityValue = availability.val();
-            const timepickerstartValue = timepickerstart.val();
-            const timepickerendValue = timepickerend.val();
-            const withInternalInvestigatorValue = withInternalInvestigator.is(':checked');
-            const withExternalInvestigatorValue = withExternalInvestigator.is(':checked');
-
-            const data = {
-                page: 1
-            };
-
-            // error selector
-            const zipError = $('#zipcode-error');
-            const serviceTypeError = $('#service-type-error');
-            const searchInvestigatorsTypeError = $('#searchInvestigatorsTypeError');
-            let hasError = false;
-
-            // Hide error
-            zipError.addClass('d-none');
-            serviceTypeError.addClass('d-none');
-            searchInvestigatorsTypeError.addClass('d-none');
-
-            // Remove error class
-            zip.removeClass('is-invalid');
-
-            if (!zipValue) {
-                // Show error
-                zipError.removeClass('d-none');
-
-                // Add error class
-                zip.addClass('is-invalid');
-
-                hasError = true;
-            }
-
-            if (!surv.is(':checked') && !stat.is(':checked') && !misc.is(':checked')) {
-                // Show error
-                console.log('here');
-
-                serviceTypeError.removeClass('d-none');
-                hasError = true;
-            }
-
-            if (!withExternalInvestigator.is(':checked') && !withInternalInvestigator.is(':checked')) {
-                // Show error
-                searchInvestigatorsTypeError.removeClass('d-none');
-                hasError = true;
-            }
-
-            if (hasError) {
-                return false;
-            }
-            $(".custom-loader-overlay").attr("style","display: flex !important;")
-            // Hide error
-            zipError.addClass('d-none');
-            serviceTypeError.addClass('d-none');
-            searchInvestigatorsError.addClass('d-none');
-
-            // Remove error class
-            zip.removeClass('is-invalid');
-
-            // hide other errors
-            $('#zipcode-lat-lng-error').addClass('d-none');
-            $('#zipcode-lat-lng-loading').addClass('d-none');
-
-            if (latValue && lngValue) {
-                data['lat'] = latValue;
-                data['lng'] = lngValue;
-            }
-
-            if (statValue) {
-                data['statements'] = 'statements';
-            }
-            if (withExternalInvestigatorValue) {
-                data['withExternalInvestigator'] = 'external';
-            }
-            if (withInternalInvestigatorValue) {
-                data['withInternalInvestigator'] = 'internal';
-            }
-            if (miscValue) {
-                data['misc'] = 'misc';
-            }
-
-            if (survValue) {
-                data['surveillance'] = 'surveillance';
-            }
-
-            if (languages && languages.length) {
-                data['languages'] = languages;
-            }
-
-            if (licenseValue) {
-                data['license'] = licenseValue;
-            }
-
-            if (availabilityValue) {
-                data['availability'] = availabilityValue;
-            }
-
-            if (timepickerstartValue) {
-                data['start_time'] = timepickerstartValue;
-            }
-
-            if (timepickerendValue) {
-                data['end_time'] = timepickerendValue;
-            }
-
-             */
+            data['distance'] = distanceValue
 
             // saveSearchHistoryData();
             fetchData(data);
@@ -892,15 +775,15 @@ $searchStoreAction = route('hm.save-investigator-search-history');
             }
 
             if (statValue) {
-                data['statements'] = 'statements';
+                data['statements'] = stat.val();;
             }
 
             if (miscValue) {
-                data['misc'] = 'misc';
+                data['misc'] = misc.val();
             }
 
             if (survValue) {
-                data['surveillance'] = 'surveillance';
+                data['surveillance'] = surv.val();
             }
 
             if (languages && languages.length) {
@@ -1253,7 +1136,7 @@ $searchStoreAction = route('hm.save-investigator-search-history');
         }
 
         if (statValue) {
-            data['statements'] = 'statements';
+            data['statements'] = stat.val();
         }
 
         if (zipValue) {
@@ -1268,11 +1151,11 @@ $searchStoreAction = route('hm.save-investigator-search-history');
         }
 
         if (miscValue) {
-            data['misc'] = 'misc';
+            data['misc'] = misc.val();
         }
 
         if (survValue) {
-            data['surveillance'] = 'surveillance';
+            data['surveillance'] = surv.val();
         }
 
         if (languages && languages.length) {

@@ -15,13 +15,20 @@ class ServiceTypeFilter extends Filter
 
     protected function applyFilters($builder)
     {
+
         if (isset($this->request->statements) || isset($this->request->surveillance) || isset($this->request->misc)) {
             return $builder->whereHas('investigatorServiceLines', function ($query) {
-//                dd($this->request->all());
-                $query->where('investigation_type', $this->request->surveillance)
-                    ->orWhere('investigation_type', $this->request->statements)
-                    ->orWhere('investigation_type', $this->request->misc);
-//                dd($query->toSql());
+
+               $query->when($this->request->has('surveillance'), function($sq) {
+                        $sq->where('investigation_type_id', $this->request->surveillance);
+                    })
+                    ->when($this->request->has('statements'), function($sq) {
+                        $sq->where('investigation_type_id', $this->request->statements);
+                    })
+                    ->when($this->request->has('misc'), function($sq) {
+                        $sq->whereNull('investigation_type');
+                    });
+            //    dd($query->dd());
             });
         }
         return $builder;
