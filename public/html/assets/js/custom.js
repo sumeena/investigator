@@ -470,6 +470,13 @@ $(document).ready(function () {
         $('#assignmentCloneForm')[0].reset();
     });
 
+
+    $(document).on('click', '.info-cost-break-up', function(){
+        var key = $(this).data('key');
+        var summaryHtml = $('#info-cost-break-up-'+key).html();
+        console.log(summaryHtml);
+        $('.show-cost-break-up-summary').html(summaryHtml);
+    })
 });
 
 

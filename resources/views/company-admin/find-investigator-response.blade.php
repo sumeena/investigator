@@ -16,7 +16,7 @@
         </tr>
     </thead>
     <tbody>
-        @forelse($investigators as $investigator)
+        @forelse($investigators as $key=>$investigator)
         <tr>
             @php
             $hourlyRate = $mileageRate = 0;
@@ -33,6 +33,7 @@
             }
 
             $disabled = '';
+            $halfDays = $fullDays = $totalhours = 0;
 
             if(in_array($investigator->id,$assignmentUsers))
             $disabled = 'disabled';
@@ -41,15 +42,21 @@
             $dayTypes = explode(',', $days);
 
             foreach($dayTypes as $day){
-                if($day == 1)
-                $hours = 4;
-                else if($day == 2)
-                $hours = 8;
+                if($day == 1) {
+                    $hours = 4;
+                    $halfDays++;
+                }
+                else if($day == 2) {
+                    $hours = 8;
+                    $fullDays++;
+                }
+            $totalhours = $totalhours+$hours;
+            $totalDays = $halfDays+$fullDays;
 
                 $serviceCost = $serviceCost + ($hourlyRate * $hours);
             }
 
-           $mileageCost = ((number_format((float)$investigator->calculated_distance, 2, '.', '')*2) * $mileageRate);
+           $mileageCost = ((number_format((float)$investigator->calculated_distance, 2, '.', '')*2) * $mileageRate)*$totalDays;
 
            $estimatedCost = $mileageCost+$serviceCost;
 
@@ -81,7 +88,45 @@
             <td class="text-center">{{ number_format((float)$investigator->calculated_distance, 2) }}
                 miles
             </td>
-            <td>${{$estimatedCost}}</td>
+            <td>${{$estimatedCost}} <sup><i data-toggle="modal" data-target="#costBreakup" data-key="{{$key}}" class="cursor-pointer fa fa-info-circle info-cost-break-up"></i></sup>
+            
+            <div id="info-cost-break-up-{{$key}}" class="d-none cost-break-up-summary">
+            <table align="center">
+                <tr>
+                    <td>Your Hourly Rate: </td>
+                    <td>${{$hourlyRate}}</td>
+                </tr>
+                <tr>
+                    <td>Your Travel Rate: </td>
+                    <td>${{$mileageRate}}</td>
+                </tr>
+
+                <tr>
+                    <td>Distance from the<br>Assignment location: </td>
+                    <td>{{ number_format((float)$investigator->calculated_distance, 2) }}</td>
+                </tr>
+
+                <tr>
+                    <td>Assignment Half Days: </td>
+                    <td>{{$halfDays}}</td>
+                </tr>
+
+                <tr>
+                    <td>Assignment Full Day: </td>
+                    <td>{{$fullDays}}</td>
+                </tr>
+                <tr>
+                    <td>Cost Estimation: </td>
+                    <td>Hourly Rate X Number of Hours +<br>Travel Rate X Distance from the<br>Assignment location (Back and<br>forth) X Total No. of Days</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>${{$hourlyRate}} X {{$totalhours}} + ${{$mileageRate}} X {{ number_format((float)$investigator->calculated_distance, 2) }}(x2) X {{$totalDays}} = ${{$estimatedCost}}</td>
+                </tr>
+            </table>
+
+            </div>
+        </td>
             <td class="text-center">
 
                 @if(!empty($disabled))
@@ -113,3 +158,24 @@
     </tfoot>
     @endif
 </table>
+
+<div class="modal" tabindex="-1" id="costBreakup" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Cost Break Up</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body show-cost-break-up-summary">
+        
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
