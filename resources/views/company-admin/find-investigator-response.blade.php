@@ -49,9 +49,9 @@
                 $serviceCost = $serviceCost + ($hourlyRate * $hours);
             }
 
-            $mileageCost = ((number_format($investigator->calculated_distance, 2)*2) * $mileageRate);
+           $mileageCost = ((number_format((float)$investigator->calculated_distance, 2, '.', '')*2) * $mileageRate);
 
-            $estimatedCost = $mileageCost+$serviceCost;
+           $estimatedCost = $mileageCost+$serviceCost;
 
                 $investigator->surveillance = $investigator->statements = $investigator->misc = '';
                 foreach($investigator->investigatorServiceLines as $serviceline) {
@@ -78,7 +78,7 @@
             <td>{{ $investigator->statements ? $hourlyRate : '-' }}</td>
             <td>{{ $investigator->misc ? 'Yes' : '-' }}</td>
             <td>{{ $investigator->misc ? $hourlyRate : '-' }}</td>
-            <td class="text-center">{{ number_format($investigator->calculated_distance, 2) }}
+            <td class="text-center">{{ number_format((float)$investigator->calculated_distance, 2) }}
                 miles
             </td>
             <td>${{$estimatedCost}}</td>
