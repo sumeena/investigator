@@ -88,7 +88,8 @@
             <td class="text-center">{{ number_format((float)$investigator->calculated_distance, 2) }}
                 miles
             </td>
-            <td>${{$estimatedCost}} <sup><i data-toggle="modal" data-target="#costBreakup" data-key="{{$key}}" class="cursor-pointer fa fa-info-circle info-cost-break-up"></i></sup>
+
+            <td>@money($estimatedCost) <sup><i data-toggle="modal" data-target="#costBreakup" data-key="{{$key}}" class="cursor-pointer fa fa-info-circle info-cost-break-up"></i></sup>
             
             <div id="info-cost-break-up-{{$key}}" class="d-none cost-break-up-summary">
             <table align="center">
@@ -119,7 +120,7 @@
                     <td colspan="2"><br><b>Cost Estimation:</b></td>
                 </tr>
                 <tr>
-                    <td colspan="2"><br><p><b>${{$hourlyRate}} per hour X {{$totalhours}} hours + ${{$mileageRate}} mileage rate X<br>({{number_format((float)$investigator->calculated_distance, 2) }} miles(back & forth X {{$totalDays}} days)) = ${{$estimatedCost}}</b></p></td>
+                    <td colspan="2"><br><p><b>${{$hourlyRate}} per hour X {{$totalhours}} hours + ${{$mileageRate}} mileage rate X<br>({{number_format((float)$investigator->calculated_distance, 2) }} miles(back & forth X {{$totalDays}} days)) = @money($estimatedCost)</b></p></td>
 
                 </tr>
             </table>
