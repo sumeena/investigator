@@ -1,4 +1,4 @@
-<table class="table" id="investigator-table">
+<table class="table" width="100%" id="investigator-table">
     <thead>
         <tr>
             <th><input type="checkbox" class="select-all-investigators"></th>
@@ -97,12 +97,12 @@
                     <td>${{$hourlyRate}}</td>
                 </tr>
                 <tr>
-                    <td>Your Travel Rate: </td>
+                    <td>Your Mileage Rate: </td>
                     <td>${{$mileageRate}}</td>
                 </tr>
 
                 <tr>
-                    <td>Distance from the<br>Assignment location: </td>
+                    <td>Distance from the<br>Assignment location(miles): </td>
                     <td>{{ number_format((float)$investigator->calculated_distance, 2) }}</td>
                 </tr>
 
@@ -116,12 +116,11 @@
                     <td>{{$fullDays}}</td>
                 </tr>
                 <tr>
-                    <td>Cost Estimation: </td>
-                    <td>Hourly Rate X Number of Hours +<br>Travel Rate X Distance from the<br>Assignment location (Back and<br>forth) X Total No. of Days</td>
+                    <td colspan="2"><br><b>Cost Estimation:</b></td>
                 </tr>
                 <tr>
-                    <td></td>
-                    <td>${{$hourlyRate}} X {{$totalhours}} + ${{$mileageRate}} X {{ number_format((float)$investigator->calculated_distance, 2) }}(x2) X {{$totalDays}} = ${{$estimatedCost}}</td>
+                    <td colspan="2"><br><p><b>${{$hourlyRate}} per hour X {{$totalhours}} hours + ${{$mileageRate}} mileage rate X<br>({{number_format((float)$investigator->calculated_distance, 2) }} miles(back & forth X {{$totalDays}} days)) = ${{$estimatedCost}}</b></p></td>
+
                 </tr>
             </table>
 
