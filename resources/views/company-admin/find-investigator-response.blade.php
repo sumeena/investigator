@@ -88,6 +88,7 @@
             <td class="text-center">{{ number_format((float)$investigator->calculated_distance, 2) }}
                 miles
             </td>
+
             <td>@money($estimatedCost) <sup><i data-toggle="modal" data-target="#costBreakup" data-key="{{$key}}" class="cursor-pointer fa fa-info-circle info-cost-break-up"></i></sup>
             
             <div id="info-cost-break-up-{{$key}}" class="d-none cost-break-up-summary">
