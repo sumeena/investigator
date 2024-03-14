@@ -312,7 +312,7 @@ class AssignmentsController extends Controller
             }
             if ($settings[0]->assignment_hired_or_closed_message == 1) {
                 if (!empty($investigatorUser->phone)) {
-                    $sendSms = $this->sendSms($investigatorUser->phone, $assignment->assignment_id);
+                    $sendSms = $this->sendSms($investigatorUser->phone, $assignment->assignment_id,'');
                     if ($sendSms != "sent") {
                         return response()->json([
                             'error' => true,
@@ -377,7 +377,7 @@ class AssignmentsController extends Controller
             if ($settings[0]->new_message_on_message == 1) {
 
                 if (!empty($userDetails[0]->phone)) {
-                    $sendSms = $this->sendSms($userDetails[0]->phone, $assignment[0]->assignment_id);
+                    $sendSms = $this->sendSms($userDetails[0]->phone, $assignment[0]->assignment_id,'');
                     if ($sendSms != "sent") {
                         $notificationData = [
                             'first_name' => $userDetails[0]->first_name,
@@ -531,7 +531,7 @@ Please correct it as soon as you can.",
             if ($settings->count() > 0) {
                 if ($settings[0]->assignment_invite_message == 1) {
                     if (!empty($investigator->phone)) {
-                        $sendSms = $this->sendSms($investigator->phone, $assignment->assignment_id);
+                        $sendSms = $this->sendSms($investigator->phone, $assignment->assignment_id,'');
                         if ($sendSms != "sent") {
                             $notificationData = [
                                 'first_name' => $investigator->first_name,
@@ -558,7 +558,6 @@ Please correct it as soon as you can.",
 
     public function invite(Request $request)
     {
-
         $request->validate([
             'investigator_id' => 'bail|required|integer|exists:users,id',
             'assignment'     => 'bail|required',
@@ -570,7 +569,7 @@ Please correct it as soon as you can.",
 
         $assignment = Assignment::find($request->assignment);
 
-        $storeAssignmentUser = AssignmentUser::updateOrCreate(['assignment_id' => $assignment->id, 'user_id' => $investigator->id], ['assignment_id' => $assignment->id, 'user_id' => $investigator->id, 'status' => 'INVITED']);
+        $storeAssignmentUser = AssignmentUser::updateOrCreate(['assignment_id' => $assignment->id, 'user_id' => $investigator->id], ['assignment_id' => $assignment->id, 'user_id' => $investigator->id, 'status' => 'INVITED', 'estimated_cost' => $request->estimated_cost]);
 
         Assignment::where('id', $assignment->id)->update(['status' => 'INVITED']);
         // Assignment::where('id',$assignment->id)->update(['status' => 'OFFER SENT']);
@@ -592,13 +591,13 @@ Please correct it as soon as you can.",
             'assigmentId'  => 'Assigment ID: ' . Str::upper($assignment->assignment_id),
             'clientId'     => 'Client ID: ' . Str::upper($assignment->client_id),
             'companyName'  => 'Company Name: ' . $company_name,
+            'estimatedCost'=> 'Estimated Cost for this job is: ' .$request->estimated_cost,
             'login'        => ' to your account so view the details.',
             'loginUrl'        => $login,
             'type'         => Notification::INVITATION,
             'thanks'        => 'Ilogistics Team',
             'url'          => route('investigator.assignment.show', $storeAssignmentUser->id),
         ];
-
 
         Notification::create($notificationData);
 
@@ -617,7 +616,7 @@ Please correct it as soon as you can.",
         if ($settings->count() > 0) {
             if ($settings[0]->assignment_invite_message == 1) {
                 if (!empty($investigator->phone)) {
-                    $sendSms = $this->sendSms($investigator->phone, $assignment->assignment_id);
+                    $sendSms = $this->sendSms($investigator->phone, $assignment->assignment_id,"You have received invite on assignment ".$assignment->assignment_id.", with estimated cost ".$request->estimated_cost);
                     if ($sendSms != "sent") {
                         $notificationData = [
                             'first_name' => $investigator->first_name,
@@ -746,12 +745,14 @@ Please correct it as soon as you can.",
             'message' => 'Assignment deleted successfully!',
         ]);
     }
-    public function sendSms($number, $assignmentId)
+    public function sendSms($number, $assignmentId,$body="")
     {
         $account_sid = env('TWILIO_ACCOUNT_SID');
         $auth_token = env('TWILIO_AUTH_TOKEN');
         $twilio_number = env('SERVICES_TWILIO_PHONE_NUMBER');
         //$twilio_number = "+12569801067"; // Your Twilio phone number
+        if($body == '')
+        $body='You have received new message on assignment ' . $assignmentId . '';
 
         $client = new Client($account_sid, $auth_token);
         try {
@@ -759,7 +760,7 @@ Please correct it as soon as you can.",
                 '+1' . $number, // Recipient's phone number
                 array(
                     'from' => $twilio_number,
-                    'body' => 'You have received new message on assignment ' . $assignmentId . ''
+                    'body' => $body
                 )
             );
         } catch (\Exception $e) {

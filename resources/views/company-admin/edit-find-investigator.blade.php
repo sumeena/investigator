@@ -1222,9 +1222,6 @@ $userrole = '/hm/';
             });
         });
 
-
-
-
         // Send Invitation
         $('#inviteModalCloseBtn').on('click', function() {
             $('#inviteModal').modal('hide');
@@ -1241,10 +1238,12 @@ $userrole = '/hm/';
             const investigatorId = $(inviteBtn).data('investigator-id');
             const assignmentID = $('#assignmentID').val();
             const inviteFormSubmitBtn = $('#inviteFormSubmitBtn');
+            const estimatedCost = $(inviteBtn).data('cost-estimate');
 
             const data = {
                 investigator_id: investigatorId,
-                assignment: assignmentID
+                assignment: assignmentID,
+                estimated_cost: estimatedCost
             };
 
             $(inviteBtn).attr('disabled', true);

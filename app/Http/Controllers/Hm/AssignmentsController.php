@@ -25,50 +25,25 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use App\Mail\NewMassageMail;
+use App\Models\InvestigatorType;
 use Twilio\Rest\Client;
 
 class AssignmentsController extends Controller
 {
     public function index()
     {
-        $user = auth()->user();
         $userId = auth()->id();
-        $parentId = NULL;
+        $parentId = '';
 
         $companyUser = CompanyUser::where('user_id', auth()->id())->exists();
 
-        if($companyUser) {
-
-          if (isset($user->company_profile_id) && $user->company_profile_id !== null) {
-
-          }else {
-                session()->flash('error', 'Please tell your company admin to complete company profile first!');
-                return redirect()->route('hm.index');
-            }
-
-            $user->load([
-                'companyAdmin',
-                'companyAdmin.company',
-                'companyAdmin.company.CompanyAdminProfile',
-            ]);
-
-            $CompanyAdminProfile = $user->companyAdmin->company->CompanyAdminProfile;
-            $parentProfile = CompanyAdminProfile::find($user->company_profile_id);
-            $companyAdmin = $user->companyAdmin?->company;
-
-            if($parentProfile->make_assignments_private == 1)
-            $parentId = NULL;
-            else
-            $parentId = $parentProfile->id;
-
+        if ($companyUser) {
+            $parent = CompanyUser::where('user_id', auth()->id())->pluck('parent_id');
+            $parentId = $parent[0];
         }
 
-        $assignments = Assignment::withCount('users')
-        ->where(['user_id' => $userId, 'is_delete' => NULL])
-        ->when($parentId != '', function ($query) use ($parentId) {
-            $query->orWhere(['user_id' => $parentId, 'is_delete' => NULL]);
-        })
-        ->orderBy('created_at','desc')->paginate(10);
+        $assignments = Assignment::withCount('users')->where(['user_id' => $userId, 'is_delete' => NULL])->orWhere(['user_id' => $parentId, 'is_delete' => NULL])->orderBy('created_at', 'desc')->paginate(10);
+
 
         $html = view('company-admin.assignments-response', compact('assignments'))->render();
 
@@ -224,7 +199,7 @@ class AssignmentsController extends Controller
         $investigators   = [];
         $assignments     = Assignment::where('user_id', auth()->id())->paginate(10);
         $assignmentCount = Assignment::where('user_id', auth()->id())->count();
-
+        $investigationTypes = InvestigatorType::get();
         $assignment->load(['users', 'searchHistory']);
 
         if ($this->checkQueryAvailablity($request)) {
@@ -250,7 +225,8 @@ class AssignmentsController extends Controller
                 'investigators',
                 'request',
                 'assignments',
-                'assignment'
+                'assignment',
+                'investigationTypes'
             )
         );
     }
@@ -576,7 +552,8 @@ class AssignmentsController extends Controller
         $authUser = auth()->user();
 
             $assignment = Assignment::find($request->assignment);
-                $storeAssignmentUser = AssignmentUser::updateOrCreate(['assignment_id' => $assignment->id, 'user_id' => $investigator->id],['assignment_id' => $assignment->id, 'user_id' => $investigator->id]);
+
+            $storeAssignmentUser = AssignmentUser::updateOrCreate(['assignment_id' => $assignment->id, 'user_id' => $investigator->id], ['assignment_id' => $assignment->id, 'user_id' => $investigator->id, 'status' => 'INVITED', 'estimated_cost' => $request->estimated_cost]);
 
                 Assignment::where('id',$assignment->id)->update(['status' => 'INVITED']);
                 $login=route('login');
@@ -599,6 +576,7 @@ class AssignmentsController extends Controller
                    'assigmentId'  => 'Assigment ID: ' . Str::upper($assignment->assignment_id),
                    'clientId'     => 'Client ID: ' . Str::upper($assignment->client_id),
                    'companyName'  => 'Company Name: ' .$company_name,
+                   'estimatedCost'=> 'Estimated Cost for this job is: ' .$request->estimated_cost,
                    'login'        => ' to your account so view the details.',
                    'loginUrl'        => $login,
                    'type'         => Notification::INVITATION,
@@ -623,13 +601,21 @@ class AssignmentsController extends Controller
              if($settings->count() > 0){
                   if($settings[0]->assignment_invite_message == 1 ){
                     if(!empty($authUser->phone)){
-                        $sendSms=$this->sendSms($investigator->phone,$assignment->assignment_id);
-                        if($sendSms !="sent"){
-                            return response()->json([
-                               'error' => true,
-                               'message' => $sendSms,
-                           ]);
-                         }
+                        $sendSms=$this->sendSms($investigator->phone,$assignment->assignment_id,"You have received invite on assignment ".$assignment->assignment_id.", with estimated cost ".$request->estimated_cost);
+                        if ($sendSms != "sent") {
+                            $notificationData = [
+                                'first_name' => $investigator->first_name,
+                                'last_name' => $investigator->last_name,
+                                'title'        => "Please recheck the phone on your profile. We use phone number to send you notifications and you may miss out on important information if it's not valid.
+            Please correct it as soon as you can.",
+                                'login'        => ' to your account so view the details.',
+                                'loginUrl'        => route('login'),
+                                'phoneupdate' => "update",
+                                'thanks'        => 'Ilogistics Team',
+    
+                            ];
+                            Mail::to($investigator->email)->send(new NewMassageMail($notificationData));
+                        }
                     }
                   }
              }
