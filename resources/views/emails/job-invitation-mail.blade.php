@@ -5,6 +5,7 @@
 {{ @$data['assigmentId'] }} <br><br>
 {{ @$data['clientId'] }} <br><br>
 {{ @$data['companyName'] }} <br><br>
+{{ @$data['estimatedCost'] }} <br><br>
 <a href="{{ @$data['loginUrl'] }}" target="_blank">Login</a>{{ @$data['login'] }} <br><br>
 <x-mail::button :url="$data['url']">
 Show Invitation
