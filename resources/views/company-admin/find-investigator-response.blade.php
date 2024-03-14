@@ -60,13 +60,17 @@
 
            $estimatedCost = $mileageCost+$serviceCost;
 
-                $investigator->surveillance = $investigator->statements = $investigator->misc = '';
+                $investigator->surveillance = $investigator->statements = $investigator->misc = $survHourlyRate = $statHourlyRate = '';
                 foreach($investigator->investigatorServiceLines as $serviceline) {
-                    if($serviceline->investigation_type == 'surveillance')
+                    if($serviceline->investigation_type == 'surveillance') {
                     $investigator->surveillance = 'surveillance';
+                    $survHourlyRate = $serviceline->hourly_rate;
+                }
                     
-                    if($serviceline->investigation_type == 'statements')
+                    if($serviceline->investigation_type == 'statements') {
                     $investigator->statements = 'statements';
+                    $statHourlyRate = $serviceline->hourly_rate;
+                }
 
                     if($serviceline->investigation_type == '')
                     $investigator->misc = 'misc';
@@ -80,9 +84,9 @@
             <td>{{ $investigator->last_name }}</td>
 
             <td>{{ $investigator->surveillance ? 'Yes' : '-' }}</td>
-            <td>{{ $investigator->surveillance ? $hourlyRate : '-' }}</td>
+            <td>{{ $investigator->surveillance ? $survHourlyRate : '-' }}</td>
             <td>{{ $investigator->statements ? 'Yes' : '-' }}</td>
-            <td>{{ $investigator->statements ? $hourlyRate : '-' }}</td>
+            <td>{{ $investigator->statements ? $statHourlyRate : '-' }}</td>
             <td>{{ $investigator->misc ? 'Yes' : '-' }}</td>
             <td>{{ $investigator->misc ? $hourlyRate : '-' }}</td>
             <td class="text-center">{{ number_format((float)$investigator->calculated_distance, 2) }}
@@ -133,7 +137,7 @@
                     <i class="fas fa-check"></i>
                 </button>
                 @else
-                <button type="button" class="btn btn-info bt+n-sm inviteSendBtn" data-assignment-count="{{ $assignmentCount }}" data-investigator-id="{{ $investigator->id }}">
+                <button type="button" data-cost-estimate="@money($estimatedCost)" class="btn btn-info btn-sm inviteSendBtn" data-assignment-count="{{ $assignmentCount }}" data-investigator-id="{{ $investigator->id }}">
                     <i class="fas fa-paper-plane"></i>
                 </button>
                 @endif
