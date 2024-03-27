@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::table('calendar_events', function (Blueprint $table) {
-            $table->string('schedule')->after('title')->nullable();
+            $table->int('schedule')->after('title')->nullable();
         });
     }
 
