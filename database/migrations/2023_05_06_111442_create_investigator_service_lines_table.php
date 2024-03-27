@@ -17,7 +17,6 @@ return new class extends Migration
         Schema::create('investigator_service_lines', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(User::class)->constrained()->cascadeOnDelete();
-            $table->string('investigation_type')->nullable();
             $table->integer('case_experience')->nullable();
             $table->integer('years_experience')->nullable();
             $table->integer('hourly_rate')->nullable();
