@@ -333,7 +333,7 @@ $userrole = '/hm/';
                                     </div>
                                     <div class="col-md-2">
                                         <button class="btn btn-md btn-primary customButton" onclick="addNewSection(this)" type="button">
-                                            Add new Row
+                                            Add another day/service
                                         </button>
                                     </div>
                                 </div>
