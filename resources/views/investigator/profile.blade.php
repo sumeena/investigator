@@ -557,7 +557,7 @@
                                             </tr>
 
                                             <tr class="d-none">
-                                                <td colspan="7"><button type="button" class="btn btn-success add-more-rows add-misc-row"><i class="fa fa-plus-circle"></i> Add more rows</button></td>
+                                                <td colspan="7"><button type="button" class="btn btn-success add-more-rows add-misc-row"><i class="fa fa-plus-circle"></i> Add another day/service</button></td>
                                             </tr>
 
                                     </tbody>

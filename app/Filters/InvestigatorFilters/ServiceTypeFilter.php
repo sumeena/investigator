@@ -15,8 +15,8 @@ class ServiceTypeFilter extends Filter
 
     protected function applyFilters($builder)
     {
-
         if (isset($this->request->statements) || isset($this->request->surveillance) || isset($this->request->misc)) {
+
             return $builder->whereHas('investigatorServiceLines', function ($query) {
 
                $query->when($this->request->has('surveillance'), function($sq) {
@@ -31,6 +31,8 @@ class ServiceTypeFilter extends Filter
             //    dd($query->dd());
             });
         }
+        dd($builder);
+
         return $builder;
     }
 }
