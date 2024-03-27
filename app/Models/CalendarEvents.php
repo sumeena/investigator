@@ -11,5 +11,5 @@ class CalendarEvents extends Model
     protected $table = 'calendar_events';
     public $timestamps = true;
 
-    protected $fillable = ['user_id', 'calendar_id', 'event_id', 'title', 'start_date', 'end_date', 'start_time', 'end_time'];
+    protected $fillable = ['user_id', 'calendar_id', 'event_id', 'title', 'schedule', 'start_date', 'end_date', 'start_time', 'end_time'];
 }

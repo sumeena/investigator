@@ -975,6 +975,8 @@ class InvestigatorController extends Controller
 
         $events = json_decode($response);
 
+        // dd($events);
+
         if (isset($events->message)) {
             $curl = curl_init();
             curl_setopt_array($curl, array(
@@ -1008,13 +1010,14 @@ class InvestigatorController extends Controller
 
             if (isset($event->when->start_time) && isset($event->when->end_time)) {
                 $calendarEvents .= json_encode([
-                    'title' => $event->title, 'start' => $event->when->start_time * 1000,
+                    'title' => $event->title,'schedule' => $event->busy, 'start' => $event->when->start_time * 1000,
                     'end'   => $event->when->end_time * 1000
                 ]) . ',';
 
                 $calEventsArray = array(
                     'user_id'    => $userId, 'calendar_id' => $calendarId, 'event_id' => $event->id,
                     'title'      => $event->title,
+                    'schedule' => $event->busy,
                     'start_date' => date('Y-m-d', $event->when->start_time),
                     'end_date'   => date('Y-m-d', $event->when->end_time),
                     'start_time' => date('H:i:s', $event->when->start_time),
@@ -1024,13 +1027,13 @@ class InvestigatorController extends Controller
                 $start_time = strtotime("" . $event->when->start_date . "") + 3600;
                 $end_time = strtotime("" . $event->when->end_date . "") + 3600 * 23.9;
                 $calendarEvents .= json_encode([
-                    'title' => $event->title, 'start' => $start_time * 1000,
+                    'title' => $event->title, 'schedule' => $event->busy, 'start' => $start_time * 1000,
                     'end'   => $end_time * 1000
                 ]) . ',';
 
                 $calEventsArray = array(
                     'user_id'  => $userId, 'calendar_id' => $calendarId, 'event_id' => $event->id,
-                    'title'    => $event->title, 'start_date' => $event->when->start_date,
+                    'title'    => $event->title, 'schedule' => $event->busy, 'start_date' => $event->when->start_date,
                     'end_date' => $event->when->end_date,
                     'start_time' => date('H:i:s', $start_time),
                     'end_time'   => date('H:i:s', $end_time)
@@ -1041,7 +1044,7 @@ class InvestigatorController extends Controller
                 $end_time = strtotime("" . $event->when->date . "") + 3600 * 23.9;
                 $calEventsArray = array(
                     'user_id'  => $userId, 'calendar_id' => $calendarId, 'event_id' => $event->id,
-                    'title'    => $event->title, 'start_date' => $event->when->date,
+                    'title'    => $event->title, 'schedule' => $event->busy, 'start_date' => $event->when->date,
                     'end_date' => $event->when->date,
                     'start_time' => date('H:i:s', $start_time),
                     'end_time'   => date('H:i:s', $end_time)
